@@ -12,11 +12,6 @@ license = "MIT"
 authors = [{ name = "David Lopez", email = "proyectos@univercity.com.co" }]
 keywords = ["mcp", "automation", "business", "audit", "consulting"]
 
-[project.urls]
-Homepage = "https://univercityaiconsult.co"
-Repository = "https://github.com/davidscoreal/univercity-mcp"
-Documentation = "https://github.com/davidscoreal/univercity-mcp#readme"
-
 dependencies = [
     "mcp>=1.0.0",
     "aiosqlite>=0.20.0",
@@ -24,6 +19,11 @@ dependencies = [
     "httpx>=0.27.0",
     "pyyaml>=6.0",
 ]
+
+[project.urls]
+Homepage = "https://univercityaiconsult.co"
+Repository = "https://github.com/davidscoreal/univercity-mcp"
+Documentation = "https://github.com/davidscoreal/univercity-mcp#readme"
 
 [project.optional-dependencies]
 pdf = ["weasyprint>=62.0"]
