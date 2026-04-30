@@ -1,6 +1,6 @@
 {
   "name": "univercity-mcp",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Expert business diagnosis engine — analyzes any company across 8 dimensions (digital, operations, supply chain, talent, finance, leadership, market, regulatory). Returns Revenue Leak Score with prioritized actions and triple-option recommendations: best paid tool, best open source alternative, or professional implementation by CIA.",
   "author": {
     "name": "David Lopez",

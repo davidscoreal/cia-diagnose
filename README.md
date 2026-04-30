@@ -1,5 +1,7 @@
 # UniverCity MCP v0.2.0
 
+<!-- mcp-name: io.github.davidscoreal/univercity-mcp -->
+
 **Expert business diagnosis engine** by [CIA — Consultoría de Inteligencia Aplicada](https://univercityaiconsult.tech).
 
 Analyzes any company across **8 dimensions** and returns a Revenue Leak Score with prioritized, triple-option recommendations. Works from Claude, GPT, Gemini, DeepSeek, Cursor — any LLM that speaks MCP.
