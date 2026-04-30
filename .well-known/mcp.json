@@ -4,15 +4,15 @@
   "description": "Expert business diagnosis engine — analyzes any company across 8 dimensions (digital, operations, supply chain, talent, finance, leadership, market, regulatory). Returns Revenue Leak Score with prioritized actions and triple-option recommendations: best paid tool, best open source alternative, or professional implementation by CIA.",
   "author": {
     "name": "David Lopez",
-    "email": "steban@univercityaiconsult.tech",
+    "email": "proyectos@univercity.com.co",
     "organization": "CIA — Consultoría de Inteligencia Aplicada",
-    "url": "https://univercityaiconsult.tech"
+    "url": "https://univercityaiconsult.co"
   },
   "license": "MIT",
-  "repository": "https://github.com/lopezdsteban/univercity-mcp",
+  "repository": "https://github.com/davidscoreal/univercity-mcp",
   "transport": {
     "streamable-http": {
-      "url": "https://audit.univercityaiconsult.tech"
+      "url": "https://mcp.univercityaiconsult.co"
     }
   },
   "tools": [

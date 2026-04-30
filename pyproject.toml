@@ -9,8 +9,13 @@ description = "Holistic business intelligence engine — 8-dimension diagnosis v
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
-authors = [{ name = "David Lopez", email = "lopezdsteban@gmail.com" }]
+authors = [{ name = "David Lopez", email = "proyectos@univercity.com.co" }]
 keywords = ["mcp", "automation", "business", "audit", "consulting"]
+
+[project.urls]
+Homepage = "https://univercityaiconsult.co"
+Repository = "https://github.com/davidscoreal/univercity-mcp"
+Documentation = "https://github.com/davidscoreal/univercity-mcp#readme"
 
 dependencies = [
     "mcp>=1.0.0",
