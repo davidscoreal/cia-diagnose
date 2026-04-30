@@ -21,7 +21,7 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://univercityaiconsult.co"
+Homepage = "https://univercityaiconsult.tech"
 Repository = "https://github.com/davidscoreal/univercity-mcp"
 Documentation = "https://github.com/davidscoreal/univercity-mcp#readme"
 

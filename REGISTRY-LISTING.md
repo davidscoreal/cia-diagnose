@@ -8,8 +8,8 @@
 **Author:** David Lopez / CIA (Consultoría de Inteligencia Aplicada)
 **License:** MIT
 **Repository:** https://github.com/davidscoreal/univercity-mcp
-**Website:** https://univercityaiconsult.co
-**Server URL:** https://mcp.univercityaiconsult.co
+**Website:** https://univercityaiconsult.tech
+**Server URL:** https://mcp.univercityaiconsult.tech
 
 ### Description (for registry)
 
@@ -36,7 +36,7 @@ One tool. Open schema. Send what you know, get expert analysis back.
 {
   "mcpServers": {
     "univercity-mcp": {
-      "url": "https://mcp.univercityaiconsult.co"
+      "url": "https://mcp.univercityaiconsult.tech"
     }
   }
 }
@@ -85,7 +85,7 @@ displayName: "UniverCity MCP — Business Diagnosis Engine"
 description: "Expert 8-dimension business diagnosis with Revenue Leak Score"
 author: "CIA — Consultoría de Inteligencia Aplicada"
 license: MIT
-homepage: https://univercityaiconsult.co
+homepage: https://univercityaiconsult.tech
 repository: https://github.com/davidscoreal/univercity-mcp
 tags:
   - business
@@ -97,7 +97,7 @@ transport:
   stdio:
     command: univercity-mcp
   http:
-    url: https://mcp.univercityaiconsult.co
+    url: https://mcp.univercityaiconsult.tech
 ```
 
 ---

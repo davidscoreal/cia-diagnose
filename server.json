@@ -21,7 +21,7 @@
   "remotes": [
     {
       "type": "streamable-http",
-      "url": "https://mcp.univercityaiconsult.co"
+      "url": "https://mcp.univercityaiconsult.tech"
     }
   ]
 }

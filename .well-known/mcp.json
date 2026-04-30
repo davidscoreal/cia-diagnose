@@ -6,13 +6,13 @@
     "name": "David Lopez",
     "email": "proyectos@univercity.com.co",
     "organization": "CIA — Consultoría de Inteligencia Aplicada",
-    "url": "https://univercityaiconsult.co"
+    "url": "https://univercityaiconsult.tech"
   },
   "license": "MIT",
   "repository": "https://github.com/davidscoreal/univercity-mcp",
   "transport": {
     "streamable-http": {
-      "url": "https://mcp.univercityaiconsult.co"
+      "url": "https://mcp.univercityaiconsult.tech"
     }
   },
   "tools": [
