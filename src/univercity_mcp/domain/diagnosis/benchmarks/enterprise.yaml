@@ -1,0 +1,207 @@
+# Enterprise with Innovation Budget (500-5000+ employees) — Tier 1 ICP
+# "purgatorio de PoC" — $200K Big4 PowerPoint, innovation theater, vendor lock-in
+id: enterprise
+name_es: "Empresa con Presupuesto de Innovación"
+name_en: "Enterprise with Innovation Budget"
+tier: 1
+employee_range: "500-5000+"
+decision_maker: "CTO / VP Innovation / Chief Digital Officer"
+sales_cycle: "3-6 meses"
+
+dimensions:
+  leadership:
+    weight: 0.25
+    signals:
+      - field: innovation_strategy
+        equals: unclear
+        impact: negative
+        score_boost: 25
+      - field: executive_alignment
+        equals: poor
+        impact: negative
+        score_boost: 20
+    defaults:
+      base_score: 45
+    benchmarks:
+      cto_tenure_months: 36
+      c_suite_ai_literacy: 0.45
+      board_innovation_pressure: true
+    findings:
+      poc_purgatory:
+        condition: "always"
+        severity: critical
+        title_es: "Purgatorio de PoC: $200K PowerPoint, cero producción"
+        title_en: "PoC purgatory: $200K PowerPoint, zero production"
+        detail_es: "Empresas grandes gastan $100K-$500K en Proof of Concepts que nunca escalan. Razones: riesgo aversión, siloed budgets, decisiones por comité (3-6 meses), falta de propietario claro. Resultado: 80% de PoCs mueren en piloto. Impacto: talento frustrado, presupuesto quemado, competencia avanza."
+        detail_en: "Large enterprises spend $100K-$500K on PoCs that never scale. Reasons: risk aversion, siloed budgets, committee decisions (3-6 months), unclear ownership. Result: 80% of PoCs die in pilot. Impact: frustrated talent, burned budget, competitors advance."
+        impact: "$50K-$500K/year in wasted pilot spending"
+        action:
+          paid: {tool: "McKinsey Digital / Deloitte AI Advisory", price: "$50K-$200K", url: "https://www.mckinsey.com"}
+          oss: {tool: "Open source PoC governance framework (Openpilot)", url: "https://github.com/commaai/openpilot"}
+          cia: {service_es: "Estrategia de PoC → Producción + propietario ejecutivo + roadmap de 90 días", service_en: "PoC → Production strategy + executive owner + 90-day roadmap", price: "$10K-$30K"}
+      innovation_theater:
+        condition: "always"
+        severity: high
+        title_es: "Teatro de innovación: pilotaje sin métrica"
+        title_en: "Innovation theater: piloting without metrics"
+        detail_es: "52% de programas de innovación corporativa carecen de KPIs claros. Ejecutivos lanzan iniciativas por presión de board, sin medir ROI. Resultado: equipos confundidos, presupuesto sin control, parálisis de análisis."
+        detail_en: "52% of corporate innovation programs lack clear KPIs. Executives launch initiatives under board pressure, without measuring ROI. Result: confused teams, uncontrolled spending, analysis paralysis."
+        impact: "$20K-$100K/month in misaligned spending"
+        action:
+          paid: {tool: "OKR software (Ally, 15Five)", price: "$100-$500/mo", url: "https://www.ally.com"}
+          oss: {tool: "OpenStack OKR tracking", url: "https://github.com"}
+          cia: {service_es: "Definición de KPIs de innovación + dashboards de impacto + cambio cultural", service_en: "Innovation KPI definition + impact dashboards + cultural change", price: "$5K-$15K"}
+      change_management_resistance:
+        condition: "always"
+        severity: high
+        title_es: "Resistencia al cambio: 70% de iniciativas fallan en adopción"
+        title_en: "Change resistance: 70% of initiatives fail in adoption"
+        detail_es: "Aún con solución perfecta, 70% de cambios empresariales fallan por falta de adopción. Razones: cultura heredada, intranet información, falta de comunicación clara. Impacto: tecnología muere en piloto, ROI = 0."
+        detail_en: "Even with perfect solution, 70% of enterprise changes fail due to lack of adoption. Reasons: legacy culture, siloed information, poor comms. Impact: tech dies in pilot, ROI = 0."
+        impact: "$100K-$1M+ in failed transformations"
+
+  operations:
+    weight: 0.20
+    signals:
+      - field: process_maturity
+        contains_any: [waterfall, legacy, siloed]
+        impact: negative
+        score_boost: 20
+      - field: cross_functional_coordination
+        equals: poor
+        impact: negative
+        score_boost: 15
+    defaults:
+      base_score: 55
+    benchmarks:
+      process_automation_percent: 0.35
+      time_to_production_weeks: 8
+      meeting_overhead_hours_per_week: 15
+    findings:
+      process_drag:
+        condition: "always"
+        severity: high
+        title_es: "Fricción de procesos: 8+ semanas a producción"
+        title_en: "Process friction: 8+ weeks to production"
+        detail_es: "Empresas grandes gastan 40% del ciclo en aprobaciones (legal, compliance, security). Resultado: startups lanzan en 4 semanas, empresa en 8-12. Ventaja competitiva: perdida."
+        detail_en: "Large enterprises spend 40% of cycle on approvals (legal, compliance, security). Result: startups ship in 4 weeks, enterprise in 8-12. Competitive advantage: lost."
+        impact: "$5K-$25K/month in lost time-to-market"
+
+  digital:
+    weight: 0.15
+    signals:
+      - field: legacy_system_dependency
+        equals: high
+        impact: negative
+        score_boost: 25
+      - field: data_infrastructure_maturity
+        less_than: 0.60
+        impact: negative
+        score_boost: 20
+    defaults:
+      base_score: 50
+    benchmarks:
+      tech_debt_ratio: 0.35
+      api_first_adoption: 0.40
+      cloud_migration_percent: 0.55
+    findings:
+      legacy_lock_in:
+        condition: "always"
+        severity: high
+        title_es: "Lock-in heredado: imposible desplegar nuevo software"
+        title_en: "Legacy lock-in: impossible to deploy new tech"
+        detail_es: "73% de empresas Fortune 500 tienen sistemas legacy que no se pueden tocar. Resultado: nuevas soluciones viven aisladas, sin integración. ROI limitado."
+        detail_en: "73% of Fortune 500 have untouchable legacy systems. Result: new solutions live isolated, no integration. Limited ROI."
+        impact: "$10K-$50K/month in integration debt"
+
+  talent:
+    weight: 0.15
+    signals:
+      - field: skill_gap_critical
+        greater_than: 0.50
+        impact: negative
+        score_boost: 20
+      - field: retention_risk
+        is_not_empty: true
+        impact: negative
+        score_boost: 15
+    defaults:
+      base_score: 50
+    benchmarks:
+      ai_literacy_percent: 0.25
+      technical_talent_turnover: 0.20
+      training_budget_percent: 0.015
+    findings:
+      talent_exodus:
+        condition: "always"
+        severity: high
+        title_es: "Éxodo de talento técnico: cerebros a startups"
+        title_en: "Technical talent exodus: brains to startups"
+        detail_es: "Talento técnico en grandes empresas ve innovación bloqueada. Resultado: migra a startups (15-25% anual). Costo reemplazo: 200-250% salario."
+        detail_en: "Technical talent in large enterprises sees innovation blocked. Result: migrates to startups (15-25% annually). Replacement cost: 200-250% salary."
+        impact: "$20K-$100K per person in replacement cost"
+
+  financial:
+    weight: 0.10
+    signals:
+      - field: innovation_budget_allocation
+        less_than: 0.05
+        impact: negative
+        score_boost: 15
+      - field: roi_tracking
+        equals: none
+        impact: negative
+        score_boost: 20
+    defaults:
+      base_score: 55
+    benchmarks:
+      innovation_budget_percent: 0.08
+      roi_measurement_maturity: 0.30
+    findings:
+      roi_invisible:
+        condition: "always"
+        severity: high
+        title_es: "ROI de innovación: invisible o negativo"
+        title_en: "Innovation ROI: invisible or negative"
+        detail_es: "45% de empresas no pueden cuantificar ROI de iniciativas de innovación. Sin métrica, presupuesto crece sin justificación. Resultado: auditoría, cortes de presupuesto, frustración."
+        detail_en: "45% of enterprises cannot quantify ROI on innovation initiatives. Without metric, budget grows unjustified. Result: audit, budget cuts, frustration."
+        impact: "$100K-$1M+ in untracked spending"
+
+  market:
+    weight: 0.10
+    signals:
+      - field: competitive_threat
+        equals: high
+        impact: negative
+        score_boost: 20
+    defaults:
+      base_score: 50
+    benchmarks:
+      market_share_trend: declining
+      disruptor_threat: high
+    findings:
+      disruption_risk:
+        condition: "always"
+        severity: high
+        title_es: "Riesgo de disrupción: competencia nativa-digital adelanta"
+        title_en: "Disruption risk: digital-native competitors advance"
+        detail_es: "Empresas incumbentes pierden 1-2% market share anual a disruptores. Causa: inversión en PoC lenta vs deployment rápido de startups."
+        detail_en: "Incumbent enterprises lose 1-2% market share annually to disruptors. Cause: slow PoC investment vs rapid startup deployment."
+        impact: "$1M-$100M+ in market share loss potential"
+
+  regulatory:
+    weight: 0.05
+    signals:
+      - field: compliance_complexity
+        is_not_empty: true
+        impact: negative
+        score_boost: 15
+    defaults:
+      base_score: 45
+    findings: {}
+
+  supply_chain:
+    weight: 0.00
+    defaults:
+      base_score: 50
+    findings: {}

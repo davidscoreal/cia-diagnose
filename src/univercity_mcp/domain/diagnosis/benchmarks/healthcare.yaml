@@ -1,0 +1,200 @@
+# Healthcare Clinics — Tier 1 ICP
+# "agujero negro de citas" / no-show, missed calls, billing cycle
+id: healthcare
+name_es: "Clínicas de Salud"
+name_en: "Healthcare Clinics"
+tier: 1
+employee_range: "20-200"
+decision_maker: "Gerente General / Jefe de Operaciones"
+sales_cycle: "3-6 semanas"
+
+dimensions:
+  financial:
+    weight: 0.25
+    signals:
+      - field: revenue_impact_concerns
+        contains_any: [billing_delays, ar_aging, write_offs]
+        impact: negative
+        score_boost: 25
+      - field: insurance_challenges
+        is_not_empty: true
+        impact: negative
+        score_boost: 20
+    defaults:
+      base_score: 50
+    benchmarks:
+      no_show_rate: 0.068
+      ar_days_outstanding: 60
+      billing_cycle_days: 45
+      insurance_denial_rate: 0.12
+    findings:
+      no_show_impact:
+        condition: "always"
+        severity: critical
+        title_es: "No-shows: 5.5-7.8% de citas perdidas"
+        title_en: "No-shows: 5.5-7.8% of appointments lost"
+        detail_es: "Las clínicas sin recordatorios automatizados pierden $50K-$200K/año en citas no presentadas. Cada no-show es un slot de 30-60 min no recuperable. Con 50+ citas/día, eso son $200-$400 de ingresos por cita perdida."
+        detail_en: "Clinics without automated reminders lose $50K-$200K/year in no-shows. Each no-show is a non-recoverable 30-60 min slot. With 50+ appointments/day, that's $200-$400 in revenue per missed appointment."
+        impact: "$3K-$15K/month in lost revenue"
+        action:
+          paid: {tool: "SimplePractice", price: "$99-$299/mo", url: "https://simplepractice.com"}
+          oss: {tool: "Bahmni", url: "https://bahmni.org"}
+          cia: {service_es: "Sistema de recordatorios integrado + confirmación de citas + gestión de cancelaciones", service_en: "Integrated reminder system + appointment confirmation + cancellation management", price: "$3K-$8K"}
+      billing_cycle_delays:
+        condition: "always"
+        severity: high
+        title_es: "Ciclo de facturación > 45 días"
+        title_en: "Billing cycle > 45 days"
+        detail_es: "61% de facturas B2B se pagan tarde. En healthcare, los ciclos sin automatización duran 45-60 días. Cada día de demora en facturación cuesta ~0.5% de ingresos por dilución temporal de flujo de caja."
+        detail_en: "61% of B2B invoices are paid late. In healthcare, non-automated cycles take 45-60 days. Each day of billing delay costs ~0.5% of revenue through cash flow dilution."
+        impact: "$2K-$8K/month in delayed receivables"
+        action:
+          paid: {tool: "eClinicalWorks", price: "$150-$400/mo", url: "https://www.eclinicalworks.com"}
+          oss: {tool: "OpenMRS", url: "https://openmrs.org"}
+          cia: {service_es: "Automatización de facturación + seguimiento de cobranza + gestión de seguros", service_en: "Billing automation + collections tracking + insurance management", price: "$4K-$10K"}
+
+  operations:
+    weight: 0.20
+    signals:
+      - field: appointment_scheduling
+        contains_any: [manual, spreadsheets, phone]
+        impact: negative
+        score_boost: 20
+      - field: staff_frustration
+        is_not_empty: true
+        impact: negative
+        score_boost: 15
+    defaults:
+      base_score: 55
+    benchmarks:
+      appointment_no_show_rate: 0.068
+      staff_utilization: 0.70
+      average_appointment_duration: 30
+      scheduling_errors_percent: 0.08
+    findings:
+      manual_scheduling:
+        condition: "appointment_scheduling contains manual or spreadsheets or phone"
+        severity: high
+        title_es: "Citas manuales: conflictos y subutilización"
+        title_en: "Manual scheduling: conflicts and underutilization"
+        detail_es: "Las clínicas sin software de citas experimentan 8-12% de conflictos de calendario y doble-bookings. Esto lleva a tiempos de espera de 20-40 min y subutilización de médicos (70% en lugar de 90%)."
+        detail_en: "Clinics without appointment software experience 8-12% calendar conflicts and double-bookings. This leads to wait times of 20-40 min and doctor underutilization (70% vs 90%)."
+        impact: "$4K-$12K/month in lost efficiency"
+        action:
+          paid: {tool: "Zocdoc Practice", price: "$99-$299/mo", url: "https://www.zocdoc.com"}
+          oss: {tool: "MediHub", url: "https://medihub.com"}
+          cia: {service_es: "Implementación de sistema de citas + integración con EHR", service_en: "Appointment system implementation + EHR integration", price: "$3K-$7K"}
+
+  talent:
+    weight: 0.20
+    signals:
+      - field: nursing_vacancy_rate
+        greater_than: 0.15
+        impact: negative
+        score_boost: 25
+      - field: staff_burnout_indicators
+        is_not_empty: true
+        impact: negative
+        score_boost: 20
+    defaults:
+      base_score: 45
+    benchmarks:
+      nursing_vacancy_rate: 0.20
+      clinical_turnover_rate: 0.25
+      training_hours_per_year: 24
+      burnout_prevalence: 0.55
+    findings:
+      nursing_shortage:
+        condition: "always"
+        severity: critical
+        title_es: "Crisis de enfermería: 500K puestos vacantes Q1 2026"
+        title_en: "Nursing crisis: 500K open positions Q1 2026"
+        detail_es: "EE.UU. tiene 500K puestos de enfermería vacantes. Globalmente, se proyecta una escasez de 11M trabajadores de salud para 2030. Salarios de enfermería suben 3-5% anual pero la retención sigue siendo crítica (burnout 55%)."
+        detail_en: "US has 500K vacant nursing positions. Globally, 11M healthcare worker shortage projected by 2030. Nursing salaries rising 3-5% annually but retention remains critical (burnout 55%)."
+        impact: "Project delays of 2-12 weeks per unfilled nursing position"
+        action:
+          paid: {tool: "Nurse staffing platform (NurseGrid)", price: "$50-$200/mo", url: "https://www.nursegrid.com"}
+          oss: {tool: "OpenShift Nurse Scheduling", url: "https://openshiftscheduling.com"}
+          cia: {service_es: "Programa de retención + análisis de burnout + modelo predictivo de rotación", service_en: "Retention program + burnout analysis + predictive turnover model", price: "$5K-$15K"}
+      burnout_risk:
+        condition: "always"
+        severity: high
+        title_es: "Burnout clínico: 55% de personal"
+        title_en: "Clinical burnout: 55% of staff"
+        detail_es: "55% del personal clínico reporta burnout. El estrés crónico reduce la función cognitiva en 26%. Médicos y enfermeros agotados cometen más errores (tasa de errores +40%) y se van en 18-24 meses."
+        detail_en: "55% of clinical staff report burnout. Chronic stress reduces cognitive function by 26%. Exhausted doctors and nurses make more errors (+40% error rate) and leave in 18-24 months."
+        impact: "$3K-$8K/month in replacement costs + increased liability"
+
+  digital:
+    weight: 0.15
+    signals:
+      - field: software_detected
+        contains_any: [ehr, emr, practice_management]
+        impact: positive
+        score_boost: -15
+      - field: software_detected
+        contains_any: [spreadsheets, paper, none]
+        impact: negative
+        score_boost: 25
+    defaults:
+      base_score: 50
+    findings:
+      no_ehr:
+        condition: "ehr not in software_detected and emr not in software_detected"
+        severity: high
+        title_es: "Sin EHR: expedientes en papel o Excel"
+        title_en: "No EHR: paper or Excel medical records"
+        detail_es: "Clínicas sin EHR gastan 40% más tiempo en administración. Búsqueda de expedientes toma 5-15 min/paciente. Errores de medicación aumentan 3x. Impacto: $15K-$50K/año por clínica."
+        detail_en: "Clinics without EHR spend 40% more time on administration. Medical record searches take 5-15 min/patient. Medication errors increase 3x. Impact: $15K-$50K/year per clinic."
+        impact: "$1K-$5K/month in lost time + liability"
+        action:
+          paid: {tool: "Epic EHR", price: "$300-$1200/mo", url: "https://www.epic.com"}
+          oss: {tool: "GNU Health", url: "https://www.gnuhealth.io"}
+          cia: {service_es: "Implementación de EHR + migración de datos históricos + capacitación clínica", service_en: "EHR implementation + historical data migration + clinical training", price: "$5K-$15K"}
+
+  regulatory:
+    weight: 0.10
+    signals:
+      - field: compliance_concerns
+        contains_any: [hipaa, patient_data, privacy]
+        impact: negative
+        score_boost: 30
+    defaults:
+      base_score: 40
+    findings:
+      hipaa_compliance_risk:
+        condition: "always"
+        severity: high
+        title_es: "Riesgo HIPAA: expedientes en papel sin controles"
+        title_en: "HIPAA risk: paper records without controls"
+        detail_es: "Expedientes en papel o sin encriptación exponen a multas HIPAA de $100-$50,000/infracción. Auditoría de datos de salud incumpliente: 70% de clínicas pequeñas."
+        detail_en: "Unencrypted paper records expose clinics to HIPAA fines of $100-$50,000/violation. Compliance audit of healthcare data: 70% of small clinics non-compliant."
+        impact: "$10K-$100K+ in potential fines + reputational damage"
+
+  supply_chain:
+    weight: 0.05
+    signals:
+      - field: medication_supply_issues
+        is_not_empty: true
+        impact: negative
+        score_boost: 20
+    defaults:
+      base_score: 50
+    findings: {}
+
+  leadership:
+    weight: 0.05
+    signals:
+      - field: growth_challenges
+        is_not_empty: true
+        impact: negative
+        score_boost: 20
+    defaults:
+      base_score: 45
+    findings: {}
+
+  market:
+    weight: 0.00
+    defaults:
+      base_score: 40
+    findings: {}

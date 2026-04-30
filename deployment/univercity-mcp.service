@@ -1,0 +1,27 @@
+[Unit]
+Description=univercity-mcp — Business Automation Audit Server
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/univercity-mcp
+Environment=UNIVERCITY_TRANSPORT=streamable-http
+Environment=UNIVERCITY_HTTP_HOST=0.0.0.0
+Environment=UNIVERCITY_HTTP_PORT=3792
+Environment=UNIVERCITY_DB_PATH=/opt/univercity-mcp/data/sessions.db
+Environment=UNIVERCITY_REPORT_STORAGE=/opt/univercity-mcp/data/reports
+Environment=UNIVERCITY_LITELLM_URL=http://127.0.0.1:4000
+Environment=UNIVERCITY_LITELLM_MODEL=kairos-primary
+Environment=UNIVERCITY_FOUNDERS_TIER=true
+Environment=UNIVERCITY_FOUNDERS_DISCOUNT=0.35
+Environment=UNIVERCITY_LANG=es
+EnvironmentFile=-/opt/univercity-mcp/.env
+ExecStart=/opt/univercity-mcp/.venv/bin/univercity-mcp --transport streamable-http
+Restart=on-failure
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

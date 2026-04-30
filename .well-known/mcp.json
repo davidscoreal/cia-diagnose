@@ -1,0 +1,56 @@
+{
+  "name": "univercity-mcp",
+  "version": "0.2.0",
+  "description": "Expert business diagnosis engine — analyzes any company across 8 dimensions (digital, operations, supply chain, talent, finance, leadership, market, regulatory). Returns Revenue Leak Score with prioritized actions and triple-option recommendations: best paid tool, best open source alternative, or professional implementation by CIA.",
+  "author": {
+    "name": "David Lopez",
+    "email": "steban@univercityaiconsult.tech",
+    "organization": "CIA — Consultoría de Inteligencia Aplicada",
+    "url": "https://univercityaiconsult.tech"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/lopezdsteban/univercity-mcp",
+  "transport": {
+    "streamable-http": {
+      "url": "https://audit.univercityaiconsult.tech"
+    }
+  },
+  "tools": [
+    {
+      "name": "univercity_diagnose",
+      "description": "Run a holistic business diagnosis. Send whatever you know about a company — industry, team size, tools, pain points, cash flow, hiring, leadership stress. Returns Revenue Leak Score (0-100), per-dimension breakdown, monthly leak estimate in USD, and prioritized Triple Option recommendations (paid tool / open source / CIA service). Works for ANY industry.",
+      "inputSchema": {
+        "type": "object",
+        "required": ["company_name"],
+        "properties": {
+          "company_name": {"type": "string"},
+          "industry": {"type": "string"},
+          "team_size": {"type": "integer"},
+          "pain_points": {"type": "string"},
+          "software_detected": {"type": "string"},
+          "cash_flow_concerns": {"type": "string"},
+          "hiring_challenges": {"type": "string"},
+          "stress_indicators": {"type": "string"},
+          "lang": {"type": "string", "enum": ["es", "en"], "default": "es"}
+        }
+      }
+    },
+    {
+      "name": "univercity_list_industries",
+      "description": "List available industry benchmarks with calibration tiers."
+    }
+  ],
+  "categories": ["business", "consulting", "analytics"],
+  "tags": ["business-diagnosis", "revenue-leak", "consulting", "8-dimensions", "triple-option", "sme", "latam"],
+  "install": {
+    "pip": "pip install univercity-mcp",
+    "claude_desktop": {
+      "mcpServers": {
+        "univercity-mcp": {
+          "command": "univercity-mcp",
+          "args": []
+        }
+      }
+    }
+  }
+}

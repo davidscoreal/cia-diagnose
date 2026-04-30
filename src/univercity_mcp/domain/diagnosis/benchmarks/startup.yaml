@@ -1,0 +1,223 @@
+# Funded Startups (Series A-B, LATAM) — Tier 1 ICP
+# "quemando runway, board pregunta por IA"
+id: startup
+name_es: "Startups Financiadas"
+name_en: "Funded Startups"
+tier: 1
+employee_range: "20-80"
+decision_maker: "Fundador / CEO"
+sales_cycle: "1-3 semanas"
+
+dimensions:
+  financial:
+    weight: 0.25
+    signals:
+      - field: burn_rate_concerns
+        is_not_empty: true
+        impact: negative
+        score_boost: 30
+      - field: runway_months
+        less_than: 18
+        impact: negative
+        score_boost: 25
+    defaults:
+      base_score: 45
+    benchmarks:
+      monthly_burn_rate: 0.15
+      runway_months: 24
+      cash_on_hand_months: 1.5
+      revenue_run_rate: 0.0
+    findings:
+      burn_rate_unsustainable:
+        condition: "always"
+        severity: critical
+        title_es: "Burn rate: promedio $150K/mes (Series A-B LATAM)"
+        title_en: "Burn rate: average $150K/month (Series A-B LATAM)"
+        detail_es: "Startups Series A gastan $80K-$200K/mes (85% payroll). Con $2-3M levantado, runway promedio: 18-24 meses. Board espera profitabilidad o 90+ Net Revenue Retention (NRR). Sin ambas, la próxima ronda es 3-6x más cara (dilución)."
+        detail_en: "Series A startups spend $80K-$200K/month (85% payroll). With $2-3M raised, average runway: 18-24 months. Board expects profitability or 90+ Net Revenue Retention (NRR). Without both, next round costs 3-6x more (dilution)."
+        impact: "$20K-$50K/month in optimization needed to hit sustainability"
+        action:
+          paid: {tool: "Finmark / Mosaic", price: "$100-$400/mo", url: "https://www.finmark.com"}
+          oss: {tool: "OpenStack financial modeling", url: "https://github.com"}
+          cia: {service_es: "Análisis de burn rate + 90-day cash flow plan + roadmap de monetización", service_en: "Burn rate analysis + 90-day cash flow plan + monetization roadmap", price: "$2K-$8K"}
+      runway_pressure:
+        condition: "runway_months < 18"
+        severity: critical
+        title_es: "Runway < 18 meses: presión inmediata de fundraising"
+        title_en: "Runway < 18 months: immediate fundraising pressure"
+        detail_es: "Con <18 meses de runway, el fundraising es urgente. Pero VCs invierten en crecimiento + unit economics claros, no en 'burn reduction'. Sin crecimiento visible, fundraising falla."
+        detail_en: "With <18 months runway, fundraising is urgent. But VCs invest in growth + clear unit economics, not 'burn reduction'. Without visible growth, fundraising fails."
+        impact: "Potential shut-down if not resolved in 12 months"
+
+  talent:
+    weight: 0.20
+    signals:
+      - field: hiring_speed
+        less_than: 1
+        impact: negative
+        score_boost: 20
+      - field: founding_team_strength
+        contains_any: [lacking, unbalanced]
+        impact: negative
+        score_boost: 25
+    defaults:
+      base_score: 40
+    benchmarks:
+      headcount_growth_monthly_percent: 0.08
+      technical_cofounder_presence: true
+      salary_competitiveness: 0.85
+      key_person_dependency: 0.60
+    findings:
+      hiring_velocity_too_slow:
+        condition: "always"
+        severity: high
+        title_es: "Velocidad de hiring: < 1 persona/mes"
+        title_en: "Hiring velocity: < 1 person/month"
+        detail_es: "Startups Series A deben crecer ~8% headcount/mes para demostrar momentum. <1 persona/mes = atraso de 6-12 meses vs expectativa de Board. Resultado: no hit growth targets + no demostramos unit economics."
+        detail_en: "Series A startups should grow ~8% headcount/month to show momentum. <1 person/month = 6-12 month delay vs Board expectation. Result: miss growth targets + don't prove unit economics."
+        impact: "$10K-$30K/month in lost growth velocity"
+        action:
+          paid: {tool: "Covey / LinkedIn Recruiter", price: "$200-$1000/mo", url: "https://business.linkedin.com/talent-solutions/recruiter"}
+          oss: {tool: "Open source recruiting automation", url: "https://github.com"}
+          cia: {service_es: "Playbook de hiring + sourcing strategy + interviewer training", service_en: "Hiring playbook + sourcing strategy + interviewer training", price: "$2K-$6K"}
+      founder_dependency:
+        condition: "always"
+        severity: high
+        title_es: "Dependencia fundador: 60% de decisiones clave"
+        title_en: "Founder dependency: 60% of key decisions"
+        detail_es: "Startups tempranas tienen riesgo fundador: si CEO se va, empresa se detiene. VCs ven esto como riesgo existencial. Solución: build management layer, documentar procesos, crear second-in-command."
+        detail_en: "Early startups have founder risk: if CEO leaves, company stops. VCs see this as existential risk. Solution: build management layer, document processes, create second-in-command."
+        impact: "Valuation haircut of 20-30% if not resolved"
+
+  market:
+    weight: 0.15
+    signals:
+      - field: product_market_fit
+        equals: unclear
+        impact: negative
+        score_boost: 30
+      - field: churn_rate
+        greater_than: 0.10
+        impact: negative
+        score_boost: 20
+    defaults:
+      base_score: 35
+    benchmarks:
+      nps_score: 40
+      customer_churn_monthly: 0.05
+      cac_payback_months: 12
+      net_revenue_retention: 0.90
+    findings:
+      pmf_uncertain:
+        condition: "always"
+        severity: critical
+        title_es: "Product-Market Fit: incierto / temprano"
+        title_en: "Product-Market Fit: unclear/early"
+        detail_es: "VCs definen PMF: NPS 50+, MRR creciente >10%/mes, churn <5%/mes. Startups tempranas rara vez lo tienen. Sin PMF, el crecimiento es costoso y frágil. Board presiona: 'Demuéstrame PMF o pivota'."
+        detail_en: "VCs define PMF: NPS 50+, MRR growing >10%/month, churn <5%/month. Early startups rarely have it. Without PMF, growth is expensive and fragile. Board pushes: 'Prove PMF or pivot'."
+        impact: "Determines viability of business; fundraising depends on clarity"
+        action:
+          paid: {tool: "Intercom / Appcues", price: "$50-$500/mo", url: "https://www.intercom.com"}
+          oss: {tool: "Open source NPS + feedback tools", url: "https://github.com"}
+          cia: {service_es: "PMF discovery + customer research + positioning strategy", service_en: "PMF discovery + customer research + positioning strategy", price: "$3K-$10K"}
+      high_churn:
+        condition: "churn_rate > 0.08"
+        severity: high
+        title_es: "Churn mensual: > 8% (benchmark 5%)"
+        title_en: "Monthly churn: > 8% (benchmark 5%)"
+        detail_es: "Churn >8%/mes significa clientes no ven valor. Con CAC=3-6 meses para recuperar, churn >8% garantiza pérdida unitaria. VCs ven esto como signal de PMF fallida."
+        detail_en: "Churn >8%/month means customers don't see value. With CAC=3-6 months payback, churn >8% guarantees unit loss. VCs see this as failed PMF signal."
+        impact: "$5K-$20K/month in preventable churn"
+
+  digital:
+    weight: 0.15
+    signals:
+      - field: analytics_maturity
+        equals: none
+        impact: negative
+        score_boost: 25
+      - field: data_infrastructure
+        is_empty: true
+        impact: negative
+        score_boost: 20
+    defaults:
+      base_score: 50
+    findings:
+      no_analytics:
+        condition: "analytics_maturity is none"
+        severity: high
+        title_es: "Sin analytics: decisiones ciegas"
+        title_en: "No analytics: blind decision-making"
+        detail_es: "Startups sin analytics no ven qué clientes se van, por qué, ni qué impulsa crecimiento. Esto deja solo intuición + anécdota. VCs exigen: 'Demuéstrame con datos'."
+        detail_en: "Startups without analytics don't see which customers leave, why, or what drives growth. This leaves only intuition + anecdote. VCs demand: 'Show me with data'."
+        impact: "$2K-$8K/month in wasted optimization attempts"
+        action:
+          paid: {tool: "Amplitude / Mixpanel", price: "$500-$2000/mo", url: "https://amplitude.com"}
+          oss: {tool: "PostHog / Plausible", url: "https://posthog.com"}
+          cia: {service_es: "Setup de analytics + event tracking + dashboard de métricas clave", service_en: "Analytics setup + event tracking + key metrics dashboard", price: "$2K-$6K"}
+
+  leadership:
+    weight: 0.15
+    signals:
+      - field: board_alignment
+        equals: poor
+        impact: negative
+        score_boost: 25
+      - field: executive_bandwidth
+        equals: stretched
+        impact: negative
+        score_boost: 20
+    defaults:
+      base_score: 40
+    benchmarks:
+      board_meeting_frequency: 1
+      executive_burnout_indicators: true
+    findings:
+      board_pressure:
+        condition: "always"
+        severity: high
+        title_es: "Presión Board: expectativa de AI + crecimiento 3x"
+        title_en: "Board pressure: AI expectation + 3x growth target"
+        detail_es: "Boards de 2025-2026 presionan a startups a 'usar AI para escalar'. Pero AI sin product-market fit = burn costoso. CEO debe balancear: PMF primero, luego AI para scale."
+        detail_en: "Boards in 2025-2026 push startups to 'use AI to scale'. But AI without product-market fit = expensive burn. CEO must balance: PMF first, then AI for scale."
+        impact: "Founder stress + misaligned execution"
+        action:
+          paid: {tool: "Executive coaching (Reforge, Maven)", price: "$500-$2000/mo", url: "https://reforge.com"}
+          oss: {tool: "Open founder peer groups", url: "https://github.com"}
+          cia: {service_es: "Estrategia de board management + prioritization framework + growth roadmap", service_en: "Board management strategy + prioritization framework + growth roadmap", price: "$3K-$10K"}
+
+  operations:
+    weight: 0.05
+    signals:
+      - field: process_maturity
+        equals: informal
+        impact: negative
+        score_boost: 15
+    defaults:
+      base_score: 50
+    findings:
+      scaling_pains:
+        condition: "always"
+        severity: medium
+        title_es: "Dolor de escala: procesos informales"
+        title_en: "Scaling pains: informal processes"
+        detail_es: "Startups crecen de 20 → 80 personas en 18 meses. Sin procesos documentados, communication breaks. Resultado: bugs en producto, errores en sales, delays en delivery."
+        detail_en: "Startups grow 20 → 80 people in 18 months. Without documented processes, communication breaks. Result: product bugs, sales errors, delivery delays."
+        impact: "$1K-$5K/month in operational drag"
+
+  supply_chain:
+    weight: 0.05
+    signals:
+      - field: vendor_concentration
+        greater_than: 0.50
+        impact: negative
+        score_boost: 15
+    defaults:
+      base_score: 50
+    findings: {}
+
+  regulatory:
+    weight: 0.00
+    defaults:
+      base_score: 40
+    findings: {}

@@ -1,0 +1,200 @@
+# E-commerce & Retail (mid-market) — Tier 1 ICP
+# 70% cart abandonment, conversion stuck
+id: ecommerce
+name_es: "E-commerce y Retail"
+name_en: "E-commerce & Retail"
+tier: 1
+employee_range: "30-150"
+decision_maker: "Director de Ventas / Gerente de Operaciones"
+sales_cycle: "3-5 semanas"
+
+dimensions:
+  digital:
+    weight: 0.25
+    signals:
+      - field: ecommerce_platform
+        contains_any: [shopify, woocommerce, magento]
+        impact: positive
+        score_boost: -10
+      - field: analytics_tools
+        contains_any: [google_analytics, mixpanel, amplitude]
+        impact: positive
+        score_boost: -5
+      - field: conversion_optimization
+        equals: none
+        impact: negative
+        score_boost: 25
+    defaults:
+      base_score: 50
+    findings:
+      cart_abandonment:
+        condition: "always"
+        severity: critical
+        title_es: "Abandono de carrito: 70% de visitas"
+        title_en: "Cart abandonment: 70% of visits"
+        detail_es: "70% de carts se abandonan sin compra. Razones: procesos de checkout complejos (4-7 pasos), opciones de pago limitadas, sorpresas de envío. Industria baseline: 69.8%. Recuperación: abandonados = $10K-$100K/mes potencial."
+        detail_en: "70% of carts are abandoned without purchase. Reasons: complex checkout (4-7 steps), limited payment options, surprise shipping. Industry baseline: 69.8%. Recovery potential: $10K-$100K/month in abandoned carts."
+        impact: "$10K-$100K/month in recoverable revenue"
+        action:
+          paid: {tool: "Klaviyo / Klayvio", price: "$300-$1200/mo", url: "https://www.klaviyo.com"}
+          oss: {tool: "Open source email automation + recovery flows", url: "https://github.com/mautic/mautic"}
+          cia: {service_es: "Auditoría de checkout + setup de recuperación de carritos abandonados + optimización de flujo", service_en: "Checkout audit + abandoned cart recovery setup + flow optimization", price: "$3K-$10K"}
+      low_conversion:
+        condition: "always"
+        severity: high
+        title_es: "Tasa de conversión: 1.5-2.5% (debajo de benchmark 2.7%)"
+        title_en: "Conversion rate: 1.5-2.5% (below 2.7% benchmark)"
+        detail_es: "E-commerce mid-market promedia 1.5-2.5% de conversión. Benchmark: 2.7%. Diferencia: 0.2-1.2% = $20K-$120K/año en ingresos omitidos por cada $1M de tráfico."
+        detail_en: "Mid-market e-commerce averages 1.5-2.5% conversion. Benchmark: 2.7%. Gap: 0.2-1.2% = $20K-$120K/year in lost revenue per $1M traffic."
+        impact: "$5K-$50K/month in unrealized revenue"
+        action:
+          paid: {tool: "Optimizely / VWO", price: "$300-$2000/mo", url: "https://www.optimizely.com"}
+          oss: {tool: "Open source A/B testing (PlanOut)", url: "https://facebook.github.io/planout"}
+          cia: {service_es: "A/B testing framework + heat mapping + conversion optimization strategy", service_en: "A/B testing framework + heat mapping + conversion optimization strategy", price: "$4K-$12K"}
+
+  financial:
+    weight: 0.20
+    signals:
+      - field: gross_margin
+        less_than: 0.40
+        impact: negative
+        score_boost: 20
+      - field: inventory_management
+        contains_any: [manual, spreadsheets]
+        impact: negative
+        score_boost: 15
+    defaults:
+      base_score: 50
+    benchmarks:
+      gross_margin_percent: 0.45
+      inventory_turnover: 4.5
+      cost_of_goods_sold_percent: 0.55
+      inventory_shrinkage: 0.03
+    findings:
+      margin_pressure:
+        condition: "always"
+        severity: high
+        title_es: "Márgenes brutos: 40% (benchmark 45%)"
+        title_en: "Gross margins: 40% (benchmark 45%)"
+        detail_es: "Retail mid-market tiene márgenes de 40-42% vs benchmark 45%. Diferencia: 3-5% = $30K-$150K/año dependiendo de volumen. Causas: competencia, logística, robo/merma (3%)."
+        detail_en: "Mid-market retail has 40-42% margins vs 45% benchmark. Gap: 3-5% = $30K-$150K/year depending on volume. Causes: competition, logistics, shrinkage (3%)."
+        impact: "$3K-$15K/month in margin loss"
+
+  supply_chain:
+    weight: 0.20
+    signals:
+      - field: inventory_visibility
+        contains_any: [manual, spreadsheets, poor]
+        impact: negative
+        score_boost: 25
+      - field: supplier_lead_time
+        greater_than: 30
+        impact: negative
+        score_boost: 20
+    defaults:
+      base_score: 45
+    benchmarks:
+      inventory_accuracy_percent: 0.92
+      stock_out_rate: 0.05
+      overstock_rate: 0.08
+      supplier_lead_time_days: 21
+    findings:
+      inventory_management_chaos:
+        condition: "inventory_visibility is manual or spreadsheets"
+        severity: critical
+        title_es: "Gestión de inventario: sin visibilidad real"
+        title_en: "Inventory management: no real-time visibility"
+        detail_es: "Sin sistema centralizado, inventarios son invisibles. Resultado: stockouts en SKUs populares (pérdida de ventas) y sobrestocks en lentos (costo de holding). Impacto: 5% de stockouts = $5K-$25K/mes en ventas perdidas; 8% de overstock = $3K-$15K/mes en holding."
+        detail_en: "Without centralized system, inventory is invisible. Result: stockouts on popular SKUs (lost sales) and overstocks on slow movers (holding cost). Impact: 5% stockouts = $5K-$25K/month lost sales; 8% overstocks = $3K-$15K/month holding cost."
+        impact: "$8K-$40K/month in inventory mismanagement"
+        action:
+          paid: {tool: "TraceLink / NetSuite", price: "$500-$3000/mo", url: "https://www.netsuite.com"}
+          oss: {tool: "Odoo Inventory", url: "https://www.odoo.com"}
+          cia: {service_es: "Implementación de sistema de inventario + reconciliación física + forecasting", service_en: "Inventory system implementation + physical reconciliation + forecasting", price: "$5K-$15K"}
+      omnichannel_gap:
+        condition: "always"
+        severity: high
+        title_es: "Brecha omnicanal: online y offline desconectadas"
+        title_en: "Omnichannel gap: online and offline disconnected"
+        detail_es: "70% de retailers no tienen visibilidad de inventario entre canales (online, tienda, marketplace). Clientes ven 'en stock' pero tienda dice 'agotado'. Tasa de frustración: 45% = churn."
+        detail_en: "70% of retailers don't have cross-channel inventory visibility. Customers see 'in stock' but store says 'sold out'. Frustration rate: 45% = churn."
+        impact: "$2K-$10K/month in lost conversions + churn"
+
+  operations:
+    weight: 0.15
+    signals:
+      - field: fulfillment_speed
+        greater_than: 5
+        impact: negative
+        score_boost: 15
+      - field: return_rate
+        greater_than: 0.15
+        impact: negative
+        score_boost: 20
+    defaults:
+      base_score: 50
+    benchmarks:
+      fulfillment_days: 3
+      return_rate_percent: 0.12
+      order_accuracy_percent: 0.98
+      shipping_cost_percent_of_sale: 0.08
+    findings:
+      slow_fulfillment:
+        condition: "fulfillment_speed > 3"
+        severity: high
+        title_es: "Cumplimiento lento: >5 días (benchmark 2-3)"
+        title_en: "Slow fulfillment: >5 days (benchmark 2-3)"
+        detail_es: "Tiempos de fulfillment >5 días aumentan devoluciones 15-20%. Clientes comparan con Amazon (1-2 días). Impacto: más devoluciones + menor repeat purchases (churn +25%)."
+        detail_en: "Fulfillment times >5 days increase returns 15-20%. Customers compare to Amazon (1-2 days). Impact: higher returns + lower repeat purchases (25% more churn)."
+        impact: "$2K-$8K/month in increased returns + churn"
+
+  talent:
+    weight: 0.05
+    signals:
+      - field: warehouse_staffing
+        is_not_empty: true
+        impact: negative
+        score_boost: 15
+    defaults:
+      base_score: 55
+    findings: {}
+
+  market:
+    weight: 0.10
+    signals:
+      - field: competitive_pricing
+        contains_any: [intense, race_to_bottom]
+        impact: negative
+        score_boost: 25
+    defaults:
+      base_score: 45
+    benchmarks:
+      nps_score: 40
+      customer_acquisition_cost: 25
+      customer_lifetime_value: 200
+    findings:
+      price_competition:
+        condition: "always"
+        severity: high
+        title_es: "Competencia de precios: márgenes bajo presión"
+        title_en: "Price competition: margins under pressure"
+        detail_es: "Marketplaces (Amazon, MercadoLibre) fragmentan ingresos. Margen promedio: 40% vs 45% benchmark. Diferencia: 5% = competencia directa en precio vs diferenciación."
+        detail_en: "Marketplaces (Amazon, MercadoLibre) fragment revenue. Average margin: 40% vs 45% benchmark. Gap: 5% = direct price competition vs differentiation."
+        impact: "$5K-$30K/month depending on volume"
+
+  leadership:
+    weight: 0.05
+    signals:
+      - field: growth_strategy
+        equals: unclear
+        impact: negative
+        score_boost: 20
+    defaults:
+      base_score: 50
+    findings: {}
+
+  regulatory:
+    weight: 0.00
+    defaults:
+      base_score: 40
+    findings: {}

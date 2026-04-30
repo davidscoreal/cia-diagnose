@@ -1,0 +1,197 @@
+# Construction & Real Estate — Tier 1 ICP
+# "se nos pierden cotizaciones entre obras"
+id: construction
+name_es: "Construcción e Inmobiliario"
+name_en: "Construction & Real Estate"
+tier: 1
+employee_range: "50-500"
+decision_maker: "Director General / Gerente de Operaciones"
+sales_cycle: "2-4 semanas"
+
+dimensions:
+  digital:
+    weight: 0.10
+    signals:
+      - field: software_detected
+        contains_any: [crm, erp, project_management]
+        impact: positive
+        score_boost: -15
+      - field: software_detected
+        contains_any: [spreadsheets, whatsapp, none]
+        impact: negative
+        score_boost: 20
+    defaults:
+      base_score: 65  # Most construction firms are digitally immature
+    findings:
+      no_crm:
+        condition: "crm not in software_detected"
+        severity: high
+        title_es: "Sin CRM: cotizaciones se pierden entre obras"
+        title_en: "No CRM: quotes lost between job sites"
+        detail_es: "Las empresas de construcción sin CRM pierden en promedio 23% de cotizaciones por falta de seguimiento. Con 50+ obras simultáneas, el Excel simplemente no escala."
+        detail_en: "Construction companies without CRM lose an average of 23% of quotes due to lack of follow-up. With 50+ simultaneous projects, Excel simply doesn't scale."
+        impact: "$2K-$8K/month in lost quotes"
+        action:
+          paid: {tool: "HubSpot CRM", price: "$45-$800/mo", url: "https://hubspot.com"}
+          oss: {tool: "Twenty CRM", url: "https://twenty.com"}
+          cia: {service_es: "Implementación CRM + migración de datos + capacitación equipo", service_en: "CRM implementation + data migration + team training", price: "$3K-$8K"}
+      no_project_mgmt:
+        condition: "project_management not in software_detected"
+        severity: high
+        title_es: "Sin gestión de proyectos digital"
+        title_en: "No digital project management"
+        detail_es: "Los maestros de obra no reportan avance a tiempo. Sin herramienta de gestión, los retrasos se detectan cuando ya son costosos."
+        detail_en: "Site supervisors don't report progress on time. Without management tools, delays are detected when they're already costly."
+        impact: "$3K-$12K/month in project overruns"
+        action:
+          paid: {tool: "Procore", price: "$375+/mo", url: "https://procore.com"}
+          oss: {tool: "OpenProject", url: "https://openproject.org"}
+          cia: {service_es: "Arquitectura de gestión de obra + automatización de reportes", service_en: "Construction management architecture + reporting automation", price: "$4K-$10K"}
+
+  operations:
+    weight: 0.25
+    signals:
+      - field: physical_operations
+        contains_any: [waste, rework, delays, overtime]
+        impact: negative
+        score_boost: 15
+      - field: team_size
+        greater_than: 100
+        impact: negative
+        score_boost: 10  # More people = more coordination waste
+    defaults:
+      base_score: 55
+    benchmarks:
+      project_handoff_loss_rate: 0.12
+      material_waste_percent: 8
+      rework_rate: 0.05
+      safety_incident_rate: 0.03
+    findings:
+      material_waste:
+        condition: "always"
+        severity: medium
+        title_es: "Desperdicio de materiales por encima del benchmark"
+        title_en: "Material waste above benchmark"
+        detail_es: "El benchmark de la industria es 8% de desperdicio. La mayoría de empresas sin tracking digital están en 12-18%. Lean Six Sigma identifica 8 tipos de desperdicio aplicables a construcción."
+        detail_en: "Industry benchmark is 8% waste. Most companies without digital tracking are at 12-18%. Lean Six Sigma identifies 8 types of waste applicable to construction."
+        impact: "$5K-$25K/month depending on project volume"
+
+  supply_chain:
+    weight: 0.15
+    signals:
+      - field: supply_chain_notes
+        contains_any: [delays, shortage, expensive, unreliable]
+        impact: negative
+        score_boost: 20
+    defaults:
+      base_score: 50
+    benchmarks:
+      supplier_lead_time_days: 14
+      procurement_cost_variance: 0.10
+    findings:
+      no_procurement_system:
+        condition: "always"
+        severity: medium
+        title_es: "Compras sin sistema centralizado"
+        title_en: "Procurement without centralized system"
+        detail_es: "48% de líderes de cadena de suministro reportan impacto significativo de AI. Sin sistema centralizado, las compras duplicadas y los precios inflados son invisibles."
+        detail_en: "48% of supply chain leaders report significant AI impact. Without centralized system, duplicate purchases and inflated prices are invisible."
+        impact: "$1K-$5K/month"
+
+  talent:
+    weight: 0.20
+    signals:
+      - field: hiring_challenges
+        is_not_empty: true
+        impact: negative
+        score_boost: 20
+      - field: skill_gaps
+        is_not_empty: true
+        impact: negative
+        score_boost: 15
+    defaults:
+      base_score: 60
+    benchmarks:
+      turnover_rate: 0.18
+      training_hours_per_year: 40
+      workers_over_45_percent: 0.40
+      positions_unfilled_days: 45
+    findings:
+      labor_shortage:
+        condition: "always"
+        severity: high
+        title_es: "Crisis de talento en construcción"
+        title_en: "Construction talent crisis"
+        detail_es: "La industria necesita 349,000 nuevos trabajadores en 2026. 40% de los trabajadores calificados tienen más de 45 años. Impacto económico: $10.8B/año globalmente."
+        detail_en: "The industry needs 349,000 new workers in 2026. 40% of skilled workers are over 45. Economic impact: $10.8B/year globally."
+        impact: "Project delays of 2-8 weeks per unfilled position"
+
+  financial:
+    weight: 0.20
+    signals:
+      - field: cash_flow_concerns
+        is_not_empty: true
+        impact: negative
+        score_boost: 25
+      - field: ar_aging
+        contains_any: [60, 90, late, overdue]
+        impact: negative
+        score_boost: 20
+    defaults:
+      base_score: 55
+    benchmarks:
+      ar_days_outstanding: 45
+      late_payment_rate: 0.35
+      cash_reserve_months: 3
+      change_order_dispute_rate: 0.15
+    findings:
+      ar_aging:
+        condition: "always"
+        severity: critical
+        title_es: "Cuentas por cobrar envejecidas"
+        title_en: "Aged accounts receivable"
+        detail_es: "61% de facturas B2B se pagan tarde. En construcción, el promedio es peor: 64% tienen facturas 60+ días vencidas. La probabilidad de cobro cae a ~70% a 90 días y ~50% a 6 meses."
+        detail_en: "61% of B2B invoices are paid late. In construction, the average is worse: 64% have invoices 60+ days overdue. Collection probability drops to ~70% at 90 days and ~50% at 6 months."
+        impact: "$5K-$50K/month in delayed or lost payments"
+        action:
+          paid: {tool: "QuickBooks Advanced", price: "$200/mo", url: "https://quickbooks.intuit.com"}
+          oss: {tool: "InvoiceNinja", url: "https://invoiceninja.com"}
+          cia: {service_es: "Arquitectura de cobranza automatizada + tablero de flujo de caja en tiempo real", service_en: "Automated collections architecture + real-time cash flow dashboard", price: "$3K-$8K"}
+
+  leadership:
+    weight: 0.10
+    signals:
+      - field: stress_indicators
+        is_not_empty: true
+        impact: negative
+        score_boost: 25
+      - field: growth_stage
+        equals_any: [stagnant, declining, crisis]
+        impact: negative
+        score_boost: 20
+    defaults:
+      base_score: 40
+    indicators:
+      burnout_risk: [micromanagement, high_turnover, decision_delays, working_weekends]
+      succession_risk: [founder_dependent, no_second_in_command, family_business]
+    findings:
+      burnout:
+        condition: "stress_indicators is not empty"
+        severity: high
+        title_es: "Indicadores de agotamiento en liderazgo"
+        title_en: "Leadership burnout indicators"
+        detail_es: "56% de líderes experimentan burnout. El estrés crónico reduce la función del córtex prefrontal en 26% — la región cerebral para pensamiento estratégico. CEOs agotados tienden a decisiones conservadoras, retrasos en ejecución y micromanagement."
+        detail_en: "56% of leaders experience burnout. Chronic stress reduces prefrontal cortex function by 26% — the brain region for strategic thinking. Exhausted CEOs lean toward risk-averse choices, execution delays, and micromanagement."
+        impact: "Burnout costs the global economy $322B annually"
+
+  market:
+    weight: 0.00  # Minimal weight for construction — operations matter more
+    defaults:
+      base_score: 40
+    findings: {}
+
+  regulatory:
+    weight: 0.00  # Handled per-country, not scored by default
+    defaults:
+      base_score: 30
+    findings: {}

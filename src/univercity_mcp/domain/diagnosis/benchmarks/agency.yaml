@@ -1,0 +1,219 @@
+# Digital Agencies (20-100 people) — Tier 1 ICP
+# "mis márgenes se los come ChatGPT"
+id: agency
+name_es: "Agencias Digitales"
+name_en: "Digital Agencies"
+tier: 1
+employee_range: "20-100"
+decision_maker: "Fundador / Director General"
+sales_cycle: "2-4 semanas"
+
+dimensions:
+  digital:
+    weight: 0.25
+    signals:
+      - field: ai_tooling_adoption
+        contains_any: [chatgpt, claude, ai_tools]
+        impact: positive
+        score_boost: -10
+      - field: ai_tooling_adoption
+        equals: none
+        impact: negative
+        score_boost: 20
+      - field: process_automation
+        is_empty: true
+        impact: negative
+        score_boost: 15
+    defaults:
+      base_score: 55
+    findings:
+      ai_tooling_gap:
+        condition: "ai_tooling_adoption is none or empty"
+        severity: critical
+        title_es: "Sin herramientas AI: commoditización en tiempo real"
+        title_en: "No AI tooling: commoditization in real-time"
+        detail_es: "Agencias sin AI están viendo márgenes erosionados 15-25% en 2025-2026. ChatGPT + Cursor hacen que juniores produzcan 3x más código. Sin reposicionamiento estratégico, agencias quedan atrapadas en commodity: propuestas más cortas, márgenes menores, rotación más alta."
+        detail_en: "Agencies without AI are seeing margins eroded 15-25% in 2025-2026. ChatGPT + Cursor let juniors ship 3x more code. Without strategic repositioning, agencies get stuck in commodity: shorter proposals, lower margins, higher churn."
+        impact: "$10K-$50K/month in margin compression"
+        action:
+          paid: {tool: "Claude API + Cursor Pro", price: "$50-$300/mo", url: "https://cursor.sh"}
+          oss: {tool: "Open Interpreter + Open WebUI", url: "https://github.com/open-webui/open-webui"}
+          cia: {service_es: "Frameworks de IA para agencias + automatización de estimación + workflow de pair programming", service_en: "Agency AI frameworks + estimation automation + pair programming workflows", price: "$5K-$20K"}
+      no_automation:
+        condition: "process_automation is empty"
+        severity: high
+        title_es: "Sin automatización: propuestas y onboarding manuales"
+        title_en: "No automation: manual proposals and onboarding"
+        detail_es: "Agencias sin herramientas de automatización gastan 8-12 horas/semana en tareas administrativas (propuestas, facturas, onboarding). Eso son $8K-$15K/año de costo perdido por empleado."
+        detail_en: "Agencies without automation tools spend 8-12 hours/week on admin tasks (proposals, invoices, onboarding). That's $8K-$15K/year in lost productivity per employee."
+        impact: "$3K-$12K/month in wasted admin time"
+
+  talent:
+    weight: 0.20
+    signals:
+      - field: creative_retention
+        contains_any: [low, declining, competitive]
+        impact: negative
+        score_boost: 25
+      - field: junior_developer_turnover
+        greater_than: 0.35
+        impact: negative
+        score_boost: 20
+    defaults:
+      base_score: 50
+    benchmarks:
+      junior_developer_turnover_rate: 0.35
+      creative_staff_retention: 0.60
+      training_budget_percent: 0.02
+      skill_gap_critical_roles: 0.40
+    findings:
+      creative_talent_flight:
+        condition: "always"
+        severity: high
+        title_es: "Fuga de talento creativo hacia in-house teams"
+        title_en: "Creative talent flight to in-house teams"
+        detail_es: "Agencias pierden diseñadores y creativos a clientes in-house (20-30% turnover vs 15% en otras industrias). Razones: mayor estabilidad, mejor salario, menos context-switching. Costo reemplazo: 150% del salario anual."
+        detail_en: "Agencies lose designers and creatives to in-house client teams (20-30% turnover vs 15% in other industries). Reasons: better stability, higher pay, less context-switching. Replacement cost: 150% of annual salary."
+        impact: "$5K-$25K/per person replacement cost"
+        action:
+          paid: {tool: "Talent retention platform (Lattice)", price: "$150-$400/mo", url: "https://www.lattice.com"}
+          oss: {tool: "Open feedback platforms", url: "https://github.com"}
+          cia: {service_es: "Programa de retención + career pathing + equity model", service_en: "Retention program + career pathing + equity model", price: "$3K-$10K"}
+      junior_burnout:
+        condition: "always"
+        severity: high
+        title_es: "Juniors quemados por context-switching"
+        title_en: "Juniors burned out by context-switching"
+        detail_es: "En agencias, juniors cambian de proyecto cada 2-4 semanas. Contexto-switching reduce productividad 40% y aumenta errores. Burnout en juniors: 60% en agencias vs 45% en in-house."
+        detail_en: "At agencies, juniors switch projects every 2-4 weeks. Context-switching cuts productivity 40% and increases errors. Junior burnout: 60% at agencies vs 45% in-house."
+        impact: "35% junior turnover = $10K-$30K/year per person"
+
+  financial:
+    weight: 0.20
+    signals:
+      - field: pricing_strategy
+        contains_any: [hourly, time_and_materials]
+        impact: negative
+        score_boost: 20
+      - field: project_profitability
+        contains_any: [declining, unpredictable]
+        impact: negative
+        score_boost: 15
+    defaults:
+      base_score: 50
+    benchmarks:
+      margin_by_project: 0.28
+      ar_days_outstanding: 45
+      project_scope_creep_rate: 0.18
+      unbillable_hours_percent: 0.12
+    findings:
+      margin_compression:
+        condition: "always"
+        severity: critical
+        title_es: "Márgenes erosionados: 28% → 18% (2023-2026)"
+        title_en: "Margins eroded: 28% → 18% (2023-2026)"
+        detail_es: "Márgenes promedio cayeron de 28% a 18% en 3 años. Causa principal: commoditización por AI + imposibilidad de aumentar precios (clientes asumen AI = barato). Agencias aún facturan por horas mientras AI reduce el esfuerzo."
+        detail_en: "Average margins fell from 28% to 18% in 3 years. Main cause: AI commoditization + inability to raise prices (clients assume AI = cheap). Agencies still bill hourly while AI reduces effort."
+        impact: "$20K-$100K/year depending on team size"
+        action:
+          paid: {tool: "Strategic pricing consultant / Profit First system", price: "$1K-$5K", url: "https://profitfirstbymikenicholson.com"}
+          oss: {tool: "Open-source cost tracking + project profit analysis", url: "https://github.com"}
+          cia: {service_es: "Reposicionamiento de modelo de negocio + value-based pricing + AI bundling", service_en: "Business model repositioning + value-based pricing + AI bundling", price: "$5K-$15K"}
+      scope_creep:
+        condition: "always"
+        severity: high
+        title_es: "Scope creep: 18% de proyectos van over budget"
+        title_en: "Scope creep: 18% of projects go over budget"
+        detail_es: "Sin contracts airtight, 18% de proyectos exceden presupuesto. Promedio: +25% de tiempo no facturado. En equipo de 30, eso son ~7.5 FTE perdidas al año."
+        detail_en: "Without airtight contracts, 18% of projects exceed budget. Average: +25% unbilled time. On a 30-person team, that's ~7.5 FTEs lost per year."
+        impact: "$8K-$30K/month in unbilled labor"
+
+  market:
+    weight: 0.15
+    signals:
+      - field: client_concentration
+        greater_than: 0.40
+        impact: negative
+        score_boost: 20
+      - field: client_retention
+        less_than: 0.70
+        impact: negative
+        score_boost: 15
+    defaults:
+      base_score: 50
+    benchmarks:
+      top_client_revenue_percent: 0.35
+      client_retention_rate: 0.75
+      nps_score: 45
+      repeat_business_percent: 0.60
+    findings:
+      client_concentration:
+        condition: "always"
+        severity: high
+        title_es: "Concentración de clientes: top 3 = 60% ingresos"
+        title_en: "Client concentration: top 3 = 60% of revenue"
+        detail_es: "Agencias suelen derivar 40-60% de ingresos de 3 clientes. Pérdida de 1 cliente grande = crisis. Sin diversificación, no hay seguridad de flujo de caja."
+        detail_en: "Agencies typically derive 40-60% of revenue from 3 clients. Loss of 1 large client = crisis. Without diversification, no cash flow security."
+        impact: "One lost client = potential $10K-$100K/month revenue loss"
+
+  operations:
+    weight: 0.10
+    signals:
+      - field: project_tracking
+        contains_any: [asana, monday, jira]
+        impact: positive
+        score_boost: -10
+      - field: project_tracking
+        equals: none
+        impact: negative
+        score_boost: 20
+    defaults:
+      base_score: 55
+    benchmarks:
+      on_time_delivery_rate: 0.75
+      budget_accuracy: 0.82
+      resource_utilization: 0.70
+    findings:
+      poor_project_visibility:
+        condition: "project_tracking is none"
+        severity: medium
+        title_es: "Sin visibilidad de proyectos: estimaciones desacertadas"
+        title_en: "No project visibility: poor estimates"
+        detail_es: "Sin herramienta centralizada, managers no ven delays hasta tarde. Estimaciones son 25-35% incorrectas. Esto dispara scope creep e insatisfacción de clientes."
+        detail_en: "Without central tool, managers see delays too late. Estimates are 25-35% inaccurate. This triggers scope creep and client dissatisfaction."
+        impact: "$2K-$8K/month in misestimated projects"
+
+  leadership:
+    weight: 0.10
+    signals:
+      - field: founder_burnout
+        is_not_empty: true
+        impact: negative
+        score_boost: 25
+      - field: strategic_direction
+        equals: unclear
+        impact: negative
+        score_boost: 20
+    defaults:
+      base_score: 45
+    findings:
+      founder_burnout:
+        condition: "always"
+        severity: high
+        title_es: "Burnout fundador: falta de visión estratégica"
+        title_en: "Founder burnout: lack of strategic vision"
+        detail_es: "56% de emprendedores experienta burnout. Sin estrategia clara de reposicionamiento hacia AI, fundadores quedan atrapados en operaciones tácticas (sales calls, delivery)."
+        detail_en: "56% of entrepreneurs experience burnout. Without clear AI repositioning strategy, founders stay trapped in tactical operations (sales calls, delivery)."
+        impact: "Business stagnation, higher vacancy in leadership"
+
+  supply_chain:
+    weight: 0.00
+    defaults:
+      base_score: 50
+    findings: {}
+
+  regulatory:
+    weight: 0.00
+    defaults:
+      base_score: 40
+    findings: {}
