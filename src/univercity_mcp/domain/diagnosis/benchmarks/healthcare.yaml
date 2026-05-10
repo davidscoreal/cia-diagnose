@@ -26,7 +26,7 @@ dimensions:
         detail_en: "High no-show rate due to lack of effective reminders."
         impact: "20% loss of capacity"
   operaciones:
-    weight: 0.15
+    weight: 0.05
     defaults: { base_score: 50 }
     findings:
       manual_scheduling:
@@ -70,7 +70,7 @@ dimensions:
         detail_en: "Unanswered negative reviews on Google."
         impact: "Loss of new patients"
   clientes:
-    weight: 0.15
+    weight: 0.05
     defaults: { base_score: 60 }
     findings:
       no_patient_lifecycle:

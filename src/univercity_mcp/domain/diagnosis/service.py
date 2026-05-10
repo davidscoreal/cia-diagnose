@@ -173,6 +173,17 @@ def _detect_icp(context: dict[str, Any]) -> str:
         "enterprise": "enterprise",
         "corporativo": "enterprise",
         "multinational": "enterprise",
+        "restaurant": "restaurant",
+        "restaurante": "restaurant",
+        "food": "restaurant",
+        "comida": "restaurant",
+        "gastronomy": "restaurant",
+        "gastronomía": "restaurant",
+        "real_estate": "real_estate",
+        "real estate": "real_estate",
+        "inmobiliaria": "real_estate",
+        "bienes raíces": "real_estate",
+        "property": "real_estate",
     }
 
     for keyword, icp_id in icp_map.items():

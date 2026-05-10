@@ -15,7 +15,7 @@ dimensions:
         detail_en: "Properties sold without collecting full commission."
         impact: "$2k-$10k/mo"
   comercial:
-    weight: 0.2
+    weight: 0.15
     defaults: { base_score: 40 }
     findings:
       dead_leads:
@@ -70,7 +70,7 @@ dimensions:
         detail_en: "Photos and descriptions that don't sell."
         impact: "Low engagement"
   clientes:
-    weight: 0.15
+    weight: 0.10
     defaults: { base_score: 50 }
     findings:
       no_nurture:
@@ -114,7 +114,7 @@ dimensions:
         detail_en: "No property acquisition system."
         impact: "No pipeline"
   marketing_digital:
-    weight: 0.1
+    weight: 0.05
     defaults: { base_score: 40 }
     findings:
       portal_dependent:
