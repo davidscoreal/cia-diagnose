@@ -1,4 +1,4 @@
-# UniverCity MCP v0.2.0
+# UniverCity MCP v0.2.1
 
 <!-- mcp-name: io.github.davidscoreal/univercity-mcp -->
 
@@ -16,8 +16,8 @@ The LLM gathers data from the user (the eyes). UniverCity MCP applies CIA consul
 
 | Tool | Description |
 |------|-------------|
-| `business_diagnose` | Full 8-dimension diagnosis. Send company context, get Revenue Leak Score + actions. |
-| `list_industries` | Returns available industry benchmarks (construction, healthcare, agency, ecommerce, startup, enterprise, generic). |
+| `univercity_diagnose` | Full 8-dimension diagnosis. Send company context, get Revenue Leak Score + actions. |
+| `univercity_list_industries` | Returns available industry benchmarks (construction, healthcare, agency, ecommerce, startup, enterprise, generic). |
 
 ## 8 Dimensions
 
