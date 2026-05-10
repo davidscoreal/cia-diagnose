@@ -1,290 +1,126 @@
-# Generic / Any Industry (Tier 2) — Catch-all ICP
-# "One size fits all" baseline for unmapped verticals
 id: generic
-name_es: "Empresa Genérica / Cualquier Industria"
-name_en: "Generic / Any Industry"
+name_es: General
+name_en: General
 tier: 2
-employee_range: "10-500+"
-decision_maker: "CEO / COO / CTO / VP Operations"
-sales_cycle: "2-8 semanas"
-
 dimensions:
-  financial:
-    weight: 0.125
-    signals:
-      - field: profitability_concerns
-        is_not_empty: true
-        impact: negative
-        score_boost: 20
-      - field: cash_flow_health
-        equals: poor
-        impact: negative
-        score_boost: 25
-    defaults:
-      base_score: 50
-    benchmarks:
-      operating_margin_percent: 0.12
-      days_cash_on_hand: 90
-      ar_days_outstanding: 45
-      expense_ratio: 0.75
+  finanzas:
+    weight: 0.1
+    defaults: { base_score: 50 }
     findings:
-      cash_flow_misalignment:
-        condition: "always"
+      cash_flow_gap:
         severity: high
-        title_es: "Flujo de caja desalineado: ingresos vs gastos"
-        title_en: "Cash flow misalignment: revenue vs expenses"
-        detail_es: "Empresas sin control de flujo de caja gastan 30-40% más de lo presupuestado. Sin visibilidad de cash runway, sorpresas de liquidez son frecuentes. Impacto: decisiones operacionales lentas, inversión bloqueada."
-        detail_en: "Companies without cash flow control spend 30-40% over budget. Without cash runway visibility, liquidity surprises are frequent. Impact: slow operational decisions, blocked investment."
-        impact: "$5K-$50K/month in untracked cash leaks"
-        action:
-          paid: {tool: "QuickBooks / Xero", price: "$100-$500/mo", url: "https://quickbooks.intuit.com"}
-          oss: {tool: "Invoice Ninja / ERPNext", url: "https://github.com/invoiceninja/invoiceninja"}
-          cia: {service_es: "Auditoría de flujo de caja + 13-semana forecast + plan de optimización", service_en: "Cash flow audit + 13-week forecast + optimization plan", price: "$2K-$6K"}
-      margin_erosion:
-        condition: "always"
-        severity: high
-        title_es: "Márgenes bajo presión: 5-15% erosión anual"
-        title_en: "Margins under pressure: 5-15% annual erosion"
-        detail_es: "Inflación, competencia, y costos ocultos erosionan márgenes año a año. Sin análisis granular de costo, empresas no ven dónde se va el dinero. Typical gap: 2-5% vs benchmark."
-        detail_en: "Inflation, competition, and hidden costs erode margins year-over-year. Without granular cost analysis, companies miss where money goes. Typical gap: 2-5% vs benchmark."
-        impact: "$10K-$100K/year in margin loss"
-
-  operations:
-    weight: 0.125
-    signals:
-      - field: process_efficiency
-        equals: low
-        impact: negative
-        score_boost: 20
-      - field: manual_workflows
-        greater_than: 0.50
-        impact: negative
-        score_boost: 15
-    defaults:
-      base_score: 50
-    benchmarks:
-      process_automation_percent: 0.30
-      admin_overhead_hours_per_week: 10
-      approval_cycle_days: 5
-      on_time_delivery_rate: 0.85
+        title_es: "Fuga de flujo de caja"
+        title_en: "Cash flow leak"
+        detail_es: "El negocio gasta más de lo que ingresa en periodos críticos."
+        detail_en: "Business spends more than it earns during critical periods."
+        impact: "$1k-$5k/mo"
+  comercial:
+    weight: 0.2
+    defaults: { base_score: 50 }
     findings:
-      manual_process_drag:
-        condition: "always"
-        severity: high
-        title_es: "Procesos manuales: 30-40% del tiempo productivo perdido"
-        title_en: "Manual processes: 30-40% of productive time lost"
-        detail_es: "Empresas con >50% procesos manuales gastan ~10 horas/semana en tareas repetitivas (aprobaciones, entrada de datos, reportes). Eso es ~$15K-$40K/año por empleado en overhead."
-        detail_en: "Companies with >50% manual processes spend ~10 hours/week on repetitive tasks (approvals, data entry, reports). That's ~$15K-$40K/year per employee in overhead."
-        impact: "$3K-$15K/month in wasted admin time"
-        action:
-          paid: {tool: "Zapier / Make", price: "$100-$500/mo", url: "https://zapier.com"}
-          oss: {tool: "n8n / Mattermost Automation", url: "https://n8n.io"}
-          cia: {service_es: "Mapeo de procesos + 10 automatizaciones de impacto + capacitación de equipo", service_en: "Process mapping + 10 high-impact automations + team training", price: "$3K-$10K"}
-
-  talent:
-    weight: 0.125
-    signals:
-      - field: turnover_rate
-        greater_than: 0.20
-        impact: negative
-        score_boost: 25
-      - field: skill_gap
-        equals: critical
-        impact: negative
-        score_boost: 20
-    defaults:
-      base_score: 50
-    benchmarks:
-      annual_turnover_rate: 0.15
-      training_hours_per_employee_per_year: 20
-      internal_promotion_rate: 0.30
-      key_role_vacancy_days: 45
+      low_conversion:
+        severity: critical
+        title_es: "Baja tasa de conversión"
+        title_en: "Low conversion rate"
+        detail_es: "Muchos leads pero pocos cierres reales."
+        detail_en: "Many leads but few actual closes."
+        impact: "$2k-$10k/mo"
+  operaciones:
+    weight: 0.1
+    defaults: { base_score: 50 }
     findings:
-      high_turnover_cycle:
-        condition: "always"
-        severity: high
-        title_es: "Rotación alta: 20%+ anual (benchmark 15%)"
-        title_en: "High turnover: 20%+ annually (benchmark 15%)"
-        detail_es: "Rotación >20% indica problemas sistémicos: cultura débil, compensación no competitiva, o falta de crecimiento. Costo de reemplazo: 100-200% del salario anual. Pérdida de conocimiento: 6-12 meses."
-        detail_en: "Turnover >20% signals systemic issues: weak culture, non-competitive pay, or lack of growth. Replacement cost: 100-200% of annual salary. Knowledge loss: 6-12 months."
-        impact: "$20K-$100K per person in replacement + ramp-up cost"
-        action:
-          paid: {tool: "Workday / Bamboo HR", price: "$150-$500/mo", url: "https://www.bamboohr.com"}
-          oss: {tool: "HRIS open source", url: "https://github.com/metabase/metabase"}
-          cia: {service_es: "Análisis de rotación + plan de retención + revisión de compensación", service_en: "Turnover analysis + retention plan + compensation review", price: "$3K-$8K"}
-      skill_gap_blocking:
-        condition: "always"
-        severity: high
-        title_es: "Brecha de habilidades: frena innovación y crecimiento"
-        title_en: "Skill gap: blocks innovation and growth"
-        detail_es: "Sin skills en areas clave (AI, data, cloud), empresas no pueden ejecutar roadmap digital. Típicamente: 30-50% de roles no pueden crecer. Impacto: delays en proyectos estratégicos."
-        detail_en: "Without skills in key areas (AI, data, cloud), companies cannot execute digital roadmap. Typically: 30-50% of roles cannot advance. Impact: strategic project delays."
-        impact: "$5K-$20K/month in delayed initiatives"
-
-  digital:
-    weight: 0.125
-    signals:
-      - field: tech_debt_level
-        equals: high
-        impact: negative
-        score_boost: 25
-      - field: data_maturity
-        less_than: 0.50
-        impact: negative
-        score_boost: 20
-    defaults:
-      base_score: 50
-    benchmarks:
-      legacy_system_percent: 0.35
-      cloud_adoption_percent: 0.50
-      api_first_adoption: 0.40
-      data_accessibility: 0.45
+      owner_bottleneck:
+        severity: critical
+        title_es: "Dueño como cuello de botella"
+        title_en: "Owner as bottleneck"
+        detail_es: "Todo depende de la aprobación del dueño."
+        detail_en: "Everything depends on owner approval."
+        impact: "Growth stagnation"
+  equipo:
+    weight: 0.1
+    defaults: { base_score: 50 }
     findings:
-      tech_debt_accumulation:
-        condition: "always"
-        severity: high
-        title_es: "Deuda tecnológica: 30-40% del ciclo de desarrollo"
-        title_en: "Tech debt: 30-40% of development cycle"
-        detail_es: "Sin refactoring planificado, la deuda técnica crece. Cada sprint gastará 30-40% en 'fixes' de legacy. Nuevo desarrollo se ralentiza 25-35% anual."
-        detail_en: "Without planned refactoring, tech debt grows. Each sprint spends 30-40% on legacy 'fixes'. New development slows 25-35% annually."
-        impact: "$10K-$50K/month in dev velocity loss"
-        action:
-          paid: {tool: "Snyk / Sonarqube", price: "$100-$500/mo", url: "https://snyk.io"}
-          oss: {tool: "SonarQube Community / Code Climate", url: "https://www.sonarqube.org"}
-          cia: {service_es: "Auditoría de deuda técnica + hoja de ruta de refactoring + mejora de CICD", service_en: "Tech debt audit + refactoring roadmap + CI/CD improvement", price: "$4K-$12K"}
-      no_data_strategy:
-        condition: "always"
-        severity: high
-        title_es: "Sin estrategia de datos: decisiones por intuición"
-        title_en: "No data strategy: decisions by intuition"
-        detail_es: "Empresas sin data lake o BI no pueden ver patrones. Decisiones se basan en anécdota. Pérdida de oportunidades: 15-25% en eficiencia operacional."
-        detail_en: "Companies without data lake or BI cannot see patterns. Decisions based on anecdote. Missed opportunities: 15-25% in operational efficiency."
-        impact: "$2K-$10K/month in suboptimal decisions"
-
-  supply_chain:
-    weight: 0.125
-    signals:
-      - field: vendor_visibility
-        equals: poor
-        impact: negative
-        score_boost: 20
-      - field: procurement_efficiency
-        equals: manual
-        impact: negative
-        score_boost: 15
-    defaults:
-      base_score: 50
-    benchmarks:
-      supplier_lead_time_days: 30
-      procurement_cycle_days: 14
-      inventory_accuracy_percent: 0.90
-      supplier_risk_monitoring: 0.40
+      skill_gap:
+        severity: medium
+        title_es: "Brecha de habilidades"
+        title_en: "Skill gap"
+        detail_es: "El equipo no tiene la capacidad técnica para escalar."
+        detail_en: "Team lacks technical capacity to scale."
+        impact: "Slower delivery"
+  tecnologia:
+    weight: 0.1
+    defaults: { base_score: 50 }
     findings:
-      supplier_concentration_risk:
-        condition: "always"
+      software_fragmentation:
         severity: high
-        title_es: "Concentración de proveedores: riesgo de disrupción"
-        title_en: "Supplier concentration: disruption risk"
-        detail_es: "Empresas con >30% de compras de 1-3 proveedores enfrentan riesgo. Cierre de proveedor = parada de producción. Sin backup suppliers, impacto: 2-8 semanas de delay."
-        detail_en: "Companies with >30% of purchases from 1-3 suppliers face risk. Supplier closure = production halt. Without backups, impact: 2-8 weeks of delay."
-        impact: "$20K-$200K+ in potential supply disruption"
-        action:
-          paid: {tool: "Coupa / Jaggr", price: "$500-$2000/mo", url: "https://www.coupa.com"}
-          oss: {tool: "Tryton / Odoo Purchasing", url: "https://www.tryton.org"}
-          cia: {service_es: "Análisis de proveedores + plan de diversificación + monitoreo de riesgos", service_en: "Supplier analysis + diversification plan + risk monitoring", price: "$3K-$8K"}
-
-  market:
-    weight: 0.125
-    signals:
-      - field: market_awareness
-        equals: low
-        impact: negative
-        score_boost: 20
-      - field: competitive_positioning
-        equals: unclear
-        impact: negative
-        score_boost: 15
-    defaults:
-      base_score: 50
-    benchmarks:
-      brand_awareness_percent: 0.30
-      customer_satisfaction_nps: 40
-      market_share_trend: flat
-      competitor_tracking_frequency: 0
+        title_es: "Fragmentación de software"
+        title_en: "Software fragmentation"
+        detail_es: "Uso de múltiples herramientas que no se hablan entre sí."
+        detail_en: "Use of multiple tools that don't talk to each other."
+        impact: "Operational waste"
+  marketing:
+    weight: 0.1
+    defaults: { base_score: 50 }
     findings:
-      market_position_unclear:
-        condition: "always"
+      no_differentiation:
         severity: high
-        title_es: "Posicionamiento confuso: 'hacemos un poco de todo'"
-        title_en: "Unclear positioning: 'we do a bit of everything'"
-        detail_es: "Sin diferenciación clara, empresa compite en precio. Clientes no entienden valor único. Impacto: churn +25%, CAC +40%, margen bajo presión."
-        detail_en: "Without clear differentiation, company competes on price. Customers don't understand unique value. Impact: churn +25%, CAC +40%, margin pressure."
-        impact: "$5K-$30K/month in lost brand value"
-        action:
-          paid: {tool: "Brand Stack / Sprout Social", price: "$200-$500/mo", url: "https://sproutsocial.com"}
-          oss: {tool: "Open-source audience analytics", url: "https://github.com/plausible/analytics"}
-          cia: {service_es: "Análisis de posicionamiento + estrategia de diferenciación + messaging framework", service_en: "Positioning analysis + differentiation strategy + messaging framework", price: "$3K-$10K"}
-
-  leadership:
-    weight: 0.125
-    signals:
-      - field: strategic_clarity
-        equals: unclear
-        impact: negative
-        score_boost: 20
-      - field: decision_velocity
-        equals: slow
-        impact: negative
-        score_boost: 15
-    defaults:
-      base_score: 50
-    benchmarks:
-      strategy_refresh_frequency: "annual"
-      board_meeting_frequency: "quarterly"
-      strategic_initiative_completion_rate: 0.65
-      executive_alignment_score: 0.60
+        title_es: "Falta de diferenciación"
+        title_en: "Lack of differentiation"
+        detail_es: "El negocio se ve igual que toda la competencia."
+        detail_en: "Business looks same as all competitors."
+        impact: "Price wars"
+  clientes:
+    weight: 0.1
+    defaults: { base_score: 50 }
     findings:
-      strategy_drift:
-        condition: "always"
-        severity: high
-        title_es: "Desviación de estrategia: ejecución sin dirección clara"
-        title_en: "Strategy drift: execution without clear direction"
-        detail_es: "Sin roadmap anual claro, equipos trabajan en paralelo. Resultado: 30-40% de esfuerzo es desperdicio. Prioridades cambian mensualmente, nada se completa."
-        detail_en: "Without clear annual roadmap, teams work in parallel. Result: 30-40% of effort is waste. Priorities change monthly, nothing ships."
-        impact: "$10K-$50K/month in misaligned effort"
-        action:
-          paid: {tool: "Lattice / 15Five", price: "$150-$400/mo", url: "https://www.lattice.com"}
-          oss: {tool: "Open-source OKR tools", url: "https://github.com"}
-          cia: {service_es: "Facilitar estrategia anual + OKR framework + follow-up trimestral", service_en: "Facilitate annual strategy + OKR framework + quarterly follow-up", price: "$5K-$15K"}
-
-  regulatory:
-    weight: 0.125
-    signals:
-      - field: compliance_maturity
-        equals: low
-        impact: negative
-        score_boost: 25
-      - field: audit_findings
-        is_not_empty: true
-        impact: negative
-        score_boost: 20
-    defaults:
-      base_score: 50
-    benchmarks:
-      compliance_training_completion_percent: 0.80
-      audit_findings_remediation_rate: 0.75
-      policy_update_frequency: "annual"
-      risk_assessment_recency_months: 12
+      high_churn:
+        severity: critical
+        title_es: "Tasa de abandono alta"
+        title_en: "High churn rate"
+        detail_es: "Los clientes se van después del primer servicio."
+        detail_en: "Customers leave after first service."
+        impact: "$5k+ loss/mo"
+  proveedores:
+    weight: 0.1
+    defaults: { base_score: 50 }
     findings:
-      compliance_risk_exposure:
-        condition: "always"
+      vendor_dependence:
+        severity: medium
+        title_es: "Dependencia de proveedor único"
+        title_en: "Single vendor dependence"
+        detail_es: "Riesgo alto si el proveedor principal falla."
+        detail_en: "High risk if primary vendor fails."
+        impact: "Supply chain risk"
+  legal:
+    weight: 0.05
+    defaults: { base_score: 50 }
+    findings:
+      no_contracts:
         severity: high
-        title_es: "Riesgo de cumplimiento: sin visibilidad regulatoria"
-        title_en: "Compliance risk: no regulatory visibility"
-        detail_es: "Empresas sin compliance program formal enfrentan multas, auditorías sorpresa, y sanciones. Costo promedio de no-conformidad: $50K-$500K+ por incidente. Tiempo de remediación: 3-6 meses."
-        detail_en: "Companies without formal compliance programs face fines, surprise audits, and sanctions. Average non-compliance cost: $50K-$500K+ per incident. Remediation time: 3-6 months."
-        impact: "$10K-$100K+ in potential fines + remediation"
-        action:
-          paid: {tool: "LogicGate / Domo Compliance", price: "$300-$1000/mo", url: "https://www.logicgate.com"}
-          oss: {tool: "OpenAudit / Compliance-as-Code", url: "https://github.com"}
-          cia: {service_es: "Evaluación de conformidad + desarrollo de políticas + programa de auditoría interna", service_en: "Compliance assessment + policy development + internal audit program", price: "$4K-$12K"}
+        title_es: "Falta de contratos firmados"
+        title_en: "No signed contracts"
+        detail_es: "Riesgo legal alto por acuerdos verbales."
+        detail_en: "High legal risk due to verbal agreements."
+        impact: "Legal liability"
+  estrategia:
+    weight: 0.1
+    defaults: { base_score: 50 }
+    findings:
+      no_long_term_plan:
+        severity: high
+        title_es: "Sin plan a largo plazo"
+        title_en: "No long term plan"
+        detail_es: "Se opera día a día sin visión clara."
+        detail_en: "Operates day-to-day without clear vision."
+        impact: "Strategic drift"
+  marketing_digital:
+    weight: 0.05
+    defaults: { base_score: 50 }
+    findings:
+      dead_socials:
+        severity: medium
+        title_es: "Redes sociales inactivas"
+        title_en: "Inactive social media"
+        detail_es: "La marca no tiene presencia digital activa."
+        detail_en: "Brand has no active digital presence."
+        impact: "Low trust"

@@ -9,7 +9,7 @@ decision_maker: "Director General / Gerente de Operaciones"
 sales_cycle: "2-4 semanas"
 
 dimensions:
-  digital:
+  tecnologia:
     weight: 0.10
     signals:
       - field: software_detected
@@ -48,7 +48,7 @@ dimensions:
           oss: {tool: "OpenProject", url: "https://openproject.org"}
           cia: {service_es: "Arquitectura de gestión de obra + automatización de reportes", service_en: "Construction management architecture + reporting automation", price: "$4K-$10K"}
 
-  operations:
+  operaciones:
     weight: 0.25
     signals:
       - field: physical_operations
@@ -76,7 +76,7 @@ dimensions:
         detail_en: "Industry benchmark is 8% waste. Most companies without digital tracking are at 12-18%. Lean Six Sigma identifies 8 types of waste applicable to construction."
         impact: "$5K-$25K/month depending on project volume"
 
-  supply_chain:
+  proveedores:
     weight: 0.15
     signals:
       - field: supply_chain_notes
@@ -98,7 +98,7 @@ dimensions:
         detail_en: "48% of supply chain leaders report significant AI impact. Without centralized system, duplicate purchases and inflated prices are invisible."
         impact: "$1K-$5K/month"
 
-  talent:
+  equipo:
     weight: 0.20
     signals:
       - field: hiring_challenges
@@ -126,7 +126,7 @@ dimensions:
         detail_en: "The industry needs 349,000 new workers in 2026. 40% of skilled workers are over 45. Economic impact: $10.8B/year globally."
         impact: "Project delays of 2-8 weeks per unfilled position"
 
-  financial:
+  finanzas:
     weight: 0.20
     signals:
       - field: cash_flow_concerns
@@ -158,7 +158,7 @@ dimensions:
           oss: {tool: "InvoiceNinja", url: "https://invoiceninja.com"}
           cia: {service_es: "Arquitectura de cobranza automatizada + tablero de flujo de caja en tiempo real", service_en: "Automated collections architecture + real-time cash flow dashboard", price: "$3K-$8K"}
 
-  leadership:
+  estrategia:
     weight: 0.10
     signals:
       - field: stress_indicators
@@ -184,14 +184,32 @@ dimensions:
         detail_en: "56% of leaders experience burnout. Chronic stress reduces prefrontal cortex function by 26% — the brain region for strategic thinking. Exhausted CEOs lean toward risk-averse choices, execution delays, and micromanagement."
         impact: "Burnout costs the global economy $322B annually"
 
-  market:
-    weight: 0.00  # Minimal weight for construction — operations matter more
+  marketing:
+    weight: 0.00
     defaults:
       base_score: 40
     findings: {}
 
-  regulatory:
-    weight: 0.00  # Handled per-country, not scored by default
+  legal:
+    weight: 0.00
     defaults:
       base_score: 30
+    findings: {}
+
+  comercial:
+    weight: 0.00
+    defaults:
+      base_score: 50
+    findings: {}
+
+  clientes:
+    weight: 0.00
+    defaults:
+      base_score: 50
+    findings: {}
+
+  marketing_digital:
+    weight: 0.00
+    defaults:
+      base_score: 50
     findings: {}

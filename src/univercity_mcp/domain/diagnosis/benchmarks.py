@@ -71,10 +71,11 @@ def _default_benchmark() -> dict[str, Any]:
         "name_en": "General",
         "tier": 2,
         "dimensions": {
-            dim: {"weight": 0.125, "defaults": {"base_score": 50}, "findings": {}}
+            dim: {"weight": 1/11, "defaults": {"base_score": 50}, "findings": {}}
             for dim in [
-                "digital", "operations", "supply_chain", "talent",
-                "financial", "leadership", "market", "regulatory",
+                "finanzas", "comercial", "operaciones", "equipo",
+                "tecnologia", "marketing", "clientes", "proveedores",
+                "legal", "estrategia", "marketing_digital",
             ]
         },
     }

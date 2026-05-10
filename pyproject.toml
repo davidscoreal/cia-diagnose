@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "univercity-mcp"
-version = "0.2.1"
-description = "Holistic business intelligence engine — 8-dimension diagnosis via any LLM. Triple option (Paid/OSS/CIA)"
+version = "1.0.0"
+description = "Holistic business intelligence engine — 11-dimension diagnosis via any LLM. Triple option (Paid/OSS/CIA)"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"

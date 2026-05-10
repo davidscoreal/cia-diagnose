@@ -9,7 +9,7 @@ decision_maker: "CTO / VP Innovation / Chief Digital Officer"
 sales_cycle: "3-6 meses"
 
 dimensions:
-  leadership:
+  estrategia:
     weight: 0.25
     signals:
       - field: innovation_strategy
@@ -60,7 +60,7 @@ dimensions:
         detail_en: "Even with perfect solution, 70% of enterprise changes fail due to lack of adoption. Reasons: legacy culture, siloed information, poor comms. Impact: tech dies in pilot, ROI = 0."
         impact: "$100K-$1M+ in failed transformations"
 
-  operations:
+  operaciones:
     weight: 0.20
     signals:
       - field: process_maturity
@@ -87,7 +87,7 @@ dimensions:
         detail_en: "Large enterprises spend 40% of cycle on approvals (legal, compliance, security). Result: startups ship in 4 weeks, enterprise in 8-12. Competitive advantage: lost."
         impact: "$5K-$25K/month in lost time-to-market"
 
-  digital:
+  tecnologia:
     weight: 0.15
     signals:
       - field: legacy_system_dependency
@@ -114,7 +114,7 @@ dimensions:
         detail_en: "73% of Fortune 500 have untouchable legacy systems. Result: new solutions live isolated, no integration. Limited ROI."
         impact: "$10K-$50K/month in integration debt"
 
-  talent:
+  equipo:
     weight: 0.15
     signals:
       - field: skill_gap_critical
@@ -141,7 +141,7 @@ dimensions:
         detail_en: "Technical talent in large enterprises sees innovation blocked. Result: migrates to startups (15-25% annually). Replacement cost: 200-250% salary."
         impact: "$20K-$100K per person in replacement cost"
 
-  financial:
+  finanzas:
     weight: 0.10
     signals:
       - field: innovation_budget_allocation
@@ -167,7 +167,7 @@ dimensions:
         detail_en: "45% of enterprises cannot quantify ROI on innovation initiatives. Without metric, budget grows unjustified. Result: audit, budget cuts, frustration."
         impact: "$100K-$1M+ in untracked spending"
 
-  market:
+  marketing:
     weight: 0.10
     signals:
       - field: competitive_threat
@@ -189,7 +189,7 @@ dimensions:
         detail_en: "Incumbent enterprises lose 1-2% market share annually to disruptors. Cause: slow PoC investment vs rapid startup deployment."
         impact: "$1M-$100M+ in market share loss potential"
 
-  regulatory:
+  legal:
     weight: 0.05
     signals:
       - field: compliance_complexity
@@ -200,7 +200,25 @@ dimensions:
       base_score: 45
     findings: {}
 
-  supply_chain:
+  proveedores:
+    weight: 0.00
+    defaults:
+      base_score: 50
+    findings: {}
+
+  comercial:
+    weight: 0.00
+    defaults:
+      base_score: 50
+    findings: {}
+
+  clientes:
+    weight: 0.00
+    defaults:
+      base_score: 50
+    findings: {}
+
+  marketing_digital:
     weight: 0.00
     defaults:
       base_score: 50

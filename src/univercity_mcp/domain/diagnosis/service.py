@@ -32,7 +32,7 @@ def diagnose(
     lang: str = "es",
     session_id: str = "",
 ) -> DiagnosisReport:
-    """Run holistic diagnosis across 8 dimensions.
+    """Run holistic diagnosis across 11 dimensions.
 
     Args:
         company_name: Name of the company.
@@ -226,30 +226,30 @@ def _score_dimension(
     findings: list[Finding] = []
     data_points_found = 0
     data_points_checked = 0
-
+    
     # ── Apply signals ──
     signals = config.get("signals", [])
     for signal in signals:
         data_points_checked += 1
         field_name = signal.get("field", "")
         field_value = context.get(field_name)
-
+        
         if field_value is None:
             continue
-
+            
         data_points_found += 1
         matched = _evaluate_signal(signal, field_value)
         if matched:
             boost = signal.get("score_boost", 0)
             score += boost
-
+            
     # ── Generate findings from config ──
     finding_configs = config.get("findings", {})
     if isinstance(finding_configs, dict):
         for finding_id, fc in finding_configs.items():
             data_points_checked += 1
             condition = fc.get("condition", "")
-
+            
             triggered = _evaluate_finding_condition(condition, context)
             if triggered:
                 data_points_found += 1
@@ -265,7 +265,7 @@ def _score_dimension(
                     benchmark_ref=finding_id,
                 )
                 findings.append(finding)
-
+                
                 # Apply severity-based score adjustment
                 severity_boost = {
                     Severity.CRITICAL: 15,
@@ -275,23 +275,23 @@ def _score_dimension(
                     Severity.INFO: 0,
                 }
                 score += severity_boost.get(severity, 0)
-
+                
     # ── Context-based scoring adjustments ──
     score = _apply_context_adjustments(dim, score, context)
-
+    
     # Clamp
     score = min(100.0, max(0.0, score))
-
+    
     # Data quality
     data_quality = (data_points_found / max(data_points_checked, 1))
+    
     # Boost data quality if we have context fields relevant to this dimension
     relevant_fields = _get_relevant_fields(dim)
     context_coverage = sum(1 for f in relevant_fields if context.get(f) is not None)
     if relevant_fields:
         data_quality = max(data_quality, context_coverage / len(relevant_fields))
-
+        
     return score, findings, data_quality
-
 
 def _evaluate_signal(signal: dict, field_value: Any) -> bool:
     """Evaluate a single signal against a field value."""
@@ -362,14 +362,17 @@ def _apply_context_adjustments(
     pain_text = " ".join(pain_points)
 
     dimension_pain_keywords = {
-        Dimension.DIGITAL: ["software", "sistema", "crm", "erp", "digital", "tech", "tool"],
-        Dimension.OPERATIONS: ["proceso", "manual", "lento", "waste", "process", "slow"],
-        Dimension.SUPPLY_CHAIN: ["proveedor", "supply", "vendor", "delivery", "shipping"],
-        Dimension.TALENT: ["contratar", "talento", "hire", "talent", "turnover", "skills"],
-        Dimension.FINANCIAL: ["flujo", "cash", "cobrar", "deuda", "invoice", "payment"],
-        Dimension.LEADERSHIP: ["estrés", "burnout", "stress", "decisions", "overwhelm"],
-        Dimension.MARKET: ["competencia", "competition", "market", "pricing", "customers"],
-        Dimension.REGULATORY: ["regulación", "compliance", "legal", "audit", "regulation"],
+        Dimension.TECNOLOGIA: ["software", "sistema", "crm", "erp", "digital", "tech", "tool", "integracion", "datos"],
+        Dimension.OPERACIONES: ["proceso", "manual", "lento", "waste", "process", "slow", "operaciones"],
+        Dimension.PROVEEDORES: ["proveedor", "supply", "vendor", "delivery", "shipping", "cadena"],
+        Dimension.EQUIPO: ["contratar", "talento", "hire", "talent", "turnover", "skills", "equipo", "rrhh"],
+        Dimension.FINANZAS: ["flujo", "cash", "cobrar", "deuda", "invoice", "payment", "margen", "costos"],
+        Dimension.ESTRATEGIA: ["estrategia", "vision", "plan", "escalabilidad", "growth", "scale"],
+        Dimension.MARKETING: ["competencia", "competition", "market", "pricing", "customers", "marca"],
+        Dimension.CLIENTES: ["clientes", "retencion", "churn", "lifetime", "nps", "satisfaccion"],
+        Dimension.COMERCIAL: ["ventas", "leads", "conversion", "pipeline", "ticket", "ciclo"],
+        Dimension.LEGAL: ["regulacion", "compliance", "legal", "audit", "regulation", "contratos"],
+        Dimension.MARKETING_DIGITAL: ["seo", "google", "redes", "social", "email", "ads", "contenido"],
     }
 
     keywords = dimension_pain_keywords.get(dim, [])
@@ -383,14 +386,17 @@ def _apply_context_adjustments(
 def _get_relevant_fields(dim: Dimension) -> list[str]:
     """Get context fields relevant to a dimension."""
     field_map = {
-        Dimension.DIGITAL: ["software_detected", "website_url", "social_presence"],
-        Dimension.OPERATIONS: ["physical_operations", "team_size"],
-        Dimension.SUPPLY_CHAIN: ["supply_chain_notes"],
-        Dimension.TALENT: ["hiring_challenges", "skill_gaps", "team_size"],
-        Dimension.FINANCIAL: ["cash_flow_concerns", "ar_aging", "revenue_estimate"],
-        Dimension.LEADERSHIP: ["stress_indicators", "growth_stage", "decision_maker_role"],
-        Dimension.MARKET: ["industry", "location"],
-        Dimension.REGULATORY: ["industry", "location"],
+        Dimension.TECNOLOGIA: ["software_detected", "website_url", "social_presence", "integrations"],
+        Dimension.OPERACIONES: ["physical_operations", "team_size", "process_notes"],
+        Dimension.PROVEEDORES: ["supply_chain_notes", "vendor_count"],
+        Dimension.EQUIPO: ["hiring_challenges", "skill_gaps", "team_size", "rotacion"],
+        Dimension.FINANZAS: ["cash_flow_concerns", "ar_aging", "revenue_estimate", "margins"],
+        Dimension.ESTRATEGIA: ["stress_indicators", "growth_stage", "decision_maker_role", "vision"],
+        Dimension.MARKETING: ["industry", "location", "competitors"],
+        Dimension.CLIENTES: ["churn_rate", "retention", "nps", "clientes_perdidos"],
+        Dimension.COMERCIAL: ["leads_volume", "conversion_rate", "ticket_promedio", "pipeline"],
+        Dimension.LEGAL: ["industry", "location", "contracts"],
+        Dimension.MARKETING_DIGITAL: ["seo_score", "social_followers", "email_list", "ads_spend"],
     }
     return field_map.get(dim, [])
 
@@ -409,31 +415,41 @@ def _categorize_leak(score: float) -> str:
 
 
 def _estimate_monthly_leak(context: dict, leak_score: float) -> tuple[int, int]:
-    """Estimate monthly revenue leak in USD."""
-    rev = str(context.get("revenue_estimate", "")).lower()
+    """Estimate monthly revenue leak in USD based on real ICP revenue scales."""
+    rev_str = str(context.get("revenue_estimate", "")).lower()
+    
+    # Midpoints for 1M-10M USD range
     midpoints = {
-        "under_50k": 25_000, "<50k": 25_000,
-        "50k_200k": 125_000, "50k-200k": 125_000,
-        "200k_1m": 600_000, "200k-1m": 600_000,
-        "1m_5m": 3_000_000, "1m-5m": 3_000_000,
-        "over_5m": 7_500_000, ">5m": 7_500_000,
+        "1m-5m": 3_000_000,
+        "5m-10m": 7_500_000,
+        "1m-10m": 5_500_000,
+        "over_10m": 15_000_000,
+        "10m+": 15_000_000,
     }
-
-    midpoint = midpoints.get(rev, 0)
+    
+    # Fallback: Try to extract a number if it's not in the mapping
+    midpoint = 0
+    for key, val in midpoints.items():
+        if key in rev_str:
+            midpoint = val
+            break
+            
     if midpoint == 0:
-        # Try to extract a number
         import re
-        nums = re.findall(r'[\d,]+', rev.replace(",", ""))
+        nums = re.findall(r'[\d,]+', rev_str.replace(",", ""))
         if nums:
             try:
                 midpoint = int(nums[0])
             except ValueError:
-                midpoint = 200_000  # Default
+                midpoint = 1_000_000  # Default for ICP
         else:
-            midpoint = 200_000
+            midpoint = 1_000_000 # Base for ICP
 
-    pct_min = max(0.02, (leak_score / 100.0) * 0.05)
-    pct_max = min(0.25, (leak_score / 100.0) * 0.25)
+    # Percentage of leak based on score (0-100)
+    # 0 score = 2% leak (minimum operational waste)
+    # 100 score = 25% leak (catastrophic failure)
+    pct_min = 0.02 + (leak_score / 100.0) * 0.23
+    pct_max = 0.05 + (leak_score / 100.0) * 0.20
 
     return (int(midpoint * pct_min), int(midpoint * pct_max))
 
@@ -508,52 +524,92 @@ def _generate_validation_questions(
     )
 
     question_templates = {
-        Dimension.DIGITAL: ValidationQuestion(
+        Dimension.TECNOLOGIA: ValidationQuestion(
             question_es="¿Qué herramientas digitales usa tu equipo día a día? (CRM, ERP, Excel, WhatsApp, ninguno)",
             question_en="What digital tools does your team use daily? (CRM, ERP, Excel, WhatsApp, none)",
-            dimension=Dimension.DIGITAL,
+            dimension=Dimension.TECNOLOGIA,
             why_es="Esto nos permite medir tu madurez digital y encontrar los puntos exactos donde se pierden oportunidades.",
             why_en="This lets us measure your digital maturity and find the exact points where opportunities are lost.",
             expected_type="text",
         ),
-        Dimension.OPERATIONS: ValidationQuestion(
+        Dimension.OPERACIONES: ValidationQuestion(
             question_es="¿Cuáles son los 2-3 procesos más manuales o lentos de tu operación?",
             question_en="What are the 2-3 most manual or slow processes in your operation?",
-            dimension=Dimension.OPERATIONS,
+            dimension=Dimension.OPERACIONES,
             why_es="Los procesos manuales son la fuente #1 de fugas de ingreso. Lean Six Sigma identifica 8 tipos de desperdicio — necesitamos saber cuáles aplican.",
             why_en="Manual processes are the #1 source of revenue leaks. Lean Six Sigma identifies 8 types of waste — we need to know which apply.",
             expected_type="text",
         ),
-        Dimension.SUPPLY_CHAIN: ValidationQuestion(
+        Dimension.PROVEEDORES: ValidationQuestion(
             question_es="¿Cómo manejas las compras y proveedores? ¿Tienes sistema centralizado?",
             question_en="How do you manage purchasing and vendors? Do you have a centralized system?",
-            dimension=Dimension.SUPPLY_CHAIN,
+            dimension=Dimension.PROVEEDORES,
             why_es="48% de líderes de supply chain reportan impacto significativo de AI. Sin visibilidad, las compras duplicadas y precios inflados son invisibles.",
             why_en="48% of supply chain leaders report significant AI impact. Without visibility, duplicate purchases and inflated prices are invisible.",
             expected_type="text",
         ),
-        Dimension.TALENT: ValidationQuestion(
+        Dimension.EQUIPO: ValidationQuestion(
             question_es="¿Cuántas posiciones tienes abiertas ahora mismo? ¿Cuánto tiempo llevan sin cubrirse?",
             question_en="How many open positions do you have right now? How long have they been unfilled?",
-            dimension=Dimension.TALENT,
+            dimension=Dimension.EQUIPO,
             why_es="El gap de talento le cuesta a la economía global $8.5T en ingresos no realizados. Cada posición vacía es dinero que no se genera.",
             why_en="The talent gap costs the global economy $8.5T in unrealized revenue. Every vacant position is money not being generated.",
             expected_type="text",
         ),
-        Dimension.FINANCIAL: ValidationQuestion(
+        Dimension.FINANZAS: ValidationQuestion(
             question_es="¿Cuántos días en promedio tardan tus clientes en pagarte? ¿Tienes facturas vencidas 60+ días?",
             question_en="How many days on average do your clients take to pay you? Do you have invoices overdue 60+ days?",
-            dimension=Dimension.FINANCIAL,
+            dimension=Dimension.FINANZAS,
             why_es="61% de facturas B2B se pagan tarde. La probabilidad de cobro cae a ~50% a los 6 meses. Este dato solo puede cambiar completamente tu diagnóstico.",
             why_en="61% of B2B invoices are paid late. Collection probability drops to ~50% at 6 months. This data point alone can completely change your diagnosis.",
             expected_type="text",
         ),
-        Dimension.LEADERSHIP: ValidationQuestion(
+        Dimension.ESTRATEGIA: ValidationQuestion(
             question_es="¿Cómo describirías el nivel de estrés de la alta gerencia en este momento? ¿Trabajan fines de semana?",
             question_en="How would you describe the stress level of senior leadership right now? Do they work weekends?",
-            dimension=Dimension.LEADERSHIP,
+            dimension=Dimension.ESTRATEGIA,
             why_es="56% de líderes experimentan burnout. El estrés crónico reduce la capacidad de pensamiento estratégico en 26%. Esto afecta TODAS las demás dimensiones.",
             why_en="56% of leaders experience burnout. Chronic stress reduces strategic thinking capacity by 26%. This affects ALL other dimensions.",
+            expected_type="text",
+        ),
+        Dimension.COMERCIAL: ValidationQuestion(
+            question_es="¿Cuántos leads nuevos recibes al mes y cuántos se convierten en clientes?",
+            question_en="How many new leads do you receive per month and how many convert to customers?",
+            dimension=Dimension.COMERCIAL,
+            why_es="La tasa de conversión comercial revela fugas directas de ingreso. Sin este dato, no podemos calcular el costo real de oportunidades perdidas.",
+            why_en="Commercial conversion rate reveals direct revenue leaks. Without this data, we cannot calculate the real cost of lost opportunities.",
+            expected_type="text",
+        ),
+        Dimension.MARKETING: ValidationQuestion(
+            question_es="¿Cuánto inviertes en marketing al mes y cómo mides el retorno?",
+            question_en="How much do you invest in marketing per month and how do you measure the return?",
+            dimension=Dimension.MARKETING,
+            why_es="Sin medición clara del ROI de marketing, es imposible saber si el presupuesto genera clientes o se desperdicia.",
+            why_en="Without clear marketing ROI measurement, it's impossible to know if the budget generates customers or is wasted.",
+            expected_type="text",
+        ),
+        Dimension.CLIENTES: ValidationQuestion(
+            question_es="¿Tienes un proceso formal para medir la satisfacción del cliente? ¿Cuál es tu tasa de retención?",
+            question_en="Do you have a formal process to measure customer satisfaction? What is your retention rate?",
+            dimension=Dimension.CLIENTES,
+            why_es="Retener un cliente cuesta 5-7x menos que adquirir uno nuevo. La satisfacción del cliente es el predictor #1 de ingresos recurrentes.",
+            why_en="Retaining a customer costs 5-7x less than acquiring a new one. Customer satisfaction is the #1 predictor of recurring revenue.",
+            expected_type="text",
+        ),
+        Dimension.LEGAL: ValidationQuestion(
+            question_es="¿Tienes contratos estandarizados con clientes y proveedores? ¿Has tenido disputas legales recientes?",
+            question_en="Do you have standardized contracts with clients and vendors? Have you had recent legal disputes?",
+            dimension=Dimension.LEGAL,
+            why_es="Los riesgos legales no gestionados pueden generar pérdidas inesperadas. Contratos débiles son una fuente invisible de fuga de ingresos.",
+            why_en="Unmanaged legal risks can generate unexpected losses. Weak contracts are an invisible source of revenue leakage.",
+            expected_type="text",
+        ),
+        Dimension.MARKETING_DIGITAL: ValidationQuestion(
+            question_es="¿Tienes presencia activa en redes sociales y campañas digitales? ¿Mides los resultados?",
+            question_en="Do you have an active presence on social media and digital campaigns? Do you measure the results?",
+            dimension=Dimension.MARKETING_DIGITAL,
+            why_es="El marketing digital sin métricas es gasto, no inversión. Necesitamos saber tu madurez digital para identificar oportunidades de crecimiento.",
+            why_en="Digital marketing without metrics is spending, not investing. We need to know your digital maturity to identify growth opportunities.",
             expected_type="text",
         ),
     }
@@ -568,7 +624,7 @@ def _generate_validation_questions(
             questions.append(ValidationQuestion(
                 question_es="¿Cuál es el rango de ingresos mensuales de la empresa? (Esto nos permite calcular el impacto real de cada fuga)",
                 question_en="What is the company's monthly revenue range? (This lets us calculate the real impact of each leak)",
-                dimension=Dimension.FINANCIAL,
+                dimension=Dimension.FINANZAS,
                 why_es="Sin este dato, las estimaciones de impacto son genéricas. Con él, podemos decirte exactamente cuánto dinero pierdes.",
                 why_en="Without this data, impact estimates are generic. With it, we can tell you exactly how much money you're losing.",
                 expected_type="select",
@@ -679,3 +735,195 @@ def _generate_leadership_insight(
         )
 
     return insight_es, insight_en
+
+
+# ─── Quick Scan (Free, No LLM) ─────────────────────────────────────────
+
+
+def quick_scan(
+    company_name: str,
+    problem_description: str,
+    lang: str = "es",
+) -> dict[str, Any]:
+    """Run a lightweight free quick scan — no LLM, no API needed.
+
+    Uses keyword matching on the problem description to identify
+    up to 3 generic pain points from the business context.
+
+    Args:
+        company_name: Name of the company
+        problem_description: Free text description of the problem
+        lang: Language code (es/en)
+
+    Returns:
+        dict with scan results — 3 generic problems + CTA
+    """
+    text = problem_description.lower()
+
+    # ── Keyword → Problem mapping ────────────────────────────────────────
+    pain_patterns = [
+        {
+            "keywords": ["leads", "clientes", "prospectos", "ventas", "no vende", "convierte", "crm", "pipeline", "cerrar"],
+            "problem": {
+                "es": "Fuga en Comercial y Ventas",
+                "en": "Sales & Revenue Leak",
+                "detail": "El negocio tiene tráfico o contactos pero no convierte en ventas. Esto suele ser fuga de dinero invisible.",
+                "dimension": "comercial",
+            },
+            "impact_range": ("$500", "$5,000+"),
+        },
+        {
+            "keywords": ["equipo", "personas", "rrhh", "contratar", "rotación", "staff", "personal", "empleado", "contratación"],
+            "problem": {
+                "es": "Brecha de Equipo y Capacidades",
+                "en": "Team Skill Gap",
+                "detail": "El equipo actual no tiene las capacidades para escalar lo que el negocio necesita.",
+                "dimension": "equipo",
+            },
+            "impact_range": ("$200", "$2,000+"),
+        },
+        {
+            "keywords": ["software", "herramientas", "sistema", "automatiz", "integr", "crm", "erp", "datos", "digital", "tech"],
+            "problem": {
+                "es": "Fragmentación de Tecnología",
+                "en": "Technology Fragmentation",
+                "detail": "El negocio usa múltiples herramientas que no se hablan entre sí, generando trabajo manual y datos aislados.",
+                "dimension": "tecnologia",
+            },
+            "impact_range": ("$300", "$3,000+"),
+        },
+        {
+            "keywords": ["flujo", "caja", "dinero", "factura", "cobro", "pago", "cash", "liquidez", "pagar", "cobrar"],
+            "problem": {
+                "es": "Fuga de Flujo de Caja",
+                "en": "Cash Flow Leak",
+                "detail": "El dinero entra pero se escapa por lugares que no se ven. Sin control, el crecimiento se frena.",
+                "dimension": "finanzas",
+            },
+            "impact_range": ("$500", "$5,000+"),
+        },
+        {
+            "keywords": ["marketing", "contenido", "redes", "social", "instagram", "facebook", "posicionamiento", "seo", "publicidad", "ads"],
+            "problem": {
+                "es": "Marketing sin Sistema",
+                "en": "Unsystematic Marketing",
+                "detail": "El negocio publica sin estrategia y sin medir resultados. Gasto en marketing sin retorno claro.",
+                "dimension": "marketing",
+            },
+            "impact_range": ("$200", "$2,000+"),
+        },
+        {
+            "keywords": ["operaciones", "proceso", "eficiencia", "lento", "cuello", "botella", "operar", "escalabilidad", "automatizar"],
+            "problem": {
+                "es": "Operaciones sin Escala",
+                "en": "Unscalable Operations",
+                "detail": "Los procesos dependen de personas específicas o de trabajo manual, imposibles de escalar.",
+                "dimension": "operaciones",
+            },
+            "impact_range": ("$300", "$3,000+"),
+        },
+        {
+            "keywords": ["clientes", "abandono", "churn", "retener", "lealtad", "regresa", "fideliz", "cliente perdido"],
+            "problem": {
+                "es": "Alta Fuga de Clientes",
+                "en": "High Customer Churn",
+                "detail": "Los clientes llegan pero no regresan. Cada cliente perdido es dinero que se fue para siempre.",
+                "dimension": "clientes",
+            },
+            "impact_range": ("$500", "$5,000+"),
+        },
+        {
+            "keywords": ["proveedor", "vendor", "dependencia", "entrega", "inventario", "cadena", "supply", "compras"],
+            "problem": {
+                "es": "Dependencia de Proveedores",
+                "en": "Vendor Dependence",
+                "detail": "El negocio depende de uno o pocos proveedores, creando riesgo de operación si fallan.",
+                "dimension": "proveedores",
+            },
+            "impact_range": ("$200", "$2,000+"),
+        },
+        {
+            "keywords": ["legal", "contrato", "abogado", "jurídico", "demanda", "riesgo legal", "compliance", "regulación"],
+            "problem": {
+                "es": "Riesgo Legal y Cumplimiento",
+                "en": "Legal & Compliance Risk",
+                "detail": "El negocio opera sin protocolos legales claros, exponiéndose a riesgos evitables.",
+                "dimension": "legal",
+            },
+            "impact_range": ("$500", "$10,000+"),
+        },
+        {
+            "keywords": ["estrategia", "visión", "plan", "crecimiento", "escala", "dirección", "competitivo", "diferenciación"],
+            "problem": {
+                "es": "Sin Estrategia Clara de Crecimiento",
+                "en": "No Clear Growth Strategy",
+                "detail": "El negocio opera día a día sin visión clara de hacia dónde va. Las decisiones no son consistentes.",
+                "dimension": "estrategia",
+            },
+            "impact_range": ("$1,000", "$10,000+"),
+        },
+        {
+            "keywords": ["web", "google", "seo", "sem", "página", "presencia online", "digital presence", "buscador"],
+            "problem": {
+                "es": "Presencia Digital Débil",
+                "en": "Weak Digital Presence",
+                "detail": "El negocio no aparece donde los clientes potenciales buscan. Perdés oportunidades diarias.",
+                "dimension": "marketing_digital",
+            },
+            "impact_range": ("$200", "$2,000+"),
+        },
+    ]
+
+    # ── Match keywords against description ──────────────────────────────
+    matched_problems = []
+    for pattern in pain_patterns:
+        score = sum(1 for kw in pattern["keywords"] if kw in text)
+        if score > 0:
+            matched_problems.append((score, pattern))
+
+    # Sort by number of matched keywords
+    matched_problems.sort(key=lambda x: x[0], reverse=True)
+    top_problems = [p[1] for p in matched_problems[:3]]
+
+    # If fewer than 3 matched, fill with generic top problems
+    if len(top_problems) < 3:
+        generic_problems = [
+            p for p in pain_patterns
+            if p not in top_problems
+        ]
+        for gp in generic_problems[:3 - len(top_problems)]:
+            top_problems.append(gp)
+
+    # ── Build problems list ─────────────────────────────────────────────
+    problems = []
+    for i, p in enumerate(top_problems, 1):
+        problems.append({
+            "number": i,
+            "title": p["problem"]["es"],
+            "title_en": p["problem"]["en"],
+            "dimension": p["problem"]["dimension"],
+            "detail": p["problem"]["detail"],
+            "impact_range": p["impact_range"],
+            "confidence": min(90, 50 + (i == 1 and 30) + (i == 2 and 15)),
+        })
+
+    # ── CTA ────────────────────────────────────────────────────────────
+    if lang == "es":
+        cta_text = "¿Quieres saber cuánto dinero estás perdiendo exactamente? Agenda un Deep Scan de 11 dimensiones sin costo. El costo del diagnóstico se descuenta de tu primera implementación."
+        cta_button = "Agenda tu Deep Scan"
+        note = "Este análisis cubre las 11 dimensiones de un negocio. El Deep Scan cubre cada una con datos específicos y un plan de acción priorizado."
+    else:
+        cta_text = "Want to know exactly how much money you're losing? Schedule a free 11-dimension Deep Scan. The cost of the diagnosis is deducted from your first implementation."
+        cta_button = "Schedule Deep Scan"
+        note = "This analysis covers 11 business dimensions. The Deep Scan covers each one with specific data and a prioritized action plan."
+
+    return {
+        "company_name": company_name,
+        "scan_type": "quick_scan",
+        "problems_found": len(problems),
+        "problems": problems,
+        "cta": cta_text,
+        "cta_button": cta_button,
+        "trust_note": note,
+        "lang": lang,
+    }

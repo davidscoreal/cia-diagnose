@@ -1,0 +1,126 @@
+id: real_estate
+name_es: Inmobiliarias
+name_en: Real Estate
+tier: 1
+dimensions:
+  finanzas:
+    weight: 0.1
+    defaults: { base_score: 50 }
+    findings:
+      commission_leaks:
+        severity: critical
+        title_es: "Fugas en Comisiones"
+        title_en: "Commission Leaks"
+        detail_es: "Propiedades vendidas sin cobrar comisión completa."
+        detail_en: "Properties sold without collecting full commission."
+        impact: "$2k-$10k/mo"
+  comercial:
+    weight: 0.2
+    defaults: { base_score: 40 }
+    findings:
+      dead_leads:
+        severity: critical
+        title_es: "Leads sin Seguimiento"
+        title_en: "Dead Leads"
+        detail_es: "Leads de portales que nunca se contactan."
+        detail_en: "Portal leads that are never contacted."
+        impact: "50% of incoming lost"
+  operaciones:
+    weight: 0.1
+    defaults: { base_score: 50 }
+    findings:
+      manual_tracking:
+        severity: high
+        title_es: "Tracking Manual"
+        title_en: "Manual Tracking"
+        detail_es: "Seguimiento de clientes en Excel o WhatsApp."
+        detail_en: "Customer tracking in Excel or WhatsApp."
+        impact: "Data loss"
+  equipo:
+    weight: 0.1
+    defaults: { base_score: 50 }
+    findings:
+      agent_churn:
+        severity: high
+        title_es: "Rotación de Agentes"
+        title_en: "Agent Churn"
+        detail_es: "Agentes que se van con su cartera de clientes."
+        detail_en: "Agents leaving with their client portfolios."
+        impact: "Knowledge loss"
+  tecnologia:
+    weight: 0.1
+    defaults: { base_score: 30 }
+    findings:
+      no_crm:
+        severity: critical
+        title_es: "Sin CRM"
+        title_en: "No CRM"
+        detail_es: "Gestión de propiedades y clientes sin sistema."
+        detail_en: "Property and client management without system."
+        impact: "Chaos"
+  marketing:
+    weight: 0.1
+    defaults: { base_score: 50 }
+    findings:
+      bad_listings:
+        severity: high
+        title_es: "Listados Malos"
+        title_en: "Bad Listings"
+        detail_es: "Fotos y descripciones que no venden."
+        detail_en: "Photos and descriptions that don't sell."
+        impact: "Low engagement"
+  clientes:
+    weight: 0.15
+    defaults: { base_score: 50 }
+    findings:
+      no_nurture:
+        severity: critical
+        title_es: "Sin Nurture"
+        title_en: "No Nurture"
+        detail_es: "Clientes que buscan pero no compran, perdidos para siempre."
+        detail_en: "Clients who browse but don't buy, lost forever."
+        impact: "80% drop-off"
+  proveedores:
+    weight: 0.05
+    defaults: { base_score: 70 }
+    findings:
+      photo_deps:
+        severity: medium
+        title_es: "Dependencia de Fotógrafo"
+        title_en: "Photographer Dependence"
+        detail_es: "Sin fotografía profesional, no hay listings."
+        detail_en: "No professional photos, no listings."
+        impact: "Delay in publishing"
+  legal:
+    weight: 0.05
+    defaults: { base_score: 60 }
+    findings:
+      verbal_agreements:
+        severity: high
+        title_es: "Acuerdos Verbales"
+        title_en: "Verbal Agreements"
+        detail_es: "Negocios cerrados sin contratos formales."
+        detail_en: "Deals closed without formal contracts."
+        impact: "Disputes"
+  estrategia:
+    weight: 0.1
+    defaults: { base_score: 50 }
+    findings:
+      no_inventory:
+        severity: critical
+        title_es: "Sin Inventario"
+        title_en: "No Inventory"
+        detail_es: "No hay sistema de captación de propiedades."
+        detail_en: "No property acquisition system."
+        impact: "No pipeline"
+  marketing_digital:
+    weight: 0.1
+    defaults: { base_score: 40 }
+    findings:
+      portal_dependent:
+        severity: high
+        title_es: "Dependencia de Portales"
+        title_en: "Portal Dependence"
+        detail_es: "100% dependiente de Metrocuadrada, FincaRaiz, etc."
+        detail_en: "100% dependent on portals."
+        impact: "High CAC, low brand"

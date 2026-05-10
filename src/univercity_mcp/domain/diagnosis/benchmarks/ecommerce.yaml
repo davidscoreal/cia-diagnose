@@ -9,7 +9,7 @@ decision_maker: "Director de Ventas / Gerente de Operaciones"
 sales_cycle: "3-5 semanas"
 
 dimensions:
-  digital:
+  tecnologia:
     weight: 0.25
     signals:
       - field: ecommerce_platform
@@ -52,7 +52,7 @@ dimensions:
           oss: {tool: "Open source A/B testing (PlanOut)", url: "https://facebook.github.io/planout"}
           cia: {service_es: "A/B testing framework + heat mapping + conversion optimization strategy", service_en: "A/B testing framework + heat mapping + conversion optimization strategy", price: "$4K-$12K"}
 
-  financial:
+  finanzas:
     weight: 0.20
     signals:
       - field: gross_margin
@@ -80,7 +80,7 @@ dimensions:
         detail_en: "Mid-market retail has 40-42% margins vs 45% benchmark. Gap: 3-5% = $30K-$150K/year depending on volume. Causes: competition, logistics, shrinkage (3%)."
         impact: "$3K-$15K/month in margin loss"
 
-  supply_chain:
+  proveedores:
     weight: 0.20
     signals:
       - field: inventory_visibility
@@ -120,7 +120,7 @@ dimensions:
         detail_en: "70% of retailers don't have cross-channel inventory visibility. Customers see 'in stock' but store says 'sold out'. Frustration rate: 45% = churn."
         impact: "$2K-$10K/month in lost conversions + churn"
 
-  operations:
+  operaciones:
     weight: 0.15
     signals:
       - field: fulfillment_speed
@@ -148,7 +148,7 @@ dimensions:
         detail_en: "Fulfillment times >5 days increase returns 15-20%. Customers compare to Amazon (1-2 days). Impact: higher returns + lower repeat purchases (25% more churn)."
         impact: "$2K-$8K/month in increased returns + churn"
 
-  talent:
+  equipo:
     weight: 0.05
     signals:
       - field: warehouse_staffing
@@ -159,7 +159,7 @@ dimensions:
       base_score: 55
     findings: {}
 
-  market:
+  marketing:
     weight: 0.10
     signals:
       - field: competitive_pricing
@@ -182,7 +182,7 @@ dimensions:
         detail_en: "Marketplaces (Amazon, MercadoLibre) fragment revenue. Average margin: 40% vs 45% benchmark. Gap: 5% = direct price competition vs differentiation."
         impact: "$5K-$30K/month depending on volume"
 
-  leadership:
+  estrategia:
     weight: 0.05
     signals:
       - field: growth_strategy
@@ -193,8 +193,26 @@ dimensions:
       base_score: 50
     findings: {}
 
-  regulatory:
+  legal:
     weight: 0.00
     defaults:
       base_score: 40
+    findings: {}
+
+  comercial:
+    weight: 0.00
+    defaults:
+      base_score: 50
+    findings: {}
+
+  clientes:
+    weight: 0.00
+    defaults:
+      base_score: 50
+    findings: {}
+
+  marketing_digital:
+    weight: 0.00
+    defaults:
+      base_score: 50
     findings: {}

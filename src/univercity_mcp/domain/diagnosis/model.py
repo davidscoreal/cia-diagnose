@@ -1,4 +1,4 @@
-"""Domain models for the 8-dimension diagnosis engine.
+"""Domain models for the 11-dimension diagnosis engine.
 
 The core data structures that power CIA's holistic business diagnosis.
 Every business leaks revenue from multiple dimensions simultaneously,
@@ -13,49 +13,64 @@ from typing import Any
 
 
 class Dimension(str, Enum):
-    """The 8 diagnostic dimensions — every business is analyzed across all."""
-    DIGITAL = "digital"
-    OPERATIONS = "operations"
-    SUPPLY_CHAIN = "supply_chain"
-    TALENT = "talent"
-    FINANCIAL = "financial"
-    LEADERSHIP = "leadership"
-    MARKET = "market"
-    REGULATORY = "regulatory"
+    """The 11 diagnostic dimensions — every business is analyzed across all."""
+    FINANZAS = "finanzas"
+    COMERCIAL = "comercial"
+    OPERACIONES = "operaciones"
+    EQUIPO = "equipo"
+    TECNOLOGIA = "tecnologia"
+    MARKETING = "marketing"
+    CLIENTES = "clientes"
+    PROVEEDORES = "proveedores"
+    LEGAL = "legal"
+    ESTRATEGIA = "estrategia"
+    MARKETING_DIGITAL = "marketing_digital"
 
 
 DIMENSION_LABELS = {
-    Dimension.DIGITAL: {
-        "es": "Infraestructura Digital",
-        "en": "Digital Infrastructure",
-    },
-    Dimension.OPERATIONS: {
-        "es": "Operaciones Físicas",
-        "en": "Physical Operations",
-    },
-    Dimension.SUPPLY_CHAIN: {
-        "es": "Cadena de Suministro",
-        "en": "Supply Chain & Vendors",
-    },
-    Dimension.TALENT: {
-        "es": "Talento y Capital Humano",
-        "en": "Talent & Human Capital",
-    },
-    Dimension.FINANCIAL: {
+    Dimension.FINANZAS: {
         "es": "Salud Financiera",
         "en": "Financial Health",
     },
-    Dimension.LEADERSHIP: {
-        "es": "Liderazgo y Psicología Decisional",
-        "en": "Leadership & Decision Psychology",
+    Dimension.COMERCIAL: {
+        "es": "Comercial y Ventas",
+        "en": "Sales & Commercial",
     },
-    Dimension.MARKET: {
-        "es": "Posición de Mercado",
-        "en": "Market & Competitive Position",
+    Dimension.OPERACIONES: {
+        "es": "Operaciones",
+        "en": "Operations",
     },
-    Dimension.REGULATORY: {
-        "es": "Regulatorio y Cumplimiento",
-        "en": "Regulatory & Compliance",
+    Dimension.EQUIPO: {
+        "es": "Equipo y RRHH",
+        "en": "Team & HR",
+    },
+    Dimension.TECNOLOGIA: {
+        "es": "Tecnología",
+        "en": "Technology",
+    },
+    Dimension.MARKETING: {
+        "es": "Marketing",
+        "en": "Marketing",
+    },
+    Dimension.CLIENTES: {
+        "es": "Clientes",
+        "en": "Customers",
+    },
+    Dimension.PROVEEDORES: {
+        "es": "Proveedores",
+        "en": "Suppliers & Vendors",
+    },
+    Dimension.LEGAL: {
+        "es": "Legal y Cumplimiento",
+        "en": "Legal & Compliance",
+    },
+    Dimension.ESTRATEGIA: {
+        "es": "Estrategia",
+        "en": "Strategy",
+    },
+    Dimension.MARKETING_DIGITAL: {
+        "es": "Marketing Digital",
+        "en": "Digital Marketing",
     },
 }
 
@@ -246,10 +261,10 @@ class DiagnosisReport:
                 "dimensions_without_data": self.dimensions_without_data,
             },
             "trust_signal": (
-                f"Análisis basado en {self.dimensions_with_data} de 8 dimensiones. "
+                f"Análisis basado en {self.dimensions_with_data} de 11 dimensiones. "
                 f"Calidad de datos: {round(self.overall_data_quality * 100)}%."
                 if lang == "es" else
-                f"Analysis based on {self.dimensions_with_data} of 8 dimensions. "
+                f"Analysis based on {self.dimensions_with_data} of 11 dimensions. "
                 f"Data quality: {round(self.overall_data_quality * 100)}%."
             ),
             "next_step_url": self.report_url,

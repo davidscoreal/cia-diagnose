@@ -9,7 +9,7 @@ decision_maker: "Fundador / Director General"
 sales_cycle: "2-4 semanas"
 
 dimensions:
-  digital:
+  tecnologia:
     weight: 0.25
     signals:
       - field: ai_tooling_adoption
@@ -48,7 +48,7 @@ dimensions:
         detail_en: "Agencies without automation tools spend 8-12 hours/week on admin tasks (proposals, invoices, onboarding). That's $8K-$15K/year in lost productivity per employee."
         impact: "$3K-$12K/month in wasted admin time"
 
-  talent:
+  equipo:
     weight: 0.20
     signals:
       - field: creative_retention
@@ -88,7 +88,7 @@ dimensions:
         detail_en: "At agencies, juniors switch projects every 2-4 weeks. Context-switching cuts productivity 40% and increases errors. Junior burnout: 60% at agencies vs 45% in-house."
         impact: "35% junior turnover = $10K-$30K/year per person"
 
-  financial:
+  finanzas:
     weight: 0.20
     signals:
       - field: pricing_strategy
@@ -128,7 +128,7 @@ dimensions:
         detail_en: "Without airtight contracts, 18% of projects exceed budget. Average: +25% unbilled time. On a 30-person team, that's ~7.5 FTEs lost per year."
         impact: "$8K-$30K/month in unbilled labor"
 
-  market:
+  marketing:
     weight: 0.15
     signals:
       - field: client_concentration
@@ -156,7 +156,7 @@ dimensions:
         detail_en: "Agencies typically derive 40-60% of revenue from 3 clients. Loss of 1 large client = crisis. Without diversification, no cash flow security."
         impact: "One lost client = potential $10K-$100K/month revenue loss"
 
-  operations:
+  operaciones:
     weight: 0.10
     signals:
       - field: project_tracking
@@ -183,7 +183,7 @@ dimensions:
         detail_en: "Without central tool, managers see delays too late. Estimates are 25-35% inaccurate. This triggers scope creep and client dissatisfaction."
         impact: "$2K-$8K/month in misestimated projects"
 
-  leadership:
+  estrategia:
     weight: 0.10
     signals:
       - field: founder_burnout
@@ -206,14 +206,32 @@ dimensions:
         detail_en: "56% of entrepreneurs experience burnout. Without clear AI repositioning strategy, founders stay trapped in tactical operations (sales calls, delivery)."
         impact: "Business stagnation, higher vacancy in leadership"
 
-  supply_chain:
+  proveedores:
     weight: 0.00
     defaults:
       base_score: 50
     findings: {}
 
-  regulatory:
+  legal:
     weight: 0.00
     defaults:
       base_score: 40
+    findings: {}
+
+  comercial:
+    weight: 0.00
+    defaults:
+      base_score: 50
+    findings: {}
+
+  clientes:
+    weight: 0.00
+    defaults:
+      base_score: 50
+    findings: {}
+
+  marketing_digital:
+    weight: 0.00
+    defaults:
+      base_score: 50
     findings: {}

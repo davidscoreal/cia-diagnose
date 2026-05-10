@@ -1,0 +1,126 @@
+id: restaurant
+name_es: Restaurantes
+name_en: Restaurants
+tier: 1
+dimensions:
+  finanzas:
+    weight: 0.1
+    defaults: { base_score: 40 }
+    findings:
+      food_cost_leaks:
+        severity: critical
+        title_es: "Fugas en Costo de Alimentos"
+        title_en: "Food Cost Leaks"
+        detail_es: "Porcentaje de merma no controlado o desperdicio sin medición."
+        detail_en: "Uncontrolled waste percentage or unmeasured spoilage."
+        impact: "$500-$3k/mo"
+  comercial:
+    weight: 0.2
+    defaults: { base_score: 40 }
+    findings:
+      empty_tables:
+        severity: critical
+        title_es: "Mesas Vacías"
+        title_en: "Empty Tables"
+        detail_es: "Capacidad ociosa no llenada por falta de reservas digitales."
+        detail_en: "Idle capacity not filled due to lack of digital reservations."
+        impact: "20-40% lost revenue"
+  operaciones:
+    weight: 0.15
+    defaults: { base_score: 50 }
+    findings:
+      kitchen_bottleneck:
+        severity: high
+        title_es: "Cuello de Botella en Cocina"
+        title_en: "Kitchen Bottleneck"
+        detail_es: "Cocina no puede escalar pedidos sin perder calidad."
+        detail_en: "Kitchen cannot scale orders without losing quality."
+        impact: "Service delays"
+  equipo:
+    weight: 0.1
+    defaults: { base_score: 50 }
+    findings:
+      high_rotation:
+        severity: critical
+        title_es: "Rotación Alta de Personal"
+        title_en: "High Staff Rotation"
+        detail_es: "Costo de contratación y entrenamiento constante."
+        detail_en: "Constant hiring and training cost."
+        impact: "$500-$2k/mo"
+  tecnologia:
+    weight: 0.1
+    defaults: { base_score: 30 }
+    findings:
+      cash_only:
+        severity: high
+        title_es: "Solo Efectivo"
+        title_en: "Cash Only"
+        detail_es: "No se aceptan pagos digitales, perdiendo clientes."
+        detail_en: "No digital payments accepted, losing customers."
+        impact: "10% lost sales"
+  marketing:
+    weight: 0.1
+    defaults: { base_score: 40 }
+    findings:
+      no_loyalty:
+        severity: high
+        title_es: "Sin Programa de Lealtad"
+        title_en: "No Loyalty Program"
+        detail_es: "Clientes que vienen una vez y no regresan."
+        detail_en: "Customers who come once and don't return."
+        impact: "High CAC"
+  clientes:
+    weight: 0.15
+    defaults: { base_score: 50 }
+    findings:
+      no_reservation_system:
+        severity: critical
+        title_es: "Sin Sistema de Reservas"
+        title_en: "No Reservation System"
+        detail_es: "No hay forma de pre-reservar, generando filas y abandonos."
+        detail_en: "No way to pre-book, generating lines and abandonment."
+        impact: "30% lost capacity"
+  proveedores:
+    weight: 0.05
+    defaults: { base_score: 60 }
+    findings:
+      single_supplier:
+        severity: medium
+        title_es: "Proveedor Único"
+        title_en: "Single Supplier"
+        detail_es: "Riesgo de desabasto si el proveedor falla."
+        detail_en: "Risk of shortage if supplier fails."
+        impact: "Supply risk"
+  legal:
+    weight: 0.05
+    defaults: { base_score: 70 }
+    findings:
+      no_invoices:
+        severity: high
+        title_es: "Sin Facturas"
+        title_en: "No Invoices"
+        detail_es: "Operación parcialmente informal."
+        detail_en: "Partially informal operation."
+        impact: "Tax risk"
+  estrategia:
+    weight: 0.1
+    defaults: { base_score: 50 }
+    findings:
+      no_delivery_strategy:
+        severity: high
+        title_es: "Sin Estrategia de Domicilios"
+        title_en: "No Delivery Strategy"
+        detail_es: "Dependencia de Rappi/Uber con márgenes destruidos."
+        detail_en: "Dependence on delivery apps with destroyed margins."
+        impact: "Margin erosion"
+  marketing_digital:
+    weight: 0.1
+    defaults: { base_score: 30 }
+    findings:
+      no_social:
+        severity: medium
+        title_es: "Sin Redes Sociales"
+        title_en: "No Social Media"
+        detail_es: "No hay presencia digital para atraer nuevos clientes."
+        detail_en: "No digital presence to attract new customers."
+        impact: "No acquisition channel"

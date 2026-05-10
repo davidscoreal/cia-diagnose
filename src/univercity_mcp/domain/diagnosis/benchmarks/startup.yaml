@@ -9,7 +9,7 @@ decision_maker: "Fundador / CEO"
 sales_cycle: "1-3 semanas"
 
 dimensions:
-  financial:
+  finanzas:
     weight: 0.25
     signals:
       - field: burn_rate_concerns
@@ -49,7 +49,7 @@ dimensions:
         detail_en: "With <18 months runway, fundraising is urgent. But VCs invest in growth + clear unit economics, not 'burn reduction'. Without visible growth, fundraising fails."
         impact: "Potential shut-down if not resolved in 12 months"
 
-  talent:
+  equipo:
     weight: 0.20
     signals:
       - field: hiring_speed
@@ -89,7 +89,7 @@ dimensions:
         detail_en: "Early startups have founder risk: if CEO leaves, company stops. VCs see this as existential risk. Solution: build management layer, document processes, create second-in-command."
         impact: "Valuation haircut of 20-30% if not resolved"
 
-  market:
+  marketing:
     weight: 0.15
     signals:
       - field: product_market_fit
@@ -129,7 +129,7 @@ dimensions:
         detail_en: "Churn >8%/month means customers don't see value. With CAC=3-6 months payback, churn >8% guarantees unit loss. VCs see this as failed PMF signal."
         impact: "$5K-$20K/month in preventable churn"
 
-  digital:
+  tecnologia:
     weight: 0.15
     signals:
       - field: analytics_maturity
@@ -156,7 +156,7 @@ dimensions:
           oss: {tool: "PostHog / Plausible", url: "https://posthog.com"}
           cia: {service_es: "Setup de analytics + event tracking + dashboard de métricas clave", service_en: "Analytics setup + event tracking + key metrics dashboard", price: "$2K-$6K"}
 
-  leadership:
+  estrategia:
     weight: 0.15
     signals:
       - field: board_alignment
@@ -186,7 +186,7 @@ dimensions:
           oss: {tool: "Open founder peer groups", url: "https://github.com"}
           cia: {service_es: "Estrategia de board management + prioritization framework + growth roadmap", service_en: "Board management strategy + prioritization framework + growth roadmap", price: "$3K-$10K"}
 
-  operations:
+  operaciones:
     weight: 0.05
     signals:
       - field: process_maturity
@@ -205,7 +205,7 @@ dimensions:
         detail_en: "Startups grow 20 → 80 people in 18 months. Without documented processes, communication breaks. Result: product bugs, sales errors, delivery delays."
         impact: "$1K-$5K/month in operational drag"
 
-  supply_chain:
+  proveedores:
     weight: 0.05
     signals:
       - field: vendor_concentration
@@ -216,8 +216,26 @@ dimensions:
       base_score: 50
     findings: {}
 
-  regulatory:
+  legal:
     weight: 0.00
     defaults:
       base_score: 40
+    findings: {}
+
+  comercial:
+    weight: 0.00
+    defaults:
+      base_score: 50
+    findings: {}
+
+  clientes:
+    weight: 0.00
+    defaults:
+      base_score: 50
+    findings: {}
+
+  marketing_digital:
+    weight: 0.00
+    defaults:
+      base_score: 50
     findings: {}
