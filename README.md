@@ -4,7 +4,7 @@
 
 **Expert business diagnosis engine** by [CIA — Consultoría de Inteligencia Aplicada](https://univercityaiconsult.tech).
 
-Analyzes any company across **8 dimensions** and returns a Revenue Leak Score with prioritized, triple-option recommendations. Works from Claude, GPT, Gemini, DeepSeek, Cursor — any LLM that speaks MCP.
+Analyzes any company across **11 dimensions** and returns a Revenue Leak Score with prioritized, triple-option recommendations. Works from Claude, GPT, Gemini, DeepSeek, Cursor — any LLM that speaks MCP.
 
 ## Architecture
 
@@ -16,8 +16,8 @@ The LLM gathers data from the user (the eyes). CIA Diagnose applies CIA consulti
 
 | Tool | Description |
 |------|-------------|
-| `univercity_diagnose` | Full 8-dimension diagnosis. Send company context, get Revenue Leak Score + actions. |
-| `univercity_list_industries` | Returns available industry benchmarks (construction, healthcare, agency, ecommerce, startup, enterprise, generic). |
+| `business_diagnose` | Full 11-dimension diagnosis. Send company context, get Revenue Leak Score + actions. |
+| `list_industries` | Returns available industry benchmarks (construction, healthcare, agency, ecommerce, startup, enterprise, generic). |
 
 ## 8 Dimensions
 

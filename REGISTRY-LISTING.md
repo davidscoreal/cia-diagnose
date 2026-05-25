@@ -1,19 +1,19 @@
-# MCP Registry Listing — univercity-mcp
+# MCP Registry Listing — cia-diagnose
 
 ## For registry.modelcontextprotocol.io
 
-**Name:** univercity-mcp
-**Tagline:** Expert business diagnosis engine — 8 dimensions, Revenue Leak Score, Triple Option recommendations
+**Name:** cia-diagnose
+**Tagline:** Expert business diagnosis engine — 11 dimensions, Revenue Leak Score, Triple Option recommendations
 **Category:** Business & Consulting
 **Author:** David Lopez / CIA (Consultoría de Inteligencia Aplicada)
 **License:** MIT
-**Repository:** https://github.com/davidscoreal/univercity-mcp
+**Repository:** https://github.com/davidscoreal/cia-diagnose
 **Website:** https://univercityaiconsult.tech
 **Server URL:** https://mcp.univercityaiconsult.tech
 
 ### Description (for registry)
 
-Diagnose any business across 8 dimensions — digital infrastructure, physical operations, supply chain, talent, financial health, leadership psychology, market position, and regulatory compliance. Returns a Revenue Leak Score (0-100) with monthly leak estimate in USD and prioritized Triple Option recommendations: best paid tool with price, best open source alternative, and professional CIA service.
+Diagnose any business across 11 dimensions — digital infrastructure, physical operations, supply chain, talent, financial health, leadership psychology, market position, and regulatory compliance. Returns a Revenue Leak Score (0-100) with monthly leak estimate in USD and prioritized Triple Option recommendations: best paid tool with price, best open source alternative, and professional CIA service.
 
 Works for ANY industry. Tier 1 benchmarks for construction, healthcare, digital agency, ecommerce, startup, and enterprise. Bilingual (ES/EN).
 
@@ -23,9 +23,9 @@ One tool. Open schema. Send what you know, get expert analysis back.
 ```json
 {
   "mcpServers": {
-    "univercity-mcp": {
+    "cia-diagnose": {
       "command": "uvx",
-      "args": ["univercity-mcp"]
+      "args": ["cia-diagnose"]
     }
   }
 }
@@ -35,7 +35,7 @@ One tool. Open schema. Send what you know, get expert analysis back.
 ```json
 {
   "mcpServers": {
-    "univercity-mcp": {
+    "cia-diagnose": {
       "url": "https://mcp.univercityaiconsult.tech"
     }
   }
@@ -43,18 +43,18 @@ One tool. Open schema. Send what you know, get expert analysis back.
 ```
 
 ### Tags
-business, consulting, diagnosis, revenue-leak, sme, latam, 8-dimensions, triple-option
+business, consulting, diagnosis, revenue-leak, sme, latam, 11-dimensions, triple-option
 
 ---
 
 ## For Smithery.ai
 
-**Server ID:** univercity-mcp
-**Display Name:** UniverCity MCP — Business Diagnosis Engine
-**Short Description:** Expert 8-dimension business diagnosis with Revenue Leak Score and triple-option recommendations (paid/OSS/CIA)
+**Server ID:** cia-diagnose
+**Display Name:** CIA Diagnose — Business Diagnosis Engine
+**Short Description:** Expert 11-dimension business diagnosis with Revenue Leak Score and triple-option recommendations (paid/OSS/CIA)
 
 **Long Description:**
-UniverCity MCP is a business consulting expertise engine. Any LLM that speaks MCP can diagnose a company across 8 dimensions:
+CIA Diagnose is a business consulting expertise engine. Any LLM that speaks MCP can diagnose a company across 11 dimensions:
 
 1. Digital Infrastructure — software stack, analytics, web presence
 2. Physical Operations — production efficiency, Lean Six Sigma 8 wastes
@@ -80,13 +80,13 @@ No commissions. No affiliate links. If the free option works, we say so.
 
 ### Smithery Config (smithery.yaml)
 ```yaml
-name: univercity-mcp
-displayName: "UniverCity MCP — Business Diagnosis Engine"
-description: "Expert 8-dimension business diagnosis with Revenue Leak Score"
+name: cia-diagnose
+displayName: "CIA Diagnose — Business Diagnosis Engine"
+description: "Expert 11-dimension business diagnosis with Revenue Leak Score"
 author: "CIA — Consultoría de Inteligencia Aplicada"
 license: MIT
 homepage: https://univercityaiconsult.tech
-repository: https://github.com/davidscoreal/univercity-mcp
+repository: https://github.com/davidscoreal/cia-diagnose
 tags:
   - business
   - consulting
@@ -95,7 +95,7 @@ tags:
   - sme
 transport:
   stdio:
-    command: univercity-mcp
+    command: cia-diagnose
   http:
     url: https://mcp.univercityaiconsult.tech
 ```
@@ -105,7 +105,7 @@ transport:
 ## Submission Checklist
 
 - [ ] Push to GitHub (public repo)
-- [ ] Publish to PyPI: `pip install univercity-mcp`
+- [ ] Publish to PyPI: `pip install cia-diagnose`
 - [ ] Submit to registry.modelcontextprotocol.io
 - [ ] Submit to Smithery.ai
 - [ ] Submit to PulseMCP
