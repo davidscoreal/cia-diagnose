@@ -12,7 +12,7 @@ from typing import Any
 
 import yaml
 
-logger = logging.getLogger("univercity-mcp.benchmarks")
+logger = logging.getLogger("cia-diagnose.benchmarks")
 
 _BENCHMARKS_DIR = Path(__file__).parent / "benchmarks"
 _cache: dict[str, dict[str, Any]] = {}

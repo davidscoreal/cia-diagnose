@@ -23,7 +23,7 @@ from .model import (
 )
 from .benchmarks import load_benchmark, get_dimension_config
 
-logger = logging.getLogger("univercity-mcp.diagnosis")
+logger = logging.getLogger("cia-diagnose.diagnosis")
 
 
 def diagnose(

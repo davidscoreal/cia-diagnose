@@ -2,7 +2,7 @@ import httpx
 import logging
 import os
 
-logger = logging.getLogger("univercity-mcp.telegram")
+logger = logging.getLogger("cia-diagnose.telegram")
 
 async def send_hot_call_alert(call_id: str, lead_name: str, score: float, reason: str):
     """Sends an immediate alert to Olivia/David when a call is getting hot."""

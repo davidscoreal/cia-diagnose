@@ -44,7 +44,7 @@ cia-diagnose
 ### Run (HTTP — remote)
 
 ```bash
-UNIVERCITY_TRANSPORT=streamable-http cia-diagnose --transport streamable-http --port 3792
+CIA_TRANSPORT=streamable-http cia-diagnose --transport streamable-http --port 3792
 ```
 
 ### Claude Desktop config
@@ -52,7 +52,7 @@ UNIVERCITY_TRANSPORT=streamable-http cia-diagnose --transport streamable-http --
 ```json
 {
   "mcpServers": {
-    "univercity": {
+    "cia-diagnose": {
       "command": "uvx",
       "args": ["cia-diagnose"]
     }
@@ -65,7 +65,7 @@ UNIVERCITY_TRANSPORT=streamable-http cia-diagnose --transport streamable-http --
 ```json
 {
   "mcpServers": {
-    "univercity": {
+    "cia-diagnose": {
       "url": "https://audit.univercityaiconsult.tech/mcp"
     }
   }
@@ -76,12 +76,12 @@ UNIVERCITY_TRANSPORT=streamable-http cia-diagnose --transport streamable-http --
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `UNIVERCITY_TRANSPORT` | `stdio` | Transport: stdio, sse, streamable-http |
-| `UNIVERCITY_HTTP_PORT` | `3792` | HTTP port for remote mode |
-| `UNIVERCITY_DB_PATH` | `~/.cia-diagnose/sessions.db` | SQLite database path |
-| `UNIVERCITY_N8N_WEBHOOK` | (empty) | n8n webhook for lead capture |
-| `UNIVERCITY_RATE_FREE` | `5` | Free diagnoses per IP per day |
-| `UNIVERCITY_LANG` | `es` | Default language (es/en) |
+| `CIA_TRANSPORT` | `stdio` | Transport: stdio, sse, streamable-http |
+| `CIA_HTTP_PORT` | `3792` | HTTP port for remote mode |
+| `CIA_DB_PATH` | `~/.cia-diagnose/sessions.db` | SQLite database path |
+| `CIA_N8N_WEBHOOK` | (empty) | n8n webhook for lead capture |
+| `CIA_RATE_FREE` | `5` | Free diagnoses per IP per day |
+| `CIA_LANG` | `es` | Default language (es/en) |
 
 ## Industry Benchmarks (YAML-driven)
 

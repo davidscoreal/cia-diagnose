@@ -1,3 +1,3 @@
-"""univercity-mcp — Business automation diagnosis for ANY industry."""
+"""cia-diagnose — Business automation diagnosis for ANY industry."""
 
 __version__ = "1.0.0"

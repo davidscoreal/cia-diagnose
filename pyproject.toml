@@ -9,7 +9,7 @@ description = "Holistic business intelligence engine — 11-dimension diagnosis 
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
-authors = [{ name = "David Lopez", email = "proyectos@univercity.com.co" }]
+authors = [{ name = "David Lopez", email = "steban@univercityaiconsult.tech" }]
 keywords = ["mcp", "automation", "business", "audit", "consulting"]
 
 dependencies = [

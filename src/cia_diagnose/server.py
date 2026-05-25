@@ -1,4 +1,4 @@
-"""univercity-mcp v1.0.0 — Full business intelligence suite by CIA.
+"""cia-diagnose v1.0.0 — Full business intelligence suite by CIA.
 
 The LLM has the eyes (knows the client).
 The MCP has the brain (CIA consulting expertise).
@@ -34,7 +34,7 @@ from cia_diagnose.domain.diagnosis.service import diagnose
 from cia_diagnose.domain.diagnosis.benchmarks import list_available_icps
 from cia_diagnose.storage.sessions import SessionStore, SessionStatus
 
-logger = logging.getLogger("univercity-mcp")
+logger = logging.getLogger("cia-diagnose")
 
 
 def build_app(cfg: Config | None = None) -> FastMCP:
@@ -47,12 +47,12 @@ def build_app(cfg: Config | None = None) -> FastMCP:
     @asynccontextmanager
     async def lifespan(app_instance):
         await store.initialize()
-        logger.info("univercity-mcp v%s started (db=%s)", SERVER_VERSION, cfg.db_path)
+        logger.info("cia-diagnose v%s started (db=%s)", SERVER_VERSION, cfg.db_path)
         try:
             yield {}
         finally:
             await store.close()
-            logger.info("univercity-mcp shutdown")
+            logger.info("cia-diagnose shutdown")
 
     app = FastMCP(
         "cia_diagnose",
@@ -382,7 +382,7 @@ def build_app(cfg: Config | None = None) -> FastMCP:
         },
     )
     async def list_industries() -> dict[str, Any]:
-        """List available industry benchmarks for UniverCity diagnosis.
+        """List available industry benchmarks for CIA diagnosis.
 
         Returns the industries with calibrated benchmarks (Tier 1 = premium,
         deep analysis). Any other industry works too via the generic benchmark.
@@ -1031,7 +1031,7 @@ def build_app(cfg: Config | None = None) -> FastMCP:
                 },
             ],
             "contact": {
-                "email": "proyectos@univercity.com.co",
+                "email": "steban@univercityaiconsult.tech",
                 "ceo": "David Lopez",
                 "ceo_email": "lopezdsteban@gmail.com",
                 "booking_url": "https://cal.com/cia-consulting",
@@ -1132,7 +1132,7 @@ def build_app(cfg: Config | None = None) -> FastMCP:
                 "Re-diagnose in 90 days to measure progress",
             ],
             "cia_contact": {
-                "email": "proyectos@univercity.com.co",
+                "email": "steban@univercityaiconsult.tech",
                 "booking": "https://cal.com/cia-consulting",
                 "website": "https://univercityaiconsult.tech",
             },
@@ -1168,7 +1168,7 @@ def build_app(cfg: Config | None = None) -> FastMCP:
 
 def main():
     """CLI entry point."""
-    parser = argparse.ArgumentParser(description="univercity-mcp server")
+    parser = argparse.ArgumentParser(description="cia-diagnose server")
     parser.add_argument(
         "--transport",
         choices=["stdio", "sse", "streamable-http"],

@@ -15,7 +15,7 @@ import httpx
 from cia_diagnose.config import Config
 from cia_diagnose.storage.sessions import Session
 
-logger = logging.getLogger("univercity-mcp.leads")
+logger = logging.getLogger("cia-diagnose.leads")
 
 
 async def forward_lead(

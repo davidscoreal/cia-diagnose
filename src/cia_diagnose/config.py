@@ -1,4 +1,4 @@
-"""Runtime configuration for univercity-mcp.
+"""Runtime configuration for cia-diagnose.
 
 Loaded once at server startup. Values come from env vars with safe defaults.
 SQLite for AI Summit (v0.1); PostgreSQL post-Summit.
@@ -64,7 +64,7 @@ class Config:
 def load_config() -> Config:
     data_dir = os.environ.get(
         "CIA_DATA_DIR",
-        str(Path.home() / ".univercity-mcp"),
+        str(Path.home() / ".cia-diagnose"),
     )
     Path(data_dir).mkdir(parents=True, exist_ok=True)
 
