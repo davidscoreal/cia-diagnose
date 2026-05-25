@@ -12,8 +12,8 @@ from typing import Any
 
 import httpx
 
-from univercity_mcp.config import Config
-from univercity_mcp.storage.sessions import Session
+from cia_diagnose.config import Config
+from cia_diagnose.storage.sessions import Session
 
 logger = logging.getLogger("univercity-mcp.leads")
 

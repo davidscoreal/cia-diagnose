@@ -13,14 +13,14 @@ Tests cover:
 from __future__ import annotations
 
 import pytest
-from univercity_mcp.domain.diagnosis.model import (
+from cia_diagnose.domain.diagnosis.model import (
     Dimension, Severity, Finding, DimensionScore, DiagnosisReport,
     TripleOption, ValidationQuestion,
 )
-from univercity_mcp.domain.diagnosis.benchmarks import (
+from cia_diagnose.domain.diagnosis.benchmarks import (
     load_benchmark, list_available_icps, clear_cache,
 )
-from univercity_mcp.domain.diagnosis.service import (
+from cia_diagnose.domain.diagnosis.service import (
     diagnose, _detect_icp, _score_dimension, _estimate_monthly_leak,
     _categorize_leak,
 )

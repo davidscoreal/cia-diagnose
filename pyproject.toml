@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "univercity-mcp"
+name = "cia-diagnose"
 version = "1.0.0"
 description = "Holistic business intelligence engine — 11-dimension diagnosis via any LLM. Triple option (Paid/OSS/CIA)"
 readme = "README.md"
@@ -22,18 +22,18 @@ dependencies = [
 
 [project.urls]
 Homepage = "https://univercityaiconsult.tech"
-Repository = "https://github.com/davidscoreal/univercity-mcp"
-Documentation = "https://github.com/davidscoreal/univercity-mcp#readme"
+Repository = "https://github.com/davidscoreal/cia-diagnose"
+Documentation = "https://github.com/davidscoreal/cia-diagnose#readme"
 
 [project.optional-dependencies]
 pdf = ["weasyprint>=62.0"]
 dev = ["pytest>=8.0", "pytest-asyncio>=0.23", "ruff>=0.4"]
 
 [project.scripts]
-univercity-mcp = "univercity_mcp.server:main"
+cia-diagnose = "cia_diagnose.server:main"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/univercity_mcp"]
+packages = ["src/cia_diagnose"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

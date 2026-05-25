@@ -1,6 +1,6 @@
-# UniverCity MCP v0.2.1
+# CIA Diagnose v0.2.1
 
-<!-- mcp-name: io.github.davidscoreal/univercity-mcp -->
+<!-- mcp-name: io.github.davidscoreal/cia-diagnose -->
 
 **Expert business diagnosis engine** by [CIA — Consultoría de Inteligencia Aplicada](https://univercityaiconsult.tech).
 
@@ -10,7 +10,7 @@ Analyzes any company across **8 dimensions** and returns a Revenue Leak Score wi
 
 **"LLM has EYES, MCP has BRAIN."**
 
-The LLM gathers data from the user (the eyes). UniverCity MCP applies CIA consulting expertise (the brain) — ICP detection, dimension scoring, revenue leak estimation, and triple-option recommendations. No scraping. No fixed questionnaire. Each diagnosis is unique.
+The LLM gathers data from the user (the eyes). CIA Diagnose applies CIA consulting expertise (the brain) — ICP detection, dimension scoring, revenue leak estimation, and triple-option recommendations. No scraping. No fixed questionnaire. Each diagnosis is unique.
 
 ## Tools
 
@@ -32,19 +32,19 @@ Every recommendation shows three paths: the best **paid tool**, the best **open 
 ### Install
 
 ```bash
-pip install univercity-mcp
+pip install cia-diagnose
 ```
 
 ### Run (stdio — local)
 
 ```bash
-univercity-mcp
+cia-diagnose
 ```
 
 ### Run (HTTP — remote)
 
 ```bash
-UNIVERCITY_TRANSPORT=streamable-http univercity-mcp --transport streamable-http --port 3792
+UNIVERCITY_TRANSPORT=streamable-http cia-diagnose --transport streamable-http --port 3792
 ```
 
 ### Claude Desktop config
@@ -54,7 +54,7 @@ UNIVERCITY_TRANSPORT=streamable-http univercity-mcp --transport streamable-http 
   "mcpServers": {
     "univercity": {
       "command": "uvx",
-      "args": ["univercity-mcp"]
+      "args": ["cia-diagnose"]
     }
   }
 }
@@ -78,14 +78,14 @@ UNIVERCITY_TRANSPORT=streamable-http univercity-mcp --transport streamable-http 
 |----------|---------|-------------|
 | `UNIVERCITY_TRANSPORT` | `stdio` | Transport: stdio, sse, streamable-http |
 | `UNIVERCITY_HTTP_PORT` | `3792` | HTTP port for remote mode |
-| `UNIVERCITY_DB_PATH` | `~/.univercity-mcp/sessions.db` | SQLite database path |
+| `UNIVERCITY_DB_PATH` | `~/.cia-diagnose/sessions.db` | SQLite database path |
 | `UNIVERCITY_N8N_WEBHOOK` | (empty) | n8n webhook for lead capture |
 | `UNIVERCITY_RATE_FREE` | `5` | Free diagnoses per IP per day |
 | `UNIVERCITY_LANG` | `es` | Default language (es/en) |
 
 ## Industry Benchmarks (YAML-driven)
 
-Add an industry = add a YAML file in `src/univercity_mcp/domain/diagnosis/benchmarks/`. No code changes needed.
+Add an industry = add a YAML file in `src/cia_diagnose/domain/diagnosis/benchmarks/`. No code changes needed.
 
 Current benchmarks: construction, healthcare, agency, ecommerce, startup, enterprise, generic.
 
