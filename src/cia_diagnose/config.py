@@ -63,7 +63,7 @@ class Config:
 
 def load_config() -> Config:
     data_dir = os.environ.get(
-        "UNIVERCITY_DATA_DIR",
+        "CIA_DATA_DIR",
         str(Path.home() / ".univercity-mcp"),
     )
     Path(data_dir).mkdir(parents=True, exist_ok=True)
@@ -73,30 +73,30 @@ def load_config() -> Config:
     Path(report_default).mkdir(parents=True, exist_ok=True)
 
     return Config(
-        transport=os.environ.get("UNIVERCITY_TRANSPORT", "stdio"),
-        http_host=os.environ.get("UNIVERCITY_HTTP_HOST", "0.0.0.0"),
-        http_port=int(os.environ.get("UNIVERCITY_HTTP_PORT", "3792")),
-        db_path=os.environ.get("UNIVERCITY_DB_PATH", db_default),
-        litellm_url=os.environ.get("UNIVERCITY_LITELLM_URL", "http://127.0.0.1:4000"),
-        litellm_model=os.environ.get("UNIVERCITY_LITELLM_MODEL", "kairos-primary"),
-        n8n_webhook_url=os.environ.get("UNIVERCITY_N8N_WEBHOOK", ""),
-        telegram_bot_token=os.environ.get("UNIVERCITY_TELEGRAM_BOT_TOKEN", ""),
-        telegram_chat_id=os.environ.get("UNIVERCITY_TELEGRAM_CHAT_ID", ""),
-        telegram_thread_id=os.environ.get("UNIVERCITY_TELEGRAM_THREAD_ID", ""),
-        vault_lead_log=os.environ.get("UNIVERCITY_VAULT_LEAD_LOG", ""),
+        transport=os.environ.get("CIA_TRANSPORT", "stdio"),
+        http_host=os.environ.get("CIA_HTTP_HOST", "0.0.0.0"),
+        http_port=int(os.environ.get("CIA_HTTP_PORT", "3792")),
+        db_path=os.environ.get("CIA_DB_PATH", db_default),
+        litellm_url=os.environ.get("CIA_LITELLM_URL", "http://127.0.0.1:4000"),
+        litellm_model=os.environ.get("CIA_LITELLM_MODEL", "kairos-primary"),
+        n8n_webhook_url=os.environ.get("CIA_N8N_WEBHOOK", ""),
+        telegram_bot_token=os.environ.get("CIA_TELEGRAM_BOT_TOKEN", ""),
+        telegram_chat_id=os.environ.get("CIA_TELEGRAM_CHAT_ID", ""),
+        telegram_thread_id=os.environ.get("CIA_TELEGRAM_THREAD_ID", ""),
+        vault_lead_log=os.environ.get("CIA_VAULT_LEAD_LOG", ""),
         sheets_pipeline_id=os.environ.get(
-            "UNIVERCITY_SHEETS_ID",
+            "CIA_SHEETS_ID",
             "1kLqINL3W_SZ1_XLAbpZVGkzIn-Mjo5EkWtenu5uusF4",
         ),
-        david_email=os.environ.get("UNIVERCITY_DAVID_EMAIL", "lopezdsteban@gmail.com"),
-        rate_limit_free=int(os.environ.get("UNIVERCITY_RATE_FREE", "5")),
-        rate_limit_registered=int(os.environ.get("UNIVERCITY_RATE_REGISTERED", "50")),
-        report_storage=os.environ.get("UNIVERCITY_REPORT_STORAGE", report_default),
-        founders_tier_active=_bool("UNIVERCITY_FOUNDERS_TIER", True),
-        founders_tier_discount=float(os.environ.get("UNIVERCITY_FOUNDERS_DISCOUNT", "0.35")),
-        founders_tier_max_clients=int(os.environ.get("UNIVERCITY_FOUNDERS_MAX", "5")),
-        default_lang=os.environ.get("UNIVERCITY_LANG", "es"),
-        base_url=os.environ.get("UNIVERCITY_BASE_URL", "https://audit.univercityaiconsult.tech"),
+        david_email=os.environ.get("CIA_DAVID_EMAIL", "lopezdsteban@gmail.com"),
+        rate_limit_free=int(os.environ.get("CIA_RATE_FREE", "5")),
+        rate_limit_registered=int(os.environ.get("CIA_RATE_REGISTERED", "50")),
+        report_storage=os.environ.get("CIA_REPORT_STORAGE", report_default),
+        founders_tier_active=_bool("CIA_FOUNDERS_TIER", True),
+        founders_tier_discount=float(os.environ.get("CIA_FOUNDERS_DISCOUNT", "0.35")),
+        founders_tier_max_clients=int(os.environ.get("CIA_FOUNDERS_MAX", "5")),
+        default_lang=os.environ.get("CIA_LANG", "es"),
+        base_url=os.environ.get("CIA_BASE_URL", "https://audit.univercityaiconsult.tech"),
     )
 
 
