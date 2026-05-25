@@ -258,19 +258,18 @@ def build_app(cfg: Config | None = None) -> FastMCP:
         session.score_breakdown = report.to_dict()
         await store.update_session(session)
         
-        # ---- Forward lead UNCONDITIONALLY (patched 2026-05-23) ----
-        # Forward EVERY diagnose to all configured sinks (n8n + Telegram + vault log).
-        # Email is optional; we want visibility even on anonymous runs.
-        try:
-            from univercity_mcp.integrations.lead_forward import forward_lead
-            await forward_lead(
-                session=session,
-                cfg=cfg,
-                action="diagnose",
-                extra={"leak_score": report.revenue_leak_score},
-            )
-        except Exception as e:
-            logger.warning("Lead forward failed: %s", e)
+        # ---- Forward lead if email provided ----
+        if contact_email:
+            try:
+                from univercity_mcp.integrations.lead_forward import forward_lead
+                await forward_lead(
+                    session=session,
+                    cfg=cfg,
+                    action="diagnose",
+                    extra={"leak_score": report.revenue_leak_score},
+                )
+            except Exception as e:
+                logger.warning("Lead forward failed: %s", e)
         
         return report.to_dict()
 

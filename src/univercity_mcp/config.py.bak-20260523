@@ -35,12 +35,6 @@ class Config:
     n8n_webhook_url: str = field(default="")
     sheets_pipeline_id: str = field(default="1kLqINL3W_SZ1_XLAbpZVGkzIn-Mjo5EkWtenu5uusF4")
     david_email: str = field(default="lopezdsteban@gmail.com")
-    # ─── Telegram direct notify (added 2026-05-23 — bypass n8n if needed) ───
-    telegram_bot_token: str = field(default="")
-    telegram_chat_id: str = field(default="")
-    telegram_thread_id: str = field(default="")
-    # ─── Vault log (always-on local sink for lead intake events) ───
-    vault_lead_log: str = field(default="")
 
     # ─── Rate limiting ────────────────────────────────────────
     rate_limit_free: int = field(default=5)       # audits/IP/day
@@ -80,10 +74,6 @@ def load_config() -> Config:
         litellm_url=os.environ.get("UNIVERCITY_LITELLM_URL", "http://127.0.0.1:4000"),
         litellm_model=os.environ.get("UNIVERCITY_LITELLM_MODEL", "kairos-primary"),
         n8n_webhook_url=os.environ.get("UNIVERCITY_N8N_WEBHOOK", ""),
-        telegram_bot_token=os.environ.get("UNIVERCITY_TELEGRAM_BOT_TOKEN", ""),
-        telegram_chat_id=os.environ.get("UNIVERCITY_TELEGRAM_CHAT_ID", ""),
-        telegram_thread_id=os.environ.get("UNIVERCITY_TELEGRAM_THREAD_ID", ""),
-        vault_lead_log=os.environ.get("UNIVERCITY_VAULT_LEAD_LOG", ""),
         sheets_pipeline_id=os.environ.get(
             "UNIVERCITY_SHEETS_ID",
             "1kLqINL3W_SZ1_XLAbpZVGkzIn-Mjo5EkWtenu5uusF4",

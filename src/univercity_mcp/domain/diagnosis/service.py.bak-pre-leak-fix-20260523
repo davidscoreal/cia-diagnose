@@ -426,76 +426,43 @@ def _categorize_leak(score: float) -> str:
 
 
 def _estimate_monthly_leak(context: dict, leak_score: float) -> tuple[int, int]:
-    """Estimate MONTHLY revenue leak in USD as proportion of declared ANNUAL revenue.
-
-    Bug fix 2026-05-23: previously (1) only read revenue_estimate but MCP passes
-    revenue_range, (2) midpoints dict only covered ≥1M, and (3) applied annual %
-    to annual midpoint without dividing by 12 → inflated 'monthly' leak by 12x.
-    """
-    # Accept multiple field names (MCP passes revenue_range; older callers use revenue_estimate)
-    rev_str = str(
-        context.get("revenue_range")
-        or context.get("revenue_estimate")
-        or context.get("annual_revenue")
-        or ""
-    ).lower().replace(" ", "").replace("_", "")
-
-    # Annual revenue midpoints (USD). Cover the full ICP \M-\M business range
-    # plus pre-ICP and beyond for accurate downsell/upsell estimates.
+    """Estimate monthly revenue leak in USD based on real ICP revenue scales."""
+    rev_str = str(context.get("revenue_estimate", "")).lower()
+    
+    # Midpoints for 1M-10M USD range
     midpoints = {
-        "under100k":         50_000,
-        "100k-500k":        300_000,
-        "100k-1m":          550_000,
-        "200k-1m":          600_000,
-        "500k-1m":          750_000,
-        "500k-2m":        1_250_000,
-        "1m-5m":          3_000_000,
-        "1m-10m":         5_500_000,
-        "2m-10m":         6_000_000,
-        "5m-10m":         7_500_000,
-        "10m-50m":       25_000_000,
-        "10m+":          15_000_000,
-        "over10m":       15_000_000,
-        "over_10m":      15_000_000,
+        "1m-5m": 3_000_000,
+        "5m-10m": 7_500_000,
+        "1m-10m": 5_500_000,
+        "over_10m": 15_000_000,
+        "10m+": 15_000_000,
     }
+    
+    # Fallback: Try to extract a number if it's not in the mapping
     midpoint = 0
     for key, val in midpoints.items():
         if key in rev_str:
             midpoint = val
             break
-
+            
     if midpoint == 0:
-        # Fallback: parse explicit numbers like ".5M", "500000", "1.2m"
         import re
-        match = re.search(r'(\d+(?:\.\d+)?)\s*([mk])?', rev_str)
-        if match:
-            num = float(match.group(1))
-            unit = (match.group(2) or '').lower()
-            if unit == 'm':
-                midpoint = int(num * 1_000_000)
-            elif unit == 'k':
-                midpoint = int(num * 1_000)
-            elif num >= 100_000:
-                midpoint = int(num)
-            else:
-                midpoint = int(num * 1_000_000)  # bare number assume millions
+        nums = re.findall(r'[\d,]+', rev_str.replace(",", ""))
+        if nums:
+            try:
+                midpoint = int(nums[0])
+            except ValueError:
+                midpoint = 1_000_000  # Default for ICP
         else:
-            midpoint = 1_000_000  # Default ICP entry point
+            midpoint = 1_000_000 # Base for ICP
 
-    # Annual leak percentage by score (0-100):
-    #   0  → 2-5%  annual revenue lost (minimum operational waste)
-    #   100 → 25%  annual revenue lost (catastrophic failure)
+    # Percentage of leak based on score (0-100)
+    # 0 score = 2% leak (minimum operational waste)
+    # 100 score = 25% leak (catastrophic failure)
     pct_min = 0.02 + (leak_score / 100.0) * 0.23
     pct_max = 0.05 + (leak_score / 100.0) * 0.20
 
-    annual_leak_min = midpoint * pct_min
-    annual_leak_max = midpoint * pct_max
-
-    # Convert annual → monthly so the field name matches the value
-    monthly_min = int(round(annual_leak_min / 12.0))
-    monthly_max = int(round(annual_leak_max / 12.0))
-
-    return (monthly_min, monthly_max)
+    return (int(midpoint * pct_min), int(midpoint * pct_max))
 
 
 # ─── Action Generation ──────────────────────────────────────────────
