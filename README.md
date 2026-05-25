@@ -19,7 +19,7 @@ The LLM gathers data from the user (the eyes). CIA Diagnose applies CIA consulti
 | `business_diagnose` | Full 11-dimension diagnosis. Send company context, get Revenue Leak Score + actions. |
 | `list_industries` | Returns available industry benchmarks (construction, healthcare, agency, ecommerce, startup, enterprise, generic). |
 
-## 8 Dimensions
+## 11 Dimensions
 
 digital, operations, supply_chain, talent, financial, leadership, market, regulatory
 
