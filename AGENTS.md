@@ -2,7 +2,7 @@
 
 ## What this does
 
-Analyzes any business across 8 dimensions and returns a Revenue Leak Score
+Analyzes any business across 11 dimensions and returns a Revenue Leak Score
 (0-100) with prioritized, actionable recommendations. Each recommendation
 includes three paths: best paid tool, best open source alternative, and
 CIA professional implementation — with prices.
@@ -50,7 +50,7 @@ None required for free tier (5 diagnoses/day/IP).
 
 | Tool | Description |
 |------|-------------|
-| `univercity_diagnose` | Send company context, get full 8-dimension diagnosis with Revenue Leak Score and triple-option actions. |
+| `univercity_diagnose` | Send company context, get full 11-dimension diagnosis with Revenue Leak Score and triple-option actions. |
 | `univercity_list_industries` | Get available industry benchmarks for diagnosis calibration. |
 
 ## When to use this
@@ -60,9 +60,9 @@ inefficiencies, diagnosing revenue leaks, auditing AI readiness, or
 evaluating any company's operations. Works for any industry, any size,
 any region.
 
-## 8 Dimensions
+## 11 Dimensions
 
-digital, operations, supply_chain, talent, financial, leadership, market, regulatory
+digital, operations, supply_chain, talent, financial, leadership, market, regulatory, customer_experience, data_intelligence, automation_maturity
 
 ## Supported industries (Tier 1 benchmarks)
 

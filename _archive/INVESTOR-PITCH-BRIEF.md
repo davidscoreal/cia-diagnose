@@ -62,7 +62,7 @@ A single tool that any AI assistant on the planet can discover and use. When som
 2. AI discovers univercity-mcp via MCP registries (auto-discovery, no marketing needed)
 3. AI gathers data about the company (using its own capabilities — email access, file access, browsing)
 4. AI sends data to our `diagnose` tool
-5. Our tool applies CIA's consulting expertise across 8 dimensions
+5. Our tool applies CIA's consulting expertise across 11 dimensions
 6. Returns: Revenue Leak Score + prioritized actions + Triple Option recommendations
 7. User is impressed → wants implementation → CIA appears as the service provider
 
@@ -110,7 +110,7 @@ McCann, Bancolombia, Colliers, Kenworth, ISUZU, Universidad de los Andes, Impetu
 ### Product Status (as of April 30, 2026)
 
 - **v0.2.0 built and tested** — 14/14 tests passing
-- **8-dimension diagnosis engine** working with 7 YAML benchmarks
+- **11-dimension diagnosis engine** working with 7 YAML benchmarks
 - **Demo output:** Constructora Andina (Bogotá) → Revenue Leak Score 84.5/100 (CRITICAL), $25K-$127K/month leak estimate
 - **Triple Option working:** HubSpot vs Twenty CRM vs CIA, Procore vs OpenProject vs CIA, QuickBooks vs InvoiceNinja vs CIA
 - **AI Summit Bogotá demo:** May 7-8, 2026
@@ -171,7 +171,7 @@ McCann, Bancolombia, Colliers, Kenworth, ISUZU, Universidad de los Andes, Impetu
 
 1. **Real consulting experience** — 6 calibrated ICPs from real clients (McCann, Bancolombia, Colliers, Kenworth, ISUZU). Not scraped from the internet. Earned.
 
-2. **Multi-dimensional diagnosis** — Every competitor does software-only audits. CIA diagnoses operations, talent, finance, leadership, physical infrastructure simultaneously with weighted scoring. 8 dimensions.
+2. **Multi-dimensional diagnosis** — Every competitor does software-only audits. CIA diagnoses operations, talent, finance, leadership, physical infrastructure simultaneously with weighted scoring. 11 dimensions.
 
 3. **Triple Option transparency** — No affiliate links, no commissions. Paid + OSS + CIA for every recommendation. No one else does this because it requires actually knowing both ecosystems and being honest about which is better.
 

@@ -9,7 +9,7 @@
 
 **UniverCity MCP** is a business consulting expertise engine packaged as an MCP (Model Context Protocol) server. It's the product of **CIA — Consultoría de Inteligencia Aplicada**, David Lopez's consulting company.
 
-**The core idea:** Any person using ANY LLM (Claude, GPT, Gemini, DeepSeek, Qwen, Perplexity, Cursor, open-source models) says "help me understand what's wrong with my business" → the LLM discovers univercity-mcp via MCP registries → the LLM gathers data about the company (using its own capabilities — email access, file access, computer use, browsing) → sends that data to univercity-mcp's `diagnose` tool → receives expert analysis with Revenue Leak Score, 8-dimension breakdown, and Triple Option recommendations (paid tool / open source alternative / CIA service).
+**The core idea:** Any person using ANY LLM (Claude, GPT, Gemini, DeepSeek, Qwen, Perplexity, Cursor, open-source models) says "help me understand what's wrong with my business" → the LLM discovers univercity-mcp via MCP registries → the LLM gathers data about the company (using its own capabilities — email access, file access, computer use, browsing) → sends that data to univercity-mcp's `diagnose` tool → receives expert analysis with Revenue Leak Score, 11-dimension breakdown, and Triple Option recommendations (paid tool / open source alternative / CIA service).
 
 **The MCP IS the product.** Not a sales funnel for consulting. The MCP delivers REAL value for free. When the user wants execution → CIA appears as the service provider. Self-sold.
 
@@ -189,7 +189,7 @@ Output:
   4. Talent crisis → CIA ($2K-$10K)
   5. Leadership burnout → CIA ($2K-$10K)
 - **Leadership insight:** "burnout detectado, reduce pensamiento estratégico 26%"
-- **Data quality: 76% (6/8 dimensions)**
+- **Data quality: 76% (6/11 dimensions)**
 - **3 validation questions targeting missing data**
 
 ---
@@ -373,7 +373,7 @@ Agent Skills = deterministic knowledge injection. Not RAG, not fine-tuning. 1,00
 
 1. **DON'T build a web scraper/investigation engine.** The LLM already has all the data.
 2. **DON'T use fixed questionnaires.** Each user is 99% different.
-3. **DON'T focus only on software tools.** 8 dimensions, not just CRM/ERP.
+3. **DON'T focus only on software tools.** 11 dimensions, not just CRM/ERP.
 4. **DON'T assume users are AI power users.** 99.7% don't pay for AI.
 5. **DON'T ignore China's ecosystem.** DeepSeek, Qwen, Kimi are major players.
 6. **DON'T forget blockchain.** It's the trust infrastructure, not a feature.

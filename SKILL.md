@@ -2,7 +2,7 @@
 
 ## What This Is
 
-UniverCity MCP is a business consulting engine by CIA (Consultoría de Inteligencia Aplicada). It diagnoses any company across **8 dimensions** and returns a Revenue Leak Score with actionable recommendations.
+UniverCity MCP is a business consulting engine by CIA (Consultoría de Inteligencia Aplicada). It diagnoses any company across **11 dimensions** and returns a Revenue Leak Score with actionable recommendations.
 
 **The LLM has the EYES. The MCP has the BRAIN.**
 You (the agent) gather data about the company using your own capabilities — browsing, email, file access, conversation. Then you send that data to the MCP's `univercity_diagnose` tool. The MCP applies CIA's consulting expertise and returns expert analysis.
@@ -68,7 +68,7 @@ The single diagnosis tool. Send whatever you know about the company.
 ### `univercity_list_industries`
 Returns available industry benchmarks. Tier 1 (calibrated): construction, healthcare, agency, ecommerce, startup, enterprise. Tier 2: generic (works for any industry).
 
-## The 8 Dimensions
+## The 11 Dimensions
 
 Every business is analyzed across:
 1. **Digital Infrastructure** — software stack, analytics, web presence

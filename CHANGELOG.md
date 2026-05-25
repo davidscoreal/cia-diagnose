@@ -8,7 +8,7 @@
 - Each diagnosis is 99% unique per user
 
 ### New features
-- 8-dimension analysis: digital, operations, supply_chain, talent, financial, leadership, market, regulatory
+- 11-dimension analysis: digital, operations, supply_chain, talent, financial, leadership, market, regulatory, customer_experience, data_intelligence, automation_maturity
 - YAML-driven ICP benchmarks (7 industries: construction, healthcare, agency, ecommerce, startup, enterprise, generic)
 - Triple Option: paid tool + OSS alternative + CIA service with prices on every recommendation
 - Revenue Leak Score with monthly leak estimation

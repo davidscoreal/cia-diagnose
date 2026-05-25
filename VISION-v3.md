@@ -326,7 +326,7 @@ Based on real MCP market data:
 ### Phase 1: Summit Demo (May 7-8)
 - 1 tool (`diagnose`) with flexible context input
 - 6 ICP benchmarks in YAML
-- Multi-dimensional scoring (8 dimensions, weighted)
+- Multi-dimensional scoring (11 dimensions, weighted)
 - Dynamic validation question generation
 - Triple Option recommendations
 - Markdown report output
@@ -468,7 +468,7 @@ diagnose:
     top_actions: array           # Prioritized next steps
     validation_questions: array  # Dynamic, unique per case
     triple_option_preview: array # Paid vs OSS vs CIA
-    trust_signal: string         # "Based on analysis of 8 dimensions..."
+    trust_signal: string         # "Based on analysis of 11 dimensions..."
     next_step_url: string        # univercityaiconsult.tech/report/{id}
 ```
 
