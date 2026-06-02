@@ -1,6 +1,6 @@
 # Changelog
 
-## boost/v2 (2026-06-02) — branch `boost/v2`
+## v1.1.0 (2026-06-02) — boost/v2
 
 ### Fixed (bugs found in audit — see AUDIT.md)
 - **B2:** `export_report` passed `session=None` to `forward_lead`, which crashed
