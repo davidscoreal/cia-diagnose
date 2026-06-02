@@ -1,25 +1,30 @@
 [Unit]
-Description=cia-diagnose — Business Automation Audit Server
+Description=cia-diagnose — CIA business diagnosis MCP server
 After=network.target
 
 [Service]
 Type=simple
-User=root
+# Run unprivileged; systemd allocates a transient user. Avoids running as root.
+DynamicUser=yes
+StateDirectory=cia-diagnose
 WorkingDirectory=/opt/cia-diagnose
+# Bound to all interfaces ONLY because this sits behind nginx (see nginx-cia-diagnose.conf).
 Environment=CIA_TRANSPORT=streamable-http
 Environment=CIA_HTTP_HOST=0.0.0.0
 Environment=CIA_HTTP_PORT=3792
-Environment=CIA_DB_PATH=/opt/cia-diagnose/data/sessions.db
-Environment=CIA_REPORT_STORAGE=/opt/cia-diagnose/data/reports
-Environment=CIA_LITELLM_URL=http://127.0.0.1:4000
-Environment=CIA_LITELLM_MODEL=kairos-primary
-Environment=CIA_FOUNDERS_TIER=true
-Environment=CIA_FOUNDERS_DISCOUNT=0.35
+Environment=CIA_DB_PATH=/var/lib/cia-diagnose/sessions.db
+Environment=CIA_REPORT_STORAGE=/var/lib/cia-diagnose/reports
 Environment=CIA_LANG=es
+# Secrets / infra (webhook, telegram, sheets) come from the env file, NOT git.
 EnvironmentFile=-/opt/cia-diagnose/.env
 ExecStart=/opt/cia-diagnose/.venv/bin/cia-diagnose --transport streamable-http
 Restart=on-failure
 RestartSec=5
+# Hardening
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
 StandardOutput=journal
 StandardError=journal
 

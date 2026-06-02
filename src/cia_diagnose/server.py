@@ -151,6 +151,7 @@ def build_app(cfg: Config | None = None) -> FastMCP:
         decision_maker_role: str = "",
         stress_indicators: str = "",
         growth_stage: str = "",
+        niche: str = "",
         additional_context: str = "",
         contact_email: str = "",
         contact_name: str = "",
@@ -204,6 +205,9 @@ def build_app(cfg: Config | None = None) -> FastMCP:
                 (e.g. 'working weekends, micromanaging, decision fatigue').
             growth_stage: Current business stage
                 (e.g. 'growing', 'stagnant', 'declining', 'startup', 'scaling').
+            niche: Hyper-specific niche/sub-vertical in free text
+                (e.g. 'B2B SaaS for dental clinics', 'modular construction for retail').
+                Captured for niche targeting and trend analysis.
             additional_context: Any other relevant information as free text or JSON.
             contact_email: Email for follow-up (optional, for lead capture).
             contact_name: Contact name (optional).
@@ -231,6 +235,9 @@ def build_app(cfg: Config | None = None) -> FastMCP:
                 - message_es / message_en (str): Localized error message
                 - upgrade_url (str): Registration URL
         """
+        # ---- Normalize language (only es/en supported) ----
+        lang = "en" if lang == "en" else "es"
+
         # ---- Parse string inputs into lists ----
         extra = {}
         if additional_context:
@@ -257,6 +264,7 @@ def build_app(cfg: Config | None = None) -> FastMCP:
             "decision_maker_role": decision_maker_role,
             "stress_indicators": _to_list(stress_indicators),
             "growth_stage": growth_stage,
+            "niche": niche,
             **extra,
         }
 
@@ -313,6 +321,7 @@ def build_app(cfg: Config | None = None) -> FastMCP:
                 extra={
                     "health_score": report.health_score,
                     "team_size": team_size,
+                    "niche": niche,
                     "pain_points": _to_list(pain_points),
                     "decision_maker_role": decision_maker_role,
                     "estimated_monthly_leak": result.get("monthly_leak_estimate"),
@@ -742,12 +751,25 @@ def build_app(cfg: Config | None = None) -> FastMCP:
                 recovery at 3 levels (DIY/hybrid/full), payback period,
                 and 12-month projection.
         """
-        # Calculate leak percentage from score (inverse relationship)
+        lang = "en" if lang == "en" else "es"
+
+        # Need revenue to project anything meaningful.
+        if not monthly_revenue or monthly_revenue <= 0:
+            return {
+                "need_revenue": True,
+                "message_es": "Para proyectar el ROI necesito tus ingresos mensuales aproximados. ¿Cuál es el rango?",
+                "message_en": "To project ROI I need your approximate monthly revenue. What's the range?",
+            }
+
+        # Health score: higher = healthier → smaller leak. (revenue_leak_score is
+        # the Business Health Score; kept as param name for backward compat.)
+        is_healthy = revenue_leak_score >= 70
         leak_pct = max(0.05, min(0.40, (100 - revenue_leak_score) / 200))
         monthly_leak = monthly_revenue * leak_pct
 
-        # Time value per employee (conservative: 10 hrs/mo wasted)
-        hourly_rate = monthly_revenue / (team_size * 160) if team_size > 0 else 25
+        # Time value per employee (conservative: 10 hrs/mo wasted, floored hourly rate
+        # so team size still moves the number for low-revenue firms).
+        hourly_rate = max(15.0, monthly_revenue / (team_size * 160)) if team_size > 0 else 25
         time_waste_monthly = team_size * 10 * hourly_rate
         total_leak = monthly_leak + time_waste_monthly
 
@@ -816,16 +838,30 @@ def build_app(cfg: Config | None = None) -> FastMCP:
                 "note_en": "What you'll continue losing in 12 months per scenario.",
             },
             "insight_es": (
-                f"Con una fuga mensual estimada de {fmt(total_leak)}, cada mes que pasa "
-                f"sin actuar equivale a {fmt(total_leak)} que no regresa. En 12 meses, "
-                f"eso es {fmt(total_leak * 12)}. La inversión en CIA se paga sola "
-                f"entre el mes 1 y el mes 3."
+                (
+                    f"Tu negocio está sano: la fuga es baja (~{fmt(total_leak)}/mes). "
+                    f"Aquí el ROI no viene de tapar fugas sino de **escalar a nuevas ligas**. "
+                    f"CIA te ayuda a convertir esa solidez en crecimiento — automatizar lo que "
+                    f"ya funciona y abrir canales nuevos."
+                ) if is_healthy else (
+                    f"Con una fuga mensual estimada de {fmt(total_leak)}, cada mes que pasa "
+                    f"sin actuar equivale a {fmt(total_leak)} que no regresa. En 12 meses, "
+                    f"eso es {fmt(total_leak * 12)}. La inversión en CIA se paga sola "
+                    f"entre el mes 1 y el mes 3."
+                )
             ),
             "insight_en": (
-                f"With an estimated monthly leak of {fmt(total_leak)}, every month of "
-                f"inaction equals {fmt(total_leak)} that doesn't come back. In 12 months, "
-                f"that's {fmt(total_leak * 12)}. CIA's investment pays for itself "
-                f"between month 1 and month 3."
+                (
+                    f"Your business is healthy: leakage is low (~{fmt(total_leak)}/mo). "
+                    f"Here ROI doesn't come from plugging leaks but from **scaling into new "
+                    f"leagues**. CIA helps you turn that strength into growth — automating what "
+                    f"already works and opening new channels."
+                ) if is_healthy else (
+                    f"With an estimated monthly leak of {fmt(total_leak)}, every month of "
+                    f"inaction equals {fmt(total_leak)} that doesn't come back. In 12 months, "
+                    f"that's {fmt(total_leak * 12)}. CIA's investment pays for itself "
+                    f"between month 1 and month 3."
+                )
             ),
             "next_step_es": "¿Quieres ver casos reales de empresas como la tuya? Usa case_studies.",
             "next_step_en": "Want to see real cases of companies like yours? Use case_studies.",
@@ -1078,6 +1114,7 @@ def build_app(cfg: Config | None = None) -> FastMCP:
         Args:
             company_name: Company name.
             revenue_leak_score: Score from diagnosis.
+            revenue_leak_score: Business Health Score (0-100, higher = healthier).
             dimensions_summary: Key dimension scores as text
                 (e.g. 'Finanzas: 3/10, Comercial: 5/10, Operaciones: 3/10').
             top_actions: Top 3-5 actions from the plan as text.
@@ -1181,6 +1218,13 @@ def build_app(cfg: Config | None = None) -> FastMCP:
     )
     from cia_diagnose import report_html
 
+    # Report/export URLs are unguessable capability links (uuid4). Keep them out
+    # of search indexes and intermediary caches.
+    _PRIVATE_HEADERS = {
+        "X-Robots-Tag": "noindex, nofollow",
+        "Cache-Control": "private, no-store",
+    }
+
     async def _load_breakdown(session_id: str):
         # Custom routes live outside the MCP per-session lifespan, so ensure the
         # store is open (idempotent).
@@ -1203,7 +1247,9 @@ def build_app(cfg: Config | None = None) -> FastMCP:
                 "<h1>404</h1><p>Diagnosis not found or not yet scored.</p>", status_code=404,
             )
         lang = request.query_params.get("lang") or session.lang or cfg.default_lang
-        return HTMLResponse(report_html.render_report_html(breakdown, lang))
+        return HTMLResponse(
+            report_html.render_report_html(breakdown, lang), headers=_PRIVATE_HEADERS,
+        )
 
     @app.custom_route("/export/{session_id}", methods=["GET"])
     async def export_route(request: Request) -> Response:
@@ -1213,7 +1259,7 @@ def build_app(cfg: Config | None = None) -> FastMCP:
             return JSONResponse({"error": "not_found"}, status_code=404)
         fmt = (request.query_params.get("format") or "json").lower()
         if fmt == "json":
-            return JSONResponse(breakdown)
+            return JSONResponse(breakdown, headers=_PRIVATE_HEADERS)
         if fmt == "csv":
             import csv
             import io
@@ -1243,7 +1289,10 @@ def build_app(cfg: Config | None = None) -> FastMCP:
                 ])
             return PlainTextResponse(
                 buf.getvalue(), media_type="text/csv",
-                headers={"Content-Disposition": f'attachment; filename="diagnosis-{session_id}.csv"'},
+                headers={
+                    "Content-Disposition": f'attachment; filename="diagnosis-{session_id}.csv"',
+                    **_PRIVATE_HEADERS,
+                },
             )
         return JSONResponse({"error": "unsupported_format", "supported": ["json", "csv"]}, status_code=400)
 

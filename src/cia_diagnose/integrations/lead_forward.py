@@ -71,8 +71,11 @@ async def forward_lead(
 
     # Promote rich CRM fields to the top level (tarea 1 boost/v2).
     lead_data["source"] = source
+    # The score is now a HEALTH score (higher = better). Flag it explicitly so
+    # downstream CRM/Sheets rules don't treat the old "higher = more leak" meaning.
+    lead_data["score_semantics"] = "health_higher_is_better"
     for promoted in (
-        "team_size", "pain_points", "decision_maker_role",
+        "team_size", "niche", "pain_points", "decision_maker_role",
         "top_actions", "estimated_monthly_leak", "diagnosis", "health_score",
     ):
         if promoted in extra:

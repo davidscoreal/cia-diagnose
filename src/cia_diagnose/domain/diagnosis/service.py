@@ -46,6 +46,8 @@ def diagnose(
     if context is None:
         context = {}
 
+    lang = "en" if lang == "en" else "es"  # only es/en supported
+
     if not session_id:
         session_id = str(uuid.uuid4())[:12]
 
@@ -493,10 +495,10 @@ def _estimate_monthly_leak(context: dict, leak_score: float) -> tuple[int, int]:
                 midpoint = int(num * 1_000_000)
             elif unit == 'k':
                 midpoint = int(num * 1_000)
-            elif num >= 100_000:
-                midpoint = int(num)
+            elif num >= 1_000:
+                midpoint = int(num)  # bare number ≥1000 = literal currency amount
             else:
-                midpoint = int(num * 1_000_000)  # bare number assume millions
+                midpoint = int(num * 1_000_000)  # small bare number (e.g. "1.5") = millions
         else:
             midpoint = 1_000_000  # Default ICP entry point
 
@@ -741,7 +743,7 @@ def _generate_summary(
         f"Biggest opportunity (lowest score): **{worst_en}**. "
         f"Strongest areas: **{best_en}**.\n\n"
     )
-    if monthly_leak[1] > 0:
+    if monthly_leak[1] > 0 and not growth_mode:
         summary_es += (
             f"Fuga de ingresos mensual estimada en las áreas débiles: "
             f"**${monthly_leak[0]:,} – ${monthly_leak[1]:,} USD**.\n\n"

@@ -135,7 +135,7 @@ async def test_forward_lead_promotes_rich_fields(monkeypatch):
 
 def test_render_report_html_minimal():
     report = {
-        "company_name": "Demo Co", "revenue_leak_score": 67.0, "leak_category": "high",
+        "company_name": "Demo Co", "health_score": 67.0, "revenue_leak_score": 67.0, "leak_category": "healthy",
         "monthly_leak_estimate": {"min_usd": 1000, "max_usd": 5000},
         "icp": {"id": "construction", "name": "Construcción"},
         "summary": "Resumen", "dimensions": [
@@ -170,6 +170,82 @@ async def test_diagnose_output_has_signature(isolated_app):
 
 
 # ─── HTTP routes (tareas 4 & 9) ──────────────────────────────────────
+
+async def test_roi_projector_zero_revenue(isolated_app):
+    app = isolated_app
+    async with app._mcp_server.lifespan(app._mcp_server):
+        res = await app.call_tool("roi_projector", {"monthly_revenue": 0, "revenue_leak_score": 30})
+    d = res[1] if isinstance(res, tuple) else res
+    assert d.get("need_revenue") is True
+
+
+async def test_roi_projector_healthy_reframes(isolated_app):
+    app = isolated_app
+    async with app._mcp_server.lifespan(app._mcp_server):
+        res = await app.call_tool("roi_projector", {
+            "monthly_revenue": 100000, "revenue_leak_score": 90, "team_size": 5, "lang": "es"})
+    d = res[1] if isinstance(res, tuple) else res
+    # Healthy business gets growth framing, not catastrophic-leak urgency.
+    assert "nuevas ligas" in d["insight_es"].lower()
+
+
+def test_lang_normalization_pt_falls_to_es():
+    # Non-es/en lang must not produce mixed-language / crash.
+    d = diagnose("X", {"industry": "construction"}, lang="pt").to_dict()
+    # normalized to es → Spanish score_meaning
+    assert "área" in d["score_meaning"] or "score" in d["score_meaning"].lower()
+
+
+def test_bare_number_revenue_not_inflated():
+    from cia_diagnose.domain.diagnosis.service import _estimate_monthly_leak
+    lo, hi = _estimate_monthly_leak({"revenue_estimate": "50000"}, 50)
+    # 50000 must be read as $50k, not $50k * 1e6
+    assert hi < 50_000  # monthly leak from a 50k/yr business is tiny, not millions
+
+
+async def test_export_has_private_headers(isolated_app):
+    app = isolated_app
+    async with app._mcp_server.lifespan(app._mcp_server):
+        res = await app.call_tool("business_diagnose", {
+            "company_name": "HdrCo", "industry": "agency", "niche": "B2B SaaS dental", "lang": "es"})
+        data = res[1] if isinstance(res, tuple) else res
+        sid = data["session_id"]
+    http_app = app.streamable_http_app()
+    async with http_app.router.lifespan_context(http_app):
+        tr = httpx.ASGITransport(app=http_app)
+        async with httpx.AsyncClient(transport=tr, base_url="http://t") as c:
+            r = await c.get(f"/report/{sid}")
+            assert r.headers.get("X-Robots-Tag", "").startswith("noindex")
+            assert "no-store" in r.headers.get("Cache-Control", "")
+
+
+def test_trends_aggregation(tmp_path):
+    import json
+    import importlib.util
+    log = tmp_path / "leads.jsonl"
+    rows = [
+        {"action": "diagnose", "icp_id": "agency", "niche": "dental saas", "health_score": 40,
+         "created_at": "2026-06-01T00:00:00Z", "pain_points": ["leads"],
+         "company_name": "SECRET Inc", "contact_email": "x@y.com",
+         "diagnosis": {"dimensions": [{"dimension": "finanzas", "score": 30}]}},
+        {"action": "diagnose", "icp_id": "agency", "niche": "dental saas", "health_score": 60,
+         "created_at": "2026-06-02T00:00:00Z",
+         "diagnosis": {"dimensions": [{"dimension": "finanzas", "score": 50}]}},
+    ]
+    log.write_text("\n".join(json.dumps(r) for r in rows))
+    spec = importlib.util.spec_from_file_location(
+        "trends", "/Users/testtst/Projects/cia-diagnose/scripts/trends.py")
+    trends = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(trends)
+    agg = trends.aggregate(str(log))
+    assert agg["total_diagnoses"] == 2
+    assert agg["by_industry"]["agency"] == 2
+    assert agg["by_niche"]["dental saas"] == 2
+    assert agg["health_by_industry"]["agency"]["mean"] == 50.0
+    # PII must NOT leak into aggregates
+    blob = json.dumps(agg)
+    assert "SECRET" not in blob and "x@y.com" not in blob
+
 
 async def test_http_routes(isolated_app):
     app = isolated_app

@@ -69,6 +69,34 @@
 - **PyPI:** publishing `cia-diagnose` v1.0.0 via GitHub Release → trusted
   publishing (OIDC) in `publish.yml`. Wheel ships brand assets + registry + YAMLs.
 
+### boost/v2 — round 3 (2026-06-02, security audit + bug hunt + research)
+Security (from a dedicated audit — nothing dangerous was committed; these are hardening):
+- Removed hardcoded **personal Gmail** and **Google Sheet ID** from `config.py`
+  defaults (no PII baked into the public wheel; set via `CIA_DAVID_EMAIL`/`CIA_SHEETS_ID`).
+- Default bind flipped `0.0.0.0` → **`127.0.0.1`** (the report/export routes are
+  unauthenticated; the VPS opts into 0.0.0.0 behind nginx).
+- `/report` and `/export` now send `X-Robots-Tag: noindex` + `Cache-Control:
+  private, no-store` (capability-URL hardening; session ids are uuid4).
+- Removed `scripts/hostinger_dns.py` and the whole `_archive/` (leaked VPS IPs,
+  ports, internal paths/model name — recon, not credentials). Dropped internal
+  `kairos-primary` default. Hardened the systemd unit (DynamicUser, no root,
+  ProtectSystem/Home, PrivateTmp).
+Bugs (from an adversarial hunt):
+- ROI/summary coherence: a **healthy business is no longer told it's leaking
+  catastrophically** — `roi_projector` reframes to growth when score ≥ 70 and
+  `_generate_summary` drops the leak line in growth_mode. `roi_projector` guards
+  `monthly_revenue <= 0`.
+- `lead_forward` adds `score_semantics: "health_higher_is_better"` so downstream
+  CRM/Sheets don't misread the (now health) score.
+- `lang` normalized to es/en in `diagnose()` and the tools (no JSON/HTML mismatch).
+- `_estimate_monthly_leak`: bare numbers ≥1000 read as literal currency (was ×1e6).
+Research / niche (David's emphasis):
+- New `niche` field on `business_diagnose` (hyper-specific sub-vertical), captured
+  in the webhook for niche targeting + trend analysis.
+- `scripts/trends.py` (anonymized aggregation of the vault log → trends, no PII)
+  and `RESEARCH.md` — the path to CIA's own papers.
+- Tests: **54 passing**.
+
 ### Known issues (flagged)
 - `.well-known/mcp.json` is empty — left as-is to avoid guessing the registry
   domain-verification schema.

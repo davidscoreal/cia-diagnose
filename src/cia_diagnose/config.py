@@ -21,7 +21,9 @@ def _bool(name: str, default: bool = False) -> bool:
 class Config:
     # ─── Transport ────────────────────────────────────────────
     transport: str = field(default="stdio")  # stdio | sse | streamable-http
-    http_host: str = field(default="0.0.0.0")  # público
+    # Bind loopback by default (the report/export routes are unauthenticated).
+    # The proxied VPS deployment opts into 0.0.0.0 via CIA_HTTP_HOST behind nginx.
+    http_host: str = field(default="127.0.0.1")
     http_port: int = field(default=3792)
 
     # ─── Database (SQLite for Summit, PG later) ───────────────
@@ -29,12 +31,12 @@ class Config:
 
     # ─── LLM (report generation via LiteLLM proxy) ───────────
     litellm_url: str = field(default="http://127.0.0.1:4000")
-    litellm_model: str = field(default="kairos-primary")
+    litellm_model: str = field(default="")
 
-    # ─── Lead capture ─────────────────────────────────────────
+    # ─── Lead capture (no PII baked into the public package — set via env) ───
     n8n_webhook_url: str = field(default="")
-    sheets_pipeline_id: str = field(default="1kLqINL3W_SZ1_XLAbpZVGkzIn-Mjo5EkWtenu5uusF4")
-    david_email: str = field(default="lopezdsteban@gmail.com")
+    sheets_pipeline_id: str = field(default="")
+    david_email: str = field(default="")
     # ─── Telegram direct notify (added 2026-05-23 — bypass n8n if needed) ───
     telegram_bot_token: str = field(default="")
     telegram_chat_id: str = field(default="")
@@ -74,21 +76,18 @@ def load_config() -> Config:
 
     return Config(
         transport=os.environ.get("CIA_TRANSPORT", "stdio"),
-        http_host=os.environ.get("CIA_HTTP_HOST", "0.0.0.0"),
+        http_host=os.environ.get("CIA_HTTP_HOST", "127.0.0.1"),
         http_port=int(os.environ.get("CIA_HTTP_PORT", "3792")),
         db_path=os.environ.get("CIA_DB_PATH", db_default),
         litellm_url=os.environ.get("CIA_LITELLM_URL", "http://127.0.0.1:4000"),
-        litellm_model=os.environ.get("CIA_LITELLM_MODEL", "kairos-primary"),
+        litellm_model=os.environ.get("CIA_LITELLM_MODEL", ""),
         n8n_webhook_url=os.environ.get("CIA_N8N_WEBHOOK", ""),
         telegram_bot_token=os.environ.get("CIA_TELEGRAM_BOT_TOKEN", ""),
         telegram_chat_id=os.environ.get("CIA_TELEGRAM_CHAT_ID", ""),
         telegram_thread_id=os.environ.get("CIA_TELEGRAM_THREAD_ID", ""),
         vault_lead_log=os.environ.get("CIA_VAULT_LEAD_LOG", ""),
-        sheets_pipeline_id=os.environ.get(
-            "CIA_SHEETS_ID",
-            "1kLqINL3W_SZ1_XLAbpZVGkzIn-Mjo5EkWtenu5uusF4",
-        ),
-        david_email=os.environ.get("CIA_DAVID_EMAIL", "lopezdsteban@gmail.com"),
+        sheets_pipeline_id=os.environ.get("CIA_SHEETS_ID", ""),
+        david_email=os.environ.get("CIA_DAVID_EMAIL", ""),
         rate_limit_free=int(os.environ.get("CIA_RATE_FREE", "5")),
         rate_limit_registered=int(os.environ.get("CIA_RATE_REGISTERED", "50")),
         report_storage=os.environ.get("CIA_REPORT_STORAGE", report_default),
