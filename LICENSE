@@ -1,28 +1,21 @@
-CIA Diagnose — Proprietary Software License
-© C.I.A — Consultoría de Inteligencia Aplicada. All rights reserved.
+MIT License
 
-This software ("the Software") is proprietary to C.I.A — Consultoría de
-Inteligencia Aplicada ("CIA"). It is made available for use with CIA's services
-and is NOT open source.
+Copyright (c) 2026 CIA — Consultoría de Inteligencia Aplicada (David Lopez)
 
-You MAY:
-  - Install and run the Software to obtain a business diagnosis.
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-You MAY NOT, without prior written authorization from CIA:
-  - Sublicense, rent, lend, sell or otherwise distribute the Software to third
-    parties.
-  - Reverse engineer, decompile or disassemble the Software.
-  - Modify the Software or create derivative works.
-  - Use the Software to build or operate a service that competes with CIA.
-  - Remove or alter any proprietary or attribution notices.
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
-CIA retains all intellectual property rights over the source code, algorithms,
-architecture, methodologies, reusable components, and any trained or fine-tuned
-AI models. Your business data and configurations remain yours.
-
-The Software is provided "AS IS", without warranty of any kind. CIA is not liable
-for any damages arising from its use, to the maximum extent permitted by law.
-
-Full legal terms (Términos de Licencia de Software e IA, Términos y Condiciones,
-Política de Privacidad, DPA) are published in the footer of
-https://www.univercityaiconsult.tech/ and available from steban@univercityaiconsult.tech.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

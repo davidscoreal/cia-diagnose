@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.1.1 (2026-06-02)
+
+- **License changed to MIT** (was Proprietary in 1.1.0). `pyproject` now declares
+  SPDX `MIT` + `license-files`; `LICENSE` is the MIT text; README updated. Open
+  source. (1.1.0 was the first PyPI release under the `cia-diagnose` name and
+  carried Proprietary metadata; PyPI versions are immutable, so 1.1.1 republishes
+  with MIT — install `cia-diagnose>=1.1.1` for the MIT build.)
+
 ## v1.1.0 (2026-06-02) — boost/v2
 
 ### Fixed (bugs found in audit — see AUDIT.md)

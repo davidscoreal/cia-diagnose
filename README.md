@@ -1,4 +1,4 @@
-# CIA Diagnose v1.1.0
+# CIA Diagnose v1.1.1
 
 <!-- mcp-name: io.github.davidscoreal/cia-diagnose -->
 
@@ -137,6 +137,4 @@ Current: construction, healthcare, agency, ecommerce, startup, enterprise, resta
 
 ## License
 
-**Proprietary** — © CIA — Consultoría de Inteligencia Aplicada. All rights reserved.
-See [`LICENSE`](LICENSE). Full legal terms in the footer of
-https://www.univercityaiconsult.tech/.
+**MIT** — © 2026 CIA — Consultoría de Inteligencia Aplicada (David Lopez). See [`LICENSE`](LICENSE).
