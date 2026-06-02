@@ -1,0 +1,13 @@
+# Construction-specific tool picks. These OVERRIDE areas.yaml for this ICP.
+# Only list areas you want to specialize; others fall back to the area default.
+meta:
+  icp: construction
+  last_reviewed: "2026-06-02"
+
+areas:
+  operaciones:
+    - {name: "Procore", tier: paid, url: "https://procore.com", why_best_es: "Estándar de gestión de obra; reportes de avance en tiempo real.", why_best_en: "Construction management standard; real-time progress reporting.", desc_es: "Gestión de construcción líder.", desc_en: "Leading construction management."}
+    - {name: "OpenProject", tier: oss, url: "https://openproject.org", why_best_es: "Gestión de proyectos open source con Gantt para obras.", why_best_en: "Open source project management with Gantt for job sites.", desc_es: "Gestión de proyectos open source.", desc_en: "Open source project management."}
+  tecnologia:
+    - {name: "PlanGrid / Autodesk Build", tier: paid, url: "https://construction.autodesk.com", why_best_es: "Planos y documentos de obra sincronizados en campo.", why_best_en: "Field-synced blueprints and construction docs.", desc_es: "Planos y documentos en campo.", desc_en: "Field blueprints and docs."}
+    - {name: "ERPNext", tier: oss, url: "https://erpnext.com", why_best_es: "ERP open source con módulo de proyectos y costeo por obra.", why_best_en: "Open source ERP with project & per-job costing.", desc_es: "ERP open source.", desc_en: "Open source ERP."}

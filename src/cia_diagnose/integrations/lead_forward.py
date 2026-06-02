@@ -19,29 +19,65 @@ logger = logging.getLogger("cia-diagnose.leads")
 
 
 async def forward_lead(
-    session: Session,
+    session: Session | None,
     cfg: Config,
     action: str = "diagnose",
     extra: dict[str, Any] | None = None,
+    source: str = "mcp_local",
 ) -> dict[str, Any]:
     """Forward lead data to ALL configured sinks (n8n + Telegram + vault log).
 
     Always returns success=True; individual sinks are best-effort.
+
+    `session` may be None (e.g. export_report has no session) — in that case
+    company/contact/score are read from `extra`. `source` flags the origin
+    ("mcp_local" for stdio, "mcp_remote" for HTTP).
+
+    Rich CRM fields (pain_points, decision_maker_role, top_actions, the full
+    diagnosis JSON) are promoted to the top level of the payload when present
+    in `extra`, so downstream n8n/Sheets get clean columns.
     """
-    lead_data = {
-        "session_id": session.id,
-        "action": action,
-        "company_name": session.company_name,
-        "contact_name": session.contact_name,
-        "contact_email": session.contact_email,
-        "industry": session.industry_hint,
-        "icp_id": session.icp_id,
-        "revenue_leak_score": session.revenue_leak_score,
-        "status": session.status.value,
-        "lang": session.lang,
-        "created_at": session.created_at,
-        "extra": extra or {},
-    }
+    extra = extra or {}
+
+    if session is not None:
+        lead_data: dict[str, Any] = {
+            "session_id": session.id,
+            "action": action,
+            "company_name": session.company_name,
+            "contact_name": session.contact_name,
+            "contact_email": session.contact_email,
+            "industry": session.industry_hint,
+            "icp_id": session.icp_id,
+            "revenue_leak_score": session.revenue_leak_score,
+            "status": session.status.value,
+            "lang": session.lang,
+            "created_at": session.created_at,
+        }
+    else:
+        # No session (export_report et al.) — build from extra.
+        lead_data = {
+            "session_id": extra.get("session_id"),
+            "action": action,
+            "company_name": extra.get("company") or extra.get("company_name", ""),
+            "contact_name": extra.get("contact") or extra.get("contact_name", ""),
+            "contact_email": extra.get("email") or extra.get("contact_email", ""),
+            "industry": extra.get("industry", ""),
+            "icp_id": extra.get("icp_id", ""),
+            "revenue_leak_score": extra.get("score") or extra.get("revenue_leak_score"),
+            "status": extra.get("status", "reported"),
+            "lang": extra.get("lang", cfg.default_lang),
+            "created_at": extra.get("created_at"),
+        }
+
+    # Promote rich CRM fields to the top level (tarea 1 boost/v2).
+    lead_data["source"] = source
+    for promoted in (
+        "team_size", "pain_points", "decision_maker_role",
+        "top_actions", "estimated_monthly_leak", "diagnosis", "health_score",
+    ):
+        if promoted in extra:
+            lead_data[promoted] = extra[promoted]
+    lead_data["extra"] = extra
 
     methods_succeeded: list[str] = []
 
@@ -75,7 +111,9 @@ async def forward_lead(
                 or lead_data.get("contact_name")
                 or "(sin contacto)"
             )
-            leak_score = (lead_data.get("extra") or {}).get("leak_score", score)
+            health = (lead_data.get("extra") or {}).get("health_score")
+            if health is None:
+                health = lead_data.get("health_score", score)
             sid = lead_data.get("session_id") or "?"
             text_lines = [
                 "#diagnostic · MCP intake",
@@ -83,7 +121,7 @@ async def forward_lead(
                 "\U0001F3E2 " + str(company),
                 "\U0001F3F7️ ICP: " + str(icp),
                 "\U0001F4DE " + str(contact),
-                "\U0001F3AF Score: " + str(leak_score) + "/100",
+                "\U0001F49A Health: " + str(health) + "/100 (más alto = mejor)",
                 "⚡ Action: " + str(action),
                 "\U0001F517 session: " + str(sid),
             ]
@@ -128,11 +166,12 @@ async def forward_lead(
             logger.warning("Vault log write failed: %s", e)
 
     logger.info(
-        "Lead captured: company=%s email=%s action=%s score=%.1f sinks=%s",
-        session.company_name,
-        session.contact_email,
+        "Lead captured: company=%s email=%s action=%s score=%s source=%s sinks=%s",
+        lead_data.get("company_name") or "?",
+        lead_data.get("contact_email") or "(none)",
         action,
-        session.revenue_leak_score or 0,
+        lead_data.get("revenue_leak_score") or 0,
+        source,
         ",".join(methods_succeeded) or "none",
     )
     return {"success": True, "methods": methods_succeeded or ["log"]}

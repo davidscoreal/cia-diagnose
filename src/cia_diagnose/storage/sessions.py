@@ -136,7 +136,11 @@ class SessionStore:
         self._db: aiosqlite.Connection | None = None
 
     async def initialize(self) -> None:
-        """Create tables if needed."""
+        """Create tables if needed. Idempotent — safe to call from both the MCP
+        server lifespan and standalone HTTP custom routes (which don't share the
+        MCP per-session lifespan)."""
+        if self._db is not None:
+            return
         self._db = await aiosqlite.connect(self._db_path)
         self._db.row_factory = aiosqlite.Row
         await self._db.executescript(_SCHEMA)

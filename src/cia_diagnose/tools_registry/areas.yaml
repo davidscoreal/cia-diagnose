@@ -1,0 +1,54 @@
+# CIA curated tool registry — DEFAULT picks per area (the "best of the best").
+#
+# This is CIA's own list, area by area. It is the source of truth for the
+# open-source / paid options in tools_recommend and the Triple Option.
+#
+# HOW "best of the best" is chosen (see TOOLS_REGISTRY.md):
+#   1. Curated by CIA consultants from real implementations.
+#   2. Each entry carries provenance: tier, why_best, last_reviewed.
+#   3. Refreshed WEEKLY (scripts/refresh_tools.py process) — newest winners in,
+#      stale ones out. Per-industry overrides live in by_industry/<icp>.yaml.
+#
+# tier: free | oss | paid
+meta:
+  version: 1
+  last_reviewed: "2026-06-02"
+  cadence: weekly
+
+areas:
+  finanzas:
+    - {name: "Wave Accounting", tier: free, url: "https://waveapps.com", why_best_es: "Contabilidad y facturación gratis, lista en minutos para PyMEs.", why_best_en: "Free accounting + invoicing, usable in minutes for SMBs.", desc_es: "Contabilidad gratuita. Facturación, reportes, flujo de caja.", desc_en: "Free accounting. Invoicing, reports, cash flow."}
+    - {name: "InvoiceNinja", tier: oss, url: "https://invoiceninja.com", why_best_es: "Open source con seguimiento de pagos y self-host.", why_best_en: "Open source with payment tracking and self-host.", desc_es: "Facturación open source con seguimiento de pagos.", desc_en: "Open source invoicing with payment tracking."}
+    - {name: "QuickBooks", tier: paid, url: "https://quickbooks.intuit.com", why_best_es: "Estándar de mercado, integra con bancos y contadores.", why_best_en: "Market standard, integrates with banks and accountants.", desc_es: "Contabilidad líder con integración bancaria.", desc_en: "Leading accounting with bank integration."}
+  comercial:
+    - {name: "Twenty CRM", tier: oss, url: "https://twenty.com", why_best_es: "CRM open source moderno, alternativa real a Salesforce.", why_best_en: "Modern open source CRM, real Salesforce alternative.", desc_es: "CRM open source moderno.", desc_en: "Modern open source CRM."}
+    - {name: "HubSpot CRM", tier: paid, url: "https://hubspot.com", why_best_es: "Free tier potente, escala a marketing+ventas.", why_best_en: "Powerful free tier, scales to marketing+sales.", desc_es: "CRM con tier gratis y suite completa.", desc_en: "CRM with free tier and full suite."}
+    - {name: "Cal.com", tier: oss, url: "https://cal.com", why_best_es: "Agendamiento open source, los clientes reservan solos.", why_best_en: "Open source scheduling, clients book themselves.", desc_es: "Agendamiento open source.", desc_en: "Open source scheduling."}
+  operaciones:
+    - {name: "n8n", tier: oss, url: "https://n8n.io", why_best_es: "Automatización self-host, conecta todo sin código.", why_best_en: "Self-host automation, connects everything no-code.", desc_es: "Automatización de workflows open source.", desc_en: "Open source workflow automation."}
+    - {name: "Plane", tier: oss, url: "https://plane.so", why_best_es: "Gestión de proyectos open source, alternativa a Jira.", why_best_en: "Open source project management, Jira alternative.", desc_es: "Gestión de proyectos open source.", desc_en: "Open source project management."}
+    - {name: "Documenso", tier: oss, url: "https://documenso.com", why_best_es: "Firma digital open source para SOPs y contratos.", why_best_en: "Open source e-signature for SOPs and contracts.", desc_es: "Firma digital open source.", desc_en: "Open source digital signing."}
+  equipo:
+    - {name: "Huly", tier: oss, url: "https://huly.io", why_best_es: "Todo-en-uno open source: chat, tareas, HR.", why_best_en: "All-in-one open source: chat, tasks, HR.", desc_es: "Plataforma todo-en-uno para equipos.", desc_en: "All-in-one team platform."}
+    - {name: "Moodle", tier: oss, url: "https://moodle.org", why_best_es: "LMS open source maduro para capacitación interna.", why_best_en: "Mature open source LMS for internal training.", desc_es: "LMS open source para capacitación.", desc_en: "Open source LMS for training."}
+  tecnologia:
+    - {name: "NocoDB", tier: oss, url: "https://nocodb.com", why_best_es: "Airtable open source, convierte tu DB en hoja inteligente.", why_best_en: "Open source Airtable, turns your DB into a smart sheet.", desc_es: "Airtable open source.", desc_en: "Open source Airtable."}
+    - {name: "Appsmith", tier: oss, url: "https://appsmith.com", why_best_es: "Apps internas sin código sobre tus datos/APIs.", why_best_en: "Internal no-code apps over your data/APIs.", desc_es: "Construye apps internas sin código.", desc_en: "Build internal apps no-code."}
+    - {name: "ERPNext", tier: oss, url: "https://erpnext.com", why_best_es: "ERP open source completo: contabilidad, inventario, HR, CRM.", why_best_en: "Complete open source ERP.", desc_es: "ERP open source completo.", desc_en: "Complete open source ERP."}
+  marketing:
+    - {name: "Mautic", tier: oss, url: "https://mautic.org", why_best_es: "Marketing automation open source: email, landings, scoring.", why_best_en: "Open source marketing automation.", desc_es: "Marketing automation open source.", desc_en: "Open source marketing automation."}
+    - {name: "Listmonk", tier: oss, url: "https://listmonk.app", why_best_es: "Email/newsletter open source de alto rendimiento.", why_best_en: "High-performance open source email/newsletter.", desc_es: "Newsletter open source.", desc_en: "Open source newsletter."}
+  clientes:
+    - {name: "Chatwoot", tier: oss, url: "https://chatwoot.com", why_best_es: "Soporte omnicanal open source (chat, email, social).", why_best_en: "Open source omnichannel support.", desc_es: "Soporte al cliente omnicanal.", desc_en: "Omnichannel customer support."}
+    - {name: "Formbricks", tier: oss, url: "https://formbricks.com", why_best_es: "Encuestas y NPS open source sin lock-in.", why_best_en: "Open source surveys & NPS, no lock-in.", desc_es: "Encuestas y NPS open source.", desc_en: "Open source surveys & NPS."}
+  proveedores:
+    - {name: "ERPNext (Buying)", tier: oss, url: "https://erpnext.com/open-source-buying", why_best_es: "Módulo de compras y proveedores open source.", why_best_en: "Open source purchasing & vendor module.", desc_es: "Compras y gestión de proveedores.", desc_en: "Purchasing and vendor management."}
+  legal:
+    - {name: "Documenso", tier: oss, url: "https://documenso.com", why_best_es: "Firma digital y contratos open source.", why_best_en: "Open source e-signature & contracts.", desc_es: "Firma y contratos digitales.", desc_en: "Digital signing & contracts."}
+    - {name: "OpenSign", tier: oss, url: "https://opensignlabs.com", why_best_es: "Alternativa open source a DocuSign.", why_best_en: "Open source DocuSign alternative.", desc_es: "Alternativa a DocuSign.", desc_en: "DocuSign alternative."}
+  estrategia:
+    - {name: "Focalboard", tier: oss, url: "https://focalboard.com", why_best_es: "OKRs y objetivos open source, alternativa a Notion boards.", why_best_en: "Open source OKRs & goals, Notion-boards alternative.", desc_es: "Gestión de OKRs open source.", desc_en: "Open source OKR management."}
+  marketing_digital:
+    - {name: "Plausible", tier: oss, url: "https://plausible.io", why_best_es: "Analytics web privado, ético, sin cookies.", why_best_en: "Private, ethical, cookie-free web analytics.", desc_es: "Analytics web open source y privado.", desc_en: "Open source private web analytics."}
+    - {name: "Matomo", tier: oss, url: "https://matomo.org", why_best_es: "Analytics completo open source: SEO, conversiones, campañas.", why_best_en: "Complete open source analytics.", desc_es: "Analytics completo open source.", desc_en: "Complete open source analytics."}
+    - {name: "Umami", tier: oss, url: "https://umami.is", why_best_es: "Analytics simple, ligero, sin cookies.", why_best_en: "Simple, lightweight, cookie-free analytics.", desc_es: "Analytics web simple.", desc_en: "Simple web analytics."}

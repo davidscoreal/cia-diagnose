@@ -66,11 +66,14 @@ def diagnose(
             # Skip dimensions with zero weight for this ICP
             continue
 
-        score, findings, data_quality = _score_dimension(dim, dim_config, context, lang)
+        leak, findings, data_quality = _score_dimension(dim, dim_config, context, lang)
+
+        # v2: invert to HEALTH so high = healthy/strong, low = worst area.
+        health = min(100.0, max(0.0, 100.0 - leak))
 
         ds = DimensionScore(
             dimension=dim,
-            score=score,
+            score=health,
             weight=weight,
             findings=findings,
             data_quality=data_quality,
@@ -78,14 +81,18 @@ def diagnose(
         dimension_scores.append(ds)
         all_findings.extend(findings)
 
-    # ── Step 3: Calculate Revenue Leak Score ──
+    # ── Step 3: Calculate overall Business Health Score (high = healthy) ──
     total_weight = sum(ds.weight for ds in dimension_scores) or 1.0
-    revenue_leak_score = sum(ds.weighted_score for ds in dimension_scores) / total_weight
-    revenue_leak_score = min(100.0, max(0.0, revenue_leak_score))
-    leak_category = _categorize_leak(revenue_leak_score)
+    health_score = sum(ds.weighted_score for ds in dimension_scores) / total_weight
+    health_score = min(100.0, max(0.0, health_score))
+    leak_category = _categorize_health(health_score)
 
-    # ── Step 4: Estimate monthly leak ──
-    monthly_leak = _estimate_monthly_leak(context, revenue_leak_score)
+    # Growth mode: >50% of scored dimensions are strong (>=70 health).
+    strong = sum(1 for ds in dimension_scores if ds.score >= 70)
+    growth_mode = bool(dimension_scores) and strong > len(dimension_scores) / 2
+
+    # ── Step 4: Estimate monthly leak (from the inverse of health) ──
+    monthly_leak = _estimate_monthly_leak(context, 100.0 - health_score)
 
     # ── Step 5: Generate Top Actions with Triple Option ──
     top_actions = _generate_actions(all_findings, benchmark, lang)
@@ -104,20 +111,23 @@ def diagnose(
     )
 
     summary_es, summary_en = _generate_summary(
-        company_name, icp_name, revenue_leak_score, leak_category,
+        company_name, icp_name, health_score, leak_category,
         monthly_leak, dimension_scores, len(all_findings), overall_dq,
+        growth_mode,
     )
 
     leadership_es, leadership_en = _generate_leadership_insight(
         context, dimension_scores,
     )
 
+    guidance_es, guidance_en = _generate_guidance(overall_dq, growth_mode)
+
     return DiagnosisReport(
         company_name=company_name,
         icp_id=icp_id,
         icp_name=icp_name,
         lang=lang,
-        revenue_leak_score=revenue_leak_score,
+        health_score=health_score,
         leak_category=leak_category,
         monthly_leak_estimate=monthly_leak,
         dimensions=dimension_scores,
@@ -130,6 +140,9 @@ def diagnose(
         overall_data_quality=overall_dq,
         dimensions_with_data=dims_with_data,
         dimensions_without_data=dims_without_data,
+        growth_mode=growth_mode,
+        guidance_es=guidance_es,
+        guidance_en=guidance_en,
         session_id=session_id,
         report_url="",
     )
@@ -143,14 +156,12 @@ def _detect_icp(context: dict[str, Any]) -> str:
     industry = str(context.get("industry", "")).lower()
     pain_points = [str(p).lower() for p in context.get("pain_points", [])]
     pain_text = " ".join(pain_points)
-    team_size = context.get("team_size", 0)
     software = [str(s).lower() for s in context.get("software_detected", [])]
 
     # Direct industry match
     icp_map = {
         "construction": "construction",
         "construcción": "construction",
-        "real estate": "construction",
         "inmobiliario": "construction",
         "healthcare": "healthcare",
         "salud": "healthcare",
@@ -415,14 +426,21 @@ def _get_relevant_fields(dim: Dimension) -> list[str]:
 # ─── Revenue Leak Estimation ────────────────────────────────────────
 
 
-def _categorize_leak(score: float) -> str:
+def _categorize_health(score: float) -> str:
+    """Health band (v2: higher = healthier)."""
     if score >= 80:
-        return "critical"
+        return "thriving"
     if score >= 60:
-        return "high"
+        return "healthy"
     if score >= 35:
-        return "medium"
-    return "low"
+        return "weak"
+    return "critical"
+
+
+# Backwards-compatible alias (old name, old leak-direction semantics) kept for
+# any external import. Prefer _categorize_health.
+def _categorize_leak(score: float) -> str:
+    return _categorize_health(100.0 - score)
 
 
 def _estimate_monthly_leak(context: dict, leak_score: float) -> tuple[int, int]:
@@ -689,54 +707,99 @@ def _generate_summary(
     dimensions: list[DimensionScore],
     finding_count: int,
     data_quality: float,
+    growth_mode: bool = False,
 ) -> tuple[str, str]:
-    """Generate bilingual summary text."""
-    # Top 3 dimensions by weighted score (most leakage)
-    top_dims = sorted(dimensions, key=lambda d: d.weighted_score, reverse=True)[:3]
+    """Generate bilingual summary text (v2: health semantics, high = good)."""
+    # Worst (lowest health) = priority areas; best (highest health) = strengths.
+    by_health = sorted(dimensions, key=lambda d: d.score)
+    worst = by_health[:3]
+    best = list(reversed(by_health))[:3]
 
-    top_dims_es = ", ".join(d.label_es for d in top_dims)
-    top_dims_en = ", ".join(d.label_en for d in top_dims)
+    worst_es = ", ".join(d.label_es for d in worst)
+    worst_en = ", ".join(d.label_en for d in worst)
+    best_es = ", ".join(d.label_es for d in best)
+    best_en = ", ".join(d.label_en for d in best)
 
     cat_map_es = {
-        "critical": "CRÍTICO", "high": "ALTO", "medium": "MEDIO", "low": "BAJO",
+        "thriving": "EXCELENTE", "healthy": "SANO", "weak": "DÉBIL", "critical": "CRÍTICO",
     }
     cat_map_en = {
-        "critical": "CRITICAL", "high": "HIGH", "medium": "MEDIUM", "low": "LOW",
+        "thriving": "THRIVING", "healthy": "HEALTHY", "weak": "WEAK", "critical": "CRITICAL",
     }
 
     summary_es = (
-        f"**{company_name}** — Nivel de fuga: **{cat_map_es.get(category, category)}** "
-        f"(Revenue Leak Score: {score:.0f}/100)\n\n"
+        f"**{company_name}** — Salud del negocio: **{cat_map_es.get(category, category)}** "
+        f"(Business Health Score: {score:.0f}/100 — más alto es mejor)\n\n"
         f"Se identificaron {finding_count} hallazgos en {len(dimensions)} dimensiones. "
-        f"Las áreas con mayor impacto son: **{top_dims_es}**.\n\n"
+        f"Mayor oportunidad de mejora (menor score): **{worst_es}**. "
+        f"Áreas más fuertes: **{best_es}**.\n\n"
     )
-    if monthly_leak[1] > 0:
-        summary_es += (
-            f"Estimación de fuga mensual: **${monthly_leak[0]:,} – ${monthly_leak[1]:,} USD**.\n\n"
-        )
-    if data_quality < 0.5:
-        summary_es += (
-            "⚠️ La calidad de datos es limitada. Respondiendo las preguntas de validación "
-            "mejoraremos significativamente la precisión del diagnóstico."
-        )
-
     summary_en = (
-        f"**{company_name}** — Leak level: **{cat_map_en.get(category, category)}** "
-        f"(Revenue Leak Score: {score:.0f}/100)\n\n"
+        f"**{company_name}** — Business health: **{cat_map_en.get(category, category)}** "
+        f"(Business Health Score: {score:.0f}/100 — higher is better)\n\n"
         f"Identified {finding_count} findings across {len(dimensions)} dimensions. "
-        f"Highest-impact areas: **{top_dims_en}**.\n\n"
+        f"Biggest opportunity (lowest score): **{worst_en}**. "
+        f"Strongest areas: **{best_en}**.\n\n"
     )
     if monthly_leak[1] > 0:
+        summary_es += (
+            f"Fuga de ingresos mensual estimada en las áreas débiles: "
+            f"**${monthly_leak[0]:,} – ${monthly_leak[1]:,} USD**.\n\n"
+        )
         summary_en += (
-            f"Estimated monthly leak: **${monthly_leak[0]:,} – ${monthly_leak[1]:,} USD**.\n\n"
+            f"Estimated monthly revenue leak in the weak areas: "
+            f"**${monthly_leak[0]:,} – ${monthly_leak[1]:,} USD**.\n\n"
+        )
+    if growth_mode:
+        summary_es += (
+            "🚀 La mayoría de tus áreas están fuertes — estás en **modo crecimiento**. "
+            "Aquí el foco no es tapar fugas sino entrar a nuevas ligas: escalar lo que ya "
+            "funciona. CIA puede ayudarte a acelerar ese salto.\n\n"
+        )
+        summary_en += (
+            "🚀 Most of your areas are strong — you're in **growth mode**. The focus here "
+            "isn't plugging leaks but entering new leagues: scaling what already works. "
+            "CIA can help you accelerate that jump.\n\n"
         )
     if data_quality < 0.5:
+        summary_es += (
+            "⚠️ La calidad de datos es limitada. Responde las preguntas de validación "
+            "para afinar significativamente la precisión del diagnóstico."
+        )
         summary_en += (
-            "⚠️ Data quality is limited. Answering the validation questions "
-            "will significantly improve diagnosis accuracy."
+            "⚠️ Data quality is limited. Answer the validation questions to "
+            "significantly sharpen the diagnosis accuracy."
         )
 
     return summary_es, summary_en
+
+
+def _generate_guidance(data_quality: float, growth_mode: bool) -> tuple[str, str]:
+    """Tell the calling LLM what to do next (ask more vs. keep the conversation going)."""
+    if data_quality < 0.4:
+        return (
+            "Tienes poca información del negocio. ANTES de presentar los números como "
+            "definitivos, hazle al cliente las validation_questions para llenar las áreas "
+            "sin datos; luego vuelve a correr business_diagnose con ese contexto.",
+            "You have little information about the business. BEFORE presenting the numbers "
+            "as final, ask the client the validation_questions to fill the data gaps, then "
+            "re-run business_diagnose with that context.",
+        )
+    if growth_mode:
+        return (
+            "El negocio está mayormente sano. No cierres la conversación: muestra las 3 "
+            "opciones (open source, paga, CIA) para optimizar y proponle el salto de "
+            "crecimiento. Sigue recogiendo datos (más contexto = mejor calificación del lead).",
+            "The business is mostly healthy. Do NOT end the conversation: show the 3 options "
+            "(open source, paid, CIA) to optimize and propose the growth jump. Keep gathering "
+            "data (more context = better lead qualification).",
+        )
+    return (
+        "Presenta el Business Health Score, las áreas de menor score (mayor oportunidad) y "
+        "las 3 opciones por acción. Invita a agendar con CIA.",
+        "Present the Business Health Score, the lowest-score areas (biggest opportunity) and "
+        "the 3 options per action. Invite to book with CIA.",
+    )
 
 
 def _generate_leadership_insight(

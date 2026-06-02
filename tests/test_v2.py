@@ -1,4 +1,4 @@
-"""Tests for univercity-mcp v1.0.0 — 11-dimension diagnosis engine (ESCANER).
+"""Tests for cia-diagnose v1.0.0 — 11-dimension diagnosis engine (ESCANER).
 
 Tests cover:
 - Benchmark loading (YAML) — 9 industries
@@ -22,7 +22,7 @@ from cia_diagnose.domain.diagnosis.benchmarks import (
 )
 from cia_diagnose.domain.diagnosis.service import (
     diagnose, _detect_icp, _score_dimension, _estimate_monthly_leak,
-    _categorize_leak,
+    _categorize_health,
 )
 
 
@@ -208,10 +208,11 @@ class TestDimensionScoring:
 
 class TestRevenueLeak:
     def test_categorize(self):
-        assert _categorize_leak(85) == "critical"
-        assert _categorize_leak(65) == "high"
-        assert _categorize_leak(40) == "medium"
-        assert _categorize_leak(20) == "low"
+        # v2 health semantics: higher = healthier.
+        assert _categorize_health(85) == "thriving"
+        assert _categorize_health(65) == "healthy"
+        assert _categorize_health(40) == "weak"
+        assert _categorize_health(20) == "critical"
 
     def test_estimate_with_range(self):
         low, high = _estimate_monthly_leak({"revenue_estimate": "1m-5m"}, 70)
@@ -237,7 +238,7 @@ class TestDiagnosis:
         assert isinstance(report, DiagnosisReport)
         assert report.company_name == "Test Corp"
         assert 0 <= report.revenue_leak_score <= 100
-        assert report.leak_category in ("low", "medium", "high", "critical")
+        assert report.leak_category in ("thriving", "healthy", "weak", "critical")
         assert report.icp_id == "generic"  # No hints -> generic
         assert len(report.dimensions) > 0
 

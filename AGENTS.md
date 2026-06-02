@@ -11,7 +11,7 @@ CIA professional implementation — with prices.
 
 **pip:**
 ```bash
-pip install univercity-mcp
+pip install cia-diagnose
 ```
 
 **Remote (any MCP client):**
@@ -25,7 +25,7 @@ https://audit.univercityaiconsult.tech/mcp
   "mcpServers": {
     "univercity": {
       "command": "uvx",
-      "args": ["univercity-mcp"]
+      "args": ["cia-diagnose"]
     }
   }
 }

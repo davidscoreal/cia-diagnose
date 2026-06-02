@@ -9,7 +9,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any
+
+from cia_diagnose.config import SERVER_VERSION
 
 
 class Dimension(str, Enum):
@@ -110,9 +111,15 @@ class Finding:
 
 @dataclass
 class DimensionScore:
-    """Score for a single dimension (0-100). Higher = more leakage."""
+    """Health score for a single dimension (0-100). HIGHER = HEALTHIER/STRONGER.
+
+    Inverted in v2 (boost/v2): a low score marks the worst area (most revenue
+    leakage / biggest opportunity); a high score marks a strong area. A 100 does
+    not mean "finished" — it means the area is taking the business into new
+    leagues / growth.
+    """
     dimension: Dimension
-    score: float                    # 0-100
+    score: float                    # 0-100 (health; higher = better)
     weight: float                   # 0.0-1.0 (from ICP benchmark)
     weighted_score: float = 0.0     # score * weight
     findings: list[Finding] = field(default_factory=list)
@@ -205,9 +212,9 @@ class DiagnosisReport:
     icp_name: str
     lang: str
 
-    # Core scores
-    revenue_leak_score: float          # 0-100 (weighted avg of dimensions)
-    leak_category: str                 # low/medium/high/critical
+    # Core scores — v2: HEALTH semantics. health_score high = healthier.
+    health_score: float                # 0-100 (weighted avg of dimension health)
+    leak_category: str                 # health band: critical/weak/healthy/thriving
     monthly_leak_estimate: tuple[int, int] = (0, 0)  # (min, max) in USD
 
     # Per-dimension breakdown
@@ -232,18 +239,46 @@ class DiagnosisReport:
     dimensions_with_data: int = 0
     dimensions_without_data: int = 0
 
+    # v2 — score framing & conversation continuity
+    growth_mode: bool = False          # True when >50% of dims are strong (>=70)
+    guidance_es: str = ""              # what the LLM should do next (ask more / continue)
+    guidance_en: str = ""
+
     # Metadata
     session_id: str = ""
     report_url: str = ""
-    version: str = "0.2.0"
+    version: str = SERVER_VERSION
+
+    @property
+    def revenue_leak_score(self) -> float:
+        """Backward-compat alias of health_score (same value; higher = healthier)."""
+        return self.health_score
 
     def to_dict(self) -> dict:
         lang = self.lang
+        score_meaning = (
+            "Score alto = área sana y fuerte. Score bajo = mayor fuga de ingresos "
+            "y mayor oportunidad de mejora. Un 100% no significa 'terminado': significa "
+            "que esa área te está llevando a nuevas ligas / crecimiento — y eso te "
+            "califica aún mejor para escalar con CIA."
+            if lang == "es" else
+            "High score = a healthy, strong area. Low score = more revenue leakage and "
+            "the biggest opportunity. A 100% does not mean 'done': it means that area is "
+            "taking you into new leagues / growth — which qualifies you even better to "
+            "scale with CIA."
+        )
         return {
             "company_name": self.company_name,
             "icp": {"id": self.icp_id, "name": self.icp_name},
-            "revenue_leak_score": round(self.revenue_leak_score, 1),
+            # v2 health semantics: higher = healthier.
+            "health_score": round(self.health_score, 1),
+            # Backward-compat alias (same value); kept so existing callers/tools
+            # that read 'revenue_leak_score' still work. Higher = healthier.
+            "revenue_leak_score": round(self.health_score, 1),
+            "score_meaning": score_meaning,
             "leak_category": self.leak_category,
+            "growth_mode": self.growth_mode,
+            "guidance": self.guidance_es if lang == "es" else self.guidance_en,
             "monthly_leak_estimate": {
                 "min_usd": self.monthly_leak_estimate[0],
                 "max_usd": self.monthly_leak_estimate[1],

@@ -1,0 +1,27 @@
+[Unit]
+Description=cia-diagnose — Business Automation Audit Server
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/cia-diagnose
+Environment=CIA_TRANSPORT=streamable-http
+Environment=CIA_HTTP_HOST=0.0.0.0
+Environment=CIA_HTTP_PORT=3792
+Environment=CIA_DB_PATH=/opt/cia-diagnose/data/sessions.db
+Environment=CIA_REPORT_STORAGE=/opt/cia-diagnose/data/reports
+Environment=CIA_LITELLM_URL=http://127.0.0.1:4000
+Environment=CIA_LITELLM_MODEL=kairos-primary
+Environment=CIA_FOUNDERS_TIER=true
+Environment=CIA_FOUNDERS_DISCOUNT=0.35
+Environment=CIA_LANG=es
+EnvironmentFile=-/opt/cia-diagnose/.env
+ExecStart=/opt/cia-diagnose/.venv/bin/cia-diagnose --transport streamable-http
+Restart=on-failure
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

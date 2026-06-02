@@ -3,7 +3,7 @@
 # Since mcp-publisher only supports GitHub device flow,
 # we'll run it and auto-open + auto-fill the code
 
-cd /Users/testtst/Projects/kairos/mcp-servers/univercity-mcp
+cd /Users/testtst/Projects/cia-diagnose
 
 # Start mcp-publisher login in background, capture output
 OUTPUT=$(mktemp)

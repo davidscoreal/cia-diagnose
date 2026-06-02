@@ -1,4 +1,4 @@
-"""Pytest configuration for univercity-mcp tests."""
+"""Pytest configuration for cia-diagnose tests."""
 import pytest
 
 

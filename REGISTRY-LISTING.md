@@ -9,7 +9,7 @@
 **License:** MIT
 **Repository:** https://github.com/davidscoreal/cia-diagnose
 **Website:** https://univercityaiconsult.tech
-**Server URL:** https://mcp.univercityaiconsult.tech
+**Server URL:** https://audit.univercityaiconsult.tech
 
 ### Description (for registry)
 
@@ -36,7 +36,7 @@ One tool. Open schema. Send what you know, get expert analysis back.
 {
   "mcpServers": {
     "cia-diagnose": {
-      "url": "https://mcp.univercityaiconsult.tech"
+      "url": "https://audit.univercityaiconsult.tech"
     }
   }
 }
@@ -97,7 +97,7 @@ transport:
   stdio:
     command: cia-diagnose
   http:
-    url: https://mcp.univercityaiconsult.tech
+    url: https://audit.univercityaiconsult.tech
 ```
 
 ---

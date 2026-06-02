@@ -13,7 +13,7 @@ You (the agent) gather data about the company using your own capabilities — br
 ```json
 {
   "mcpServers": {
-    "univercity-mcp": {
+    "cia-diagnose": {
       "url": "https://audit.univercityaiconsult.tech"
     }
   }
@@ -22,13 +22,13 @@ You (the agent) gather data about the company using your own capabilities — br
 
 ### Option B: Local install
 ```bash
-pip install univercity-mcp
+pip install cia-diagnose
 ```
 ```json
 {
   "mcpServers": {
-    "univercity-mcp": {
-      "command": "univercity-mcp",
+    "cia-diagnose": {
+      "command": "cia-diagnose",
       "args": []
     }
   }

@@ -1,5 +1,81 @@
 # Changelog
 
+## boost/v2 (2026-06-02) — branch `boost/v2`
+
+### Fixed (bugs found in audit — see AUDIT.md)
+- **B2:** `export_report` passed `session=None` to `forward_lead`, which crashed
+  on `session.id` (`AttributeError`) and silently dropped the lead. `forward_lead`
+  now accepts `session=None` and reads from `extra`.
+- **B3:** rate limit used a hardcoded `ip="cli"` → in HTTP mode the 5/day limit was
+  **global, shared across all clients**. Now derives the real client IP
+  (`X-Forwarded-For` → socket peer) via the FastMCP `Context`; stdio stays `cli`.
+- **B4:** Cal.com booking URL was `cal.com/cia-consulting` (wrong) → now the
+  canonical `cal.com/david-cia/diagnostico-ai`, centralized in `branding.py`.
+- **B5:** `DiagnosisReport.version` was hardcoded `0.2.0` → now reads `SERVER_VERSION`.
+
+### Added
+- `branding.py` — single source of truth for links, contact, brand colors, taglines,
+  and the diagnosis signature (header / booking CTA / closing). Used everywhere.
+- **Lead webhook enriched** (tarea 1): payload now carries `source`
+  (`mcp_local`/`mcp_remote`), `team_size`, `pain_points`, `decision_maker_role`,
+  `top_actions`, `estimated_monthly_leak`, and the **full diagnosis JSON**.
+- **Brand signature in tool output** (tarea 3): `business_diagnose` and
+  `export_report` return a `cia` block (header, booking CTA, closing, links).
+- **Visual HTML report** (tarea 4): `report_html.py` — SVG gauge + dimension bars +
+  triple-option cards + CTA, mobile-responsive, no external JS. Served at
+  `GET /report/{session_id}` in HTTP mode.
+- **Export endpoints** (tarea 9): `GET /export/{session_id}?format=json|csv` for
+  Sheets / Tabularis, plus `GET /healthz` and `GET /brand/{asset}`.
+- `brand/` — official CIA logos (monogram light/dark, gothic wordmark, favicons),
+  all linking to the website.
+- Prospect copy-paste prompt in `README.md` (tarea 2).
+- `AUDIT.md`, `DECISION.md` (PocketBase/SQLite + Dub), `INTEGRATION_GUIDE.md`
+  (call.md), `EVOLUTION_PLAN.md` (Evolver).
+- `tests/test_boost_v2.py` — 6 tests (branding, B2, rich webhook, HTML render,
+  signature, HTTP routes). Suite: **44 passing**.
+
+### Changed / cleanup
+- `SessionStore.initialize()` is now idempotent (HTTP custom routes live outside the
+  MCP per-session lifespan and must self-initialize the store).
+- `README.md` rewritten: correct v1.0.0, all 9 tools, the real 11 Spanish dimensions,
+  prospect prompt, HTTP endpoints, env vars.
+- `server.json` realigned to `cia-diagnose` v1.0.0 (was stale `univercity-mcp` 0.2.1).
+- Removed committed `*.bak-*` files from `src/`.
+- `contact_cia` no longer exposes the personal Gmail or a placeholder WhatsApp.
+
+### boost/v2 — round 2 (2026-06-02, after David review)
+- **B6 RESOLVED — score inverted to Business Health Score** (high = healthier,
+  low = worst area / biggest opportunity). Engine now computes per-dimension and
+  overall **health**; `_categorize_health` bands = thriving/healthy/weak/critical.
+  `health_score` is the headline; `revenue_leak_score` kept as a same-value alias
+  (object property + dict key) so `roi_projector`/`export_report` (which already
+  assumed high=good) stay correct. Added `score_meaning` (incl. "100% = entering
+  new leagues / growth"), `growth_mode`, and `guidance` (tells the LLM to ASK
+  first when data is thin, and to keep the conversation going when healthy).
+- **Up-front elicitation + continuity** baked into FastMCP `instructions` and the
+  `business_diagnose` docstring.
+- **Curated tool registry** (`tools_registry/`): best free/OSS/paid per **area ×
+  industry** with provenance (`tier`, `why_best`, `last_reviewed`). Replaces the
+  inline `_TOOL_DB`. `tools_recommend` gains an `industry` param; `action_plan`
+  uses it too. `scripts/refresh_tools.py` + `TOOLS_REGISTRY.md` document the
+  **weekly refresh** process. (Construction industry override seeded.)
+- **License RESOLVED — Proprietary.** Added `LICENSE` (per CIA's
+  Términos de Licencia de Software e IA); `pyproject` now `license = {file=...}`.
+- **All `univercity-mcp` references purged** from the live tree (SKILL.md,
+  AGENTS.md, REGISTRY-LISTING.md, deployment/* renamed to `cia-diagnose.*`,
+  scripts, tests). Historical narrative docs moved to `_archive/`.
+- **Lint:** `src/` is now ruff-clean (removed pre-existing dead vars / dup dict
+  key / unused imports). Tests: **48 passing**.
+- **PyPI:** publishing `cia-diagnose` v1.0.0 via GitHub Release → trusted
+  publishing (OIDC) in `publish.yml`. Wheel ships brand assets + registry + YAMLs.
+
+### Known issues (flagged)
+- `.well-known/mcp.json` is empty — left as-is to avoid guessing the registry
+  domain-verification schema.
+- Benchmark **calibration**: the engine still skews toward finding leaks (exact-match
+  finding conditions), so many businesses score low until benchmarks are recalibrated
+  with real outcome data — see `EVOLUTION_PLAN.md`.
+
 ## v0.2.0 (2026-04-30)
 
 ### Architecture overhaul

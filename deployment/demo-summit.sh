@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ─── Demo script for AI Summit Bogotá — May 7-8, 2026 ───
-# univercity-mcp v0.2.0 — Single tool architecture
+# cia-diagnose v0.2.0 — Single tool architecture
 #
 # Usage:
 #   ./deployment/demo-summit.sh [es|en]
@@ -12,7 +12,7 @@ SERVER="http://127.0.0.1:3792"
 
 echo ""
 echo "═══════════════════════════════════════════════════════"
-echo "  univercity-mcp v0.2.0 — Demo AI Summit Bogotá"
+echo "  cia-diagnose v0.2.0 — Demo AI Summit Bogotá"
 echo "  Idioma: $LANG"
 echo "  Architecture: 1 tool (univercity_diagnose) + 8 dimensions"
 echo "═══════════════════════════════════════════════════════"
@@ -23,8 +23,8 @@ if curl -sf "$SERVER/health" > /dev/null 2>&1; then
     echo "✅ Server running at $SERVER"
 else
     echo "⚠️  Server not running at $SERVER"
-    echo "   Start with: univercity-mcp --transport streamable-http"
-    echo "   Or: UNIVERCITY_TRANSPORT=streamable-http univercity-mcp"
+    echo "   Start with: cia-diagnose --transport streamable-http"
+    echo "   Or: CIA_TRANSPORT=streamable-http cia-diagnose"
     echo ""
 fi
 

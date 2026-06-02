@@ -1,17 +1,17 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.davidscoreal/univercity-mcp",
-  "description": "11-dimension business diagnosis with Revenue Leak Score and triple-option recommendations",
+  "name": "io.github.davidscoreal/cia-diagnose",
+  "description": "11-dimension business diagnosis with Revenue Leak Score and triple-option (Paid/OSS/CIA) recommendations, by CIA — Consultoría de Inteligencia Aplicada.",
   "repository": {
-    "url": "https://github.com/davidscoreal/univercity-mcp",
+    "url": "https://github.com/davidscoreal/cia-diagnose",
     "source": "github"
   },
-  "version": "0.2.1",
+  "version": "1.0.0",
   "packages": [
     {
       "registryType": "pypi",
-      "identifier": "univercity-mcp",
-      "version": "0.2.1",
+      "identifier": "cia-diagnose",
+      "version": "1.0.0",
       "transport": {
         "type": "stdio"
       },
@@ -21,7 +21,7 @@
   "remotes": [
     {
       "type": "streamable-http",
-      "url": "https://mcp.univercityaiconsult.tech"
+      "url": "https://audit.univercityaiconsult.tech/mcp"
     }
   ]
 }

@@ -8,7 +8,7 @@ version = "1.0.0"
 description = "Holistic business intelligence engine — 11-dimension diagnosis via any LLM. Triple option (Paid/OSS/CIA)"
 readme = "README.md"
 requires-python = ">=3.10"
-license = "MIT"
+license = { file = "LICENSE" }
 authors = [{ name = "David Lopez", email = "steban@univercityaiconsult.tech" }]
 keywords = ["mcp", "automation", "business", "audit", "consulting"]
 
@@ -34,6 +34,13 @@ cia-diagnose = "cia_diagnose.server:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/cia_diagnose"]
+
+# Ship brand assets and YAML benchmarks inside the wheel.
+[tool.hatch.build.targets.wheel.force-include]
+"brand" = "cia_diagnose/brand"
+
+[tool.hatch.build]
+artifacts = ["src/cia_diagnose/domain/diagnosis/benchmarks/*.yaml"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
