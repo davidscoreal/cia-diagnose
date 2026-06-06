@@ -142,6 +142,11 @@ class DimensionScore:
     weighted_score: float = 0.0     # score * weight
     findings: list[Finding] = field(default_factory=list)
     data_quality: float = 0.0       # 0-1.0 — how much data we had for this dimension
+    # T13: defensibility. status="scored" only when the prospect gave data for
+    # this dimension; "insufficient_data" dims are excluded from the composite
+    # and become follow-up questions. basis traces every point of the score.
+    status: str = "scored"          # "scored" | "insufficient_data"
+    basis: list[str] = field(default_factory=list)
     label_es: str = ""
     label_en: str = ""
 
@@ -159,6 +164,8 @@ class DimensionScore:
             "weight": round(self.weight, 2),
             "weighted_score": round(self.weighted_score, 1),
             "data_quality": round(self.data_quality, 2),
+            "status": self.status,
+            "basis": self.basis,
             "finding_count": len(self.findings),
             "findings": [f.to_dict(lang) for f in self.findings],
         }
@@ -257,6 +264,12 @@ class DiagnosisReport:
     dimensions_with_data: int = 0
     dimensions_without_data: int = 0
 
+    # T13 — defensible score: confidence, gaps, industry reference context.
+    confidence: float = 1.0            # share of total weight backed by real data
+    verdict: str = ""                  # leak_category, or "preliminary" when confidence < 0.6
+    data_gaps: list[dict] = field(default_factory=list)        # [{dimension, question_es/en}]
+    industry_context: list[dict] = field(default_factory=list)  # benchmark refs (ex-"always" findings)
+
     # v2 — score framing & conversation continuity
     growth_mode: bool = False          # True when >50% of dims are strong (>=70)
     guidance_es: str = ""              # what the LLM should do next (ask more / continue)
@@ -295,6 +308,14 @@ class DiagnosisReport:
             "revenue_leak_score": round(self.health_score, 1),
             "score_meaning": score_meaning,
             "leak_category": self.leak_category,
+            # T13 — defensibility. verdict is "preliminary" when we lacked the data
+            # to render a hard sentence; confidence is the share of weight backed by
+            # the prospect's own numbers; data_gaps drives the follow-up questions;
+            # industry_context holds benchmark references that DON'T move the score.
+            "verdict": self.verdict or self.leak_category,
+            "confidence": round(self.confidence, 2),
+            "data_gaps": self.data_gaps,
+            "industry_context": self.industry_context,
             "growth_mode": self.growth_mode,
             "guidance": self.guidance_es if lang == "es" else self.guidance_en,
             "monthly_leak_estimate": {

@@ -1,4 +1,4 @@
-# CIA Diagnose v1.1.2
+# CIA Diagnose v1.2.0
 
 <!-- mcp-name: io.github.davidscoreal/cia-diagnose -->
 
