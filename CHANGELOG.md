@@ -1,5 +1,46 @@
 # Changelog
 
+## v1.2.0 (2026-06-06) — Defensible scoring (T13)
+
+The Business Health Score was effectively constant (~30/CRÍTICO for almost any
+input: a deliberately healthy agency and a burning one both scored ~30, spread
+0.0). It is now **traceable, responsive, and benchmark-as-yardstick**.
+
+### Changed (score behaviour — hence the minor bump)
+- **Score is computed from the prospect's own intake vs benchmark**, per
+  dimension, each producing a `basis` (e.g. `"margen bruto: 32 (vs bench 28%) →
+  88/100"`). Healthy agency now scores ~93 (thriving), a struggling one ~10
+  (critical) — spread ~83.
+- **`_evaluate_finding_condition` defaults to `False`** for unparseable
+  conditions (was `True`, so almost everything fired and floored the score).
+- **`"always"` / benchmark findings no longer move the score.** They are
+  surfaced separately as `industry_context`, labelled "Benchmark de industria
+  (referencia)" — the yardstick, never the prospect's own number.
+- **Composite = weighted average of dimensions WITH data only.** Dimensions
+  without data are `status: "insufficient_data"`, excluded, and become
+  follow-up questions.
+
+### Added (output keys — additive, backward-compatible)
+- `confidence` — share of weight backed by the prospect's real data.
+- `verdict` — `"preliminary"` when `confidence < 0.6` (no hard sentence on thin
+  data); otherwise the health band.
+- `data_gaps` — `[{dimension, question_es, question_en}]` driving the
+  one-question-at-a-time follow-up flow.
+- `industry_context` — benchmark references that inform but don't score.
+- per dimension: `status` and `basis`.
+- Optional deep-intake fields (INTAKE-SCHEMA): `gross_margin_pct`, `ar_days`,
+  `cash_runway_months`, `on_time_on_budget_pct`, `reporting`,
+  `documented_processes`, `founder_dependency`, `annual_turnover_pct`,
+  `billable_utilization_pct`, `integration_level`, `ai_adoption`,
+  `core_systems`, `lead_source_concentration`, `conversion_rate_pct`,
+  `cac_ltv_known`, `documented_plan`, `revenue_concentration_pct`. All optional;
+  the engine runs on partial data and asks for the rest.
+- `tests/test_scoring.py` — responsiveness + defensibility invariants.
+
+### Unchanged
+- MCP tool signature, the triple-option (`options`) shape, and the existing
+  report keys. The leak estimate (`tests/test_leak_estimate.py`) stays green.
+
 ## v1.1.2 (2026-06-05)
 
 ### Fixed

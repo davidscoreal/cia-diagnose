@@ -56,9 +56,11 @@ def diagnose(
     benchmark = load_benchmark(icp_id)
     icp_name = benchmark.get(f"name_{lang}", benchmark.get("name_en", icp_id))
 
-    # ── Step 2: Score each dimension ──
+    # ── Step 2: Score each weighted dimension (T13: defensible, intake-driven) ──
     dimension_scores: list[DimensionScore] = []
     all_findings: list[Finding] = []
+    industry_context: list[dict] = []
+    data_gaps: list[dict] = []
 
     for dim in Dimension:
         dim_config = get_dimension_config(benchmark, dim.value)
@@ -68,10 +70,41 @@ def diagnose(
             # Skip dimensions with zero weight for this ICP
             continue
 
+        # Legacy pass still runs — it produces the display findings and lets us
+        # split "always"/benchmark findings into industry_context (which, per C1,
+        # do NOT move the score). legacy_health is only a fallback.
         leak, findings, data_quality = _score_dimension(dim, dim_config, context, lang)
+        legacy_health = min(100.0, max(0.0, 100.0 - leak))
+        real_findings, ctx_items = _split_findings(dim, dim_config, findings, lang)
+        industry_context.extend(ctx_items)
 
-        # v2: invert to HEALTH so high = healthy/strong, low = worst area.
-        health = min(100.0, max(0.0, 100.0 - leak))
+        # Defensible score from the prospect's OWN numbers vs benchmark (C3).
+        status, intake_score, basis, coverage = _score_dimension_defensible(dim, context, lang)
+
+        if status == "scored":
+            health = intake_score
+            data_quality = max(data_quality, coverage)
+        elif real_findings:
+            # No structured intake, but real (condition-triggered, non-benchmark)
+            # findings fired from the prospect's data. Defensible enough to score.
+            # NB: we deliberately do NOT trust legacy data_quality here — it is
+            # inflated by "always" benchmark findings and would fake confidence.
+            status = "scored"
+            health = legacy_health
+            basis = (
+                [(f.title_es if lang == "es" else f.title_en) for f in real_findings]
+                or [("datos cualitativos del negocio" if lang == "es" else "qualitative business data")]
+            )
+        else:
+            # Nothing to stand on for this dimension → don't fabricate a verdict.
+            health = legacy_health  # shown for context, excluded from the composite
+            q = _DATA_GAP_QUESTIONS.get(dim)
+            if q:
+                data_gaps.append({
+                    "dimension": dim.value,
+                    "question_es": q["es"],
+                    "question_en": q["en"],
+                })
 
         ds = DimensionScore(
             dimension=dim,
@@ -79,19 +112,31 @@ def diagnose(
             weight=weight,
             findings=findings,
             data_quality=data_quality,
+            status=status,
+            basis=basis,
         )
         dimension_scores.append(ds)
         all_findings.extend(findings)
 
-    # ── Step 3: Calculate overall Business Health Score (high = healthy) ──
+    # ── Step 3: Composite Business Health Score over dims WITH data + confidence ──
     total_weight = sum(ds.weight for ds in dimension_scores) or 1.0
-    health_score = sum(ds.weighted_score for ds in dimension_scores) / total_weight
+    scored_dims = [ds for ds in dimension_scores if ds.status == "scored"]
+    covered_weight = sum(ds.weight for ds in scored_dims)
+    confidence = covered_weight / total_weight if total_weight else 0.0
+
+    if scored_dims and covered_weight > 0:
+        health_score = sum(ds.score * ds.weight for ds in scored_dims) / covered_weight
+    else:
+        # No dimension had usable data → neutral placeholder, flagged preliminary.
+        health_score = 50.0
     health_score = min(100.0, max(0.0, health_score))
     leak_category = _categorize_health(health_score)
+    # C4: can't defend a hard sentence on thin data.
+    verdict = "preliminary" if confidence < 0.6 else leak_category
 
-    # Growth mode: >50% of scored dimensions are strong (>=70 health).
-    strong = sum(1 for ds in dimension_scores if ds.score >= 70)
-    growth_mode = bool(dimension_scores) and strong > len(dimension_scores) / 2
+    # Growth mode: >50% of dims WITH data are strong (>=70 health).
+    strong = sum(1 for ds in scored_dims if ds.score >= 70)
+    growth_mode = bool(scored_dims) and strong > len(scored_dims) / 2
 
     # ── Step 4: Estimate monthly leak (from the inverse of health) ──
     monthly_leak = _estimate_monthly_leak(context, 100.0 - health_score)
@@ -100,7 +145,7 @@ def diagnose(
     top_actions = _generate_actions(all_findings, benchmark, lang)
 
     # ── Step 6: Generate Validation Questions ──
-    dims_with_data = sum(1 for ds in dimension_scores if ds.data_quality > 0.3)
+    dims_with_data = sum(1 for ds in dimension_scores if ds.status == "scored")
     dims_without_data = len(dimension_scores) - dims_with_data
     validation_questions = _generate_validation_questions(
         dimension_scores, context, lang,
@@ -117,6 +162,20 @@ def diagnose(
         monthly_leak, dimension_scores, len(all_findings), overall_dq,
         growth_mode,
     )
+
+    # C4: with thin data we present a PRELIMINARY read, not a hard verdict.
+    if verdict == "preliminary":
+        n_gaps = len(data_gaps)
+        summary_es = (
+            f"⚠️ **Lectura preliminar** (confianza {round(confidence * 100)}%): faltan datos "
+            f"en {n_gaps} dimensión(es). Respondé las preguntas de seguimiento para un "
+            f"diagnóstico defendible.\n\n" + summary_es
+        )
+        summary_en = (
+            f"⚠️ **Preliminary read** (confidence {round(confidence * 100)}%): {n_gaps} "
+            f"dimension(s) lack data. Answer the follow-up questions for a defensible "
+            f"diagnosis.\n\n" + summary_en
+        )
 
     leadership_es, leadership_en = _generate_leadership_insight(
         context, dimension_scores,
@@ -145,6 +204,10 @@ def diagnose(
         growth_mode=growth_mode,
         guidance_es=guidance_es,
         guidance_en=guidance_en,
+        confidence=confidence,
+        verdict=verdict,
+        data_gaps=data_gaps,
+        industry_context=industry_context,
         session_id=session_id,
         report_url="",
     )
@@ -345,7 +408,10 @@ def _evaluate_signal(signal: dict, field_value: Any) -> bool:
 
 def _evaluate_finding_condition(condition: str, context: dict) -> bool:
     """Evaluate a finding condition string against context."""
-    if condition == "always":
+    # A missing/blank condition is an unconditional benchmark finding (like
+    # "always"): it is created so _split_findings can route it to industry_context,
+    # but it does NOT move the score. Avoids warn-spam for condition-less findings.
+    if not str(condition).strip() or condition == "always":
         return True
 
     if " not in " in condition:
@@ -375,7 +441,10 @@ def _evaluate_finding_condition(condition: str, context: dict) -> bool:
             return len(field_data) > 0
         return bool(field_data)
 
-    return True  # Default: triggered
+    # T13/C2: a condition we cannot evaluate must NOT fire. Previously this
+    # returned True, so almost every finding triggered → constant ~critical score.
+    logger.warning("Unparseable finding condition, not triggering: %r", condition)
+    return False
 
 
 def _apply_context_adjustments(
@@ -423,6 +492,209 @@ def _get_relevant_fields(dim: Dimension) -> list[str]:
         Dimension.MARKETING_DIGITAL: ["seo_score", "social_followers", "email_list", "ads_spend"],
     }
     return field_map.get(dim, [])
+
+
+# ─── T13: Defensible, intake-driven dimension scoring ───────────────
+
+
+def _lin_higher(v: float, lo: float, hi: float) -> float:
+    """Linear 0-100 where lo→0 and hi→100 (higher input = healthier)."""
+    if hi == lo:
+        return 50.0
+    return max(0.0, min(100.0, (v - lo) / (hi - lo) * 100.0))
+
+
+def _lin_lower(v: float, good: float, bad: float) -> float:
+    """Linear 0-100 where good→100 and bad→0 (lower input = healthier)."""
+    if bad == good:
+        return 50.0
+    return max(0.0, min(100.0, (bad - v) / (bad - good) * 100.0))
+
+
+def _num(value: Any) -> float | None:
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _score_core_systems(value: Any) -> float | None:
+    """Tooling maturity from the systems the prospect actually runs."""
+    items = value if isinstance(value, list) else [value]
+    text = " ".join(str(i).lower() for i in items if i)
+    if not text:
+        return None
+    categories = {
+        "crm": ("hubspot", "salesforce", "pipedrive", "zoho", "close", "copper"),
+        "bi": ("looker", "tableau", "power bi", "powerbi", "metabase"),
+        "pm": ("asana", "monday", "jira", "clickup", "trello", "notion"),
+        "automation": ("zapier", "make.com", "make ", "n8n", "workato"),
+    }
+    covered = sum(1 for kws in categories.values() if any(k in text for k in kws))
+    return max(0.0, min(100.0, 20.0 + 25.0 * covered))
+
+
+_ENUM_SCORES: dict[str, dict[str, float]] = {
+    "reporting": {"manual": 15, "semi": 55, "automated": 95},
+    "documented_processes": {"none": 15, "some": 55, "most": 90},
+    "founder_dependency": {"low": 90, "med": 50, "medium": 50, "high": 15},
+    "integration_level": {"siloed": 15, "partial": 55, "integrated": 92},
+    "ai_adoption": {"none": 12, "adhoc": 50, "ad-hoc": 50, "systematic": 92},
+    "lead_source_concentration": {"single": 18, "few": 55, "diversified": 90},
+    "documented_plan": {"none": 15, "loose": 50, "clear": 90},
+}
+
+
+def _enum_metric(field: str):
+    table = _ENUM_SCORES[field]
+    return lambda v: table.get(str(v).strip().lower())
+
+
+def _bool_metric(value: Any) -> float | None:
+    if isinstance(value, bool):
+        return 85.0 if value else 25.0
+    s = str(value).strip().lower()
+    if s in ("true", "yes", "si", "sí", "1"):
+        return 85.0
+    if s in ("false", "no", "0"):
+        return 25.0
+    return None
+
+
+# Per-dimension intake metrics (INTAKE-SCHEMA.md). Each: (field, scorer, label_es,
+# label_en, bench_note). scorer(value) -> 0..100 health sub-score, or None.
+_INTAKE_METRICS: dict[Dimension, list[tuple]] = {
+    Dimension.FINANZAS: [
+        ("gross_margin_pct", lambda v: _lin_higher(n, 10, 35) if (n := _num(v)) is not None else None,
+         "margen bruto", "gross margin", "bench 28%"),
+        ("ar_days", lambda v: _lin_lower(n, 30, 90) if (n := _num(v)) is not None else None,
+         "días de cobro", "AR days", "bench 45d"),
+        ("cash_runway_months", lambda v: _lin_higher(n, 1, 6) if (n := _num(v)) is not None else None,
+         "runway de caja", "cash runway", "min 3 meses"),
+    ],
+    Dimension.OPERACIONES: [
+        ("on_time_on_budget_pct", lambda v: _lin_higher(n, 50, 90) if (n := _num(v)) is not None else None,
+         "entregas a tiempo/presupuesto", "on-time/on-budget", "bench 85%"),
+        ("reporting", _enum_metric("reporting"), "reporting a clientes", "client reporting", "manual→automatizado"),
+        ("documented_processes", _enum_metric("documented_processes"),
+         "procesos documentados", "documented processes", "none→most"),
+    ],
+    Dimension.EQUIPO: [
+        ("founder_dependency", _enum_metric("founder_dependency"),
+         "dependencia del dueño", "founder dependency", "low es mejor"),
+        ("annual_turnover_pct", lambda v: _lin_lower(n, 10, 40) if (n := _num(v)) is not None else None,
+         "rotación anual", "annual turnover", "bench 15%"),
+        ("billable_utilization_pct", lambda v: _lin_higher(n, 45, 75) if (n := _num(v)) is not None else None,
+         "utilización facturable", "billable utilization", "min 55%"),
+    ],
+    Dimension.TECNOLOGIA: [
+        ("integration_level", _enum_metric("integration_level"),
+         "integración de sistemas", "system integration", "siloed→integrated"),
+        ("ai_adoption", _enum_metric("ai_adoption"), "adopción de IA", "AI adoption", "none→systematic"),
+        ("core_systems", _score_core_systems, "stack de sistemas", "core systems", "CRM+BI+PM+automation"),
+    ],
+    Dimension.MARKETING: [
+        ("lead_source_concentration", _enum_metric("lead_source_concentration"),
+         "concentración de canales", "lead-source concentration", "single→diversified"),
+        ("conversion_rate_pct", lambda v: _lin_higher(n, 8, 30) if (n := _num(v)) is not None else None,
+         "conversión lead→cliente", "lead→client conversion", "bench por industria"),
+        ("cac_ltv_known", _bool_metric, "conoce CAC/LTV", "knows CAC/LTV", "sí es mejor"),
+    ],
+    Dimension.ESTRATEGIA: [
+        ("documented_plan", _enum_metric("documented_plan"),
+         "plan a 12 meses", "12-month plan", "none→clear"),
+        ("revenue_concentration_pct", lambda v: _lin_lower(n, 15, 50) if (n := _num(v)) is not None else None,
+         "concentración de ingresos", "revenue concentration", ">40% es riesgo"),
+    ],
+}
+
+
+# Follow-up question per dimension when its intake data is missing (data_gaps).
+_DATA_GAP_QUESTIONS: dict[Dimension, dict[str, str]] = {
+    Dimension.FINANZAS: {
+        "es": "¿Cuál es tu margen bruto promedio por proyecto y a cuántos días cobrás?",
+        "en": "What's your average gross margin per project and your AR days?"},
+    Dimension.OPERACIONES: {
+        "es": "¿Qué % de proyectos entregás a tiempo y en presupuesto? ¿El reporting es manual o automatizado?",
+        "en": "What % of projects ship on time/on budget? Is reporting manual or automated?"},
+    Dimension.EQUIPO: {
+        "es": "Si el dueño desaparece 2 semanas, ¿la operación sigue sola? ¿Cuál es la rotación anual?",
+        "en": "If the owner is gone 2 weeks, does the operation run itself? What's your annual turnover?"},
+    Dimension.TECNOLOGIA: {
+        "es": "¿Tus sistemas están integrados y usás IA de forma sistemática? ¿Qué CRM/herramientas usás?",
+        "en": "Are your systems integrated and is AI use systematic? What CRM/tools do you run?"},
+    Dimension.MARKETING: {
+        "es": "¿De dónde vienen tus clientes — un canal o varios — y conocés tu CAC y LTV?",
+        "en": "Where do clients come from — one channel or several — and do you know your CAC and LTV?"},
+    Dimension.ESTRATEGIA: {
+        "es": "¿Tenés un plan a 12 meses con métricas? ¿Qué % de ingresos viene de tu cliente más grande?",
+        "en": "Do you have a 12-month plan with metrics? What % of revenue is your largest client?"},
+}
+
+
+def _fmt_raw(raw: Any, lang: str) -> str:
+    if isinstance(raw, bool):
+        return ("sí" if raw else "no") if lang == "es" else ("yes" if raw else "no")
+    if isinstance(raw, list):
+        return ", ".join(str(x) for x in raw)
+    return str(raw)
+
+
+def _score_dimension_defensible(
+    dim: Dimension, context: dict, lang: str,
+) -> tuple[str, float | None, list[str], float]:
+    """Score a dimension from the prospect's own intake vs benchmark (T13/C3).
+
+    Returns (status, score|None, basis, coverage). status is "scored" when at
+    least one intake metric was provided, else "insufficient_data".
+    """
+    metrics = _INTAKE_METRICS.get(dim, [])
+    sub_scores: list[float] = []
+    basis: list[str] = []
+    for field_name, scorer, label_es, label_en, bench in metrics:
+        if field_name not in context:
+            continue
+        raw = context.get(field_name)
+        if raw is None or raw == "" or raw == []:
+            continue
+        s = scorer(raw)
+        if s is None:
+            continue
+        sub_scores.append(s)
+        label = label_es if lang == "es" else label_en
+        basis.append(f"{label}: {_fmt_raw(raw, lang)} (vs {bench}) → {round(s)}/100")
+    if not sub_scores:
+        return "insufficient_data", None, [], 0.0
+    score = sum(sub_scores) / len(sub_scores)
+    coverage = len(sub_scores) / len(metrics) if metrics else 0.0
+    return "scored", score, basis, coverage
+
+
+def _split_findings(
+    dim: Dimension, dim_config: dict, findings: list[Finding], lang: str,
+) -> tuple[list[Finding], list[dict]]:
+    """Split a dimension's findings into data-triggered vs industry benchmark refs.
+
+    T13/C1: findings whose condition is "always" (or unevaluable) are industry
+    context — labelled references that do NOT move the score.
+    """
+    real: list[Finding] = []
+    ctx: list[dict] = []
+    fconfigs = dim_config.get("findings", {}) or {}
+    for f in findings:
+        fc = fconfigs.get(f.benchmark_ref, {}) if isinstance(fconfigs, dict) else {}
+        cond = str(fc.get("condition", "")).strip().lower()
+        if cond in ("", "always"):
+            ctx.append({
+                "dimension": dim.value,
+                "title": f.title_es if lang == "es" else f.title_en,
+                "basis": "benchmark",
+                "label": ("Benchmark de industria (referencia)" if lang == "es"
+                          else "Industry benchmark (reference)"),
+            })
+        else:
+            real.append(f)
+    return real, ctx
 
 
 # ─── Revenue Leak Estimation ────────────────────────────────────────

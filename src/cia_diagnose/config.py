@@ -99,4 +99,4 @@ def load_config() -> Config:
     )
 
 
-SERVER_VERSION = "1.1.2"
+SERVER_VERSION = "1.2.0"
