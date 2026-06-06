@@ -451,14 +451,30 @@ def _estimate_monthly_leak(context: dict, leak_score: float) -> tuple[int, int]:
     Bug fix 2026-05-23: previously (1) only read revenue_estimate but MCP passes
     revenue_range, (2) midpoints dict only covered ≥1M, and (3) applied annual %
     to annual midpoint without dividing by 12 → inflated 'monthly' leak by 12x.
+
+    Hardening 2026-06-05: the fallback parser grabbed only the FIRST number, so
+    "0-200k" → $0 (demo-killer), en-dash dropdown values diverged from hyphen
+    ones, two-sided ranges took the floor instead of the midpoint, and the 1M
+    default rendered an absurd ~$15k/mo leak for pre-revenue leads. Now: unicode
+    dashes are normalised, every bound is parsed, ranges use the midpoint,
+    open-low bands use the ceiling, pre-revenue anchors to a credible run-rate,
+    and the estimate can never collapse to $0. Invariants in tests/test_leak_estimate.py.
     """
     # Accept multiple field names (MCP passes revenue_range; older callers use revenue_estimate)
-    rev_str = str(
+    raw = str(
         context.get("revenue_range")
         or context.get("revenue_estimate")
         or context.get("annual_revenue")
         or ""
-    ).lower().replace(" ", "").replace("_", "")
+    ).lower()
+    # Normalise unicode dashes (en/em/minus) to ASCII hyphen so dropdown values
+    # like "USD 200k – 1M" parse identically to "200k-1m" (dash-invariance).
+    for _dash in ("–", "—", "−"):
+        raw = raw.replace(_dash, "-")
+    rev_str = (
+        raw.replace(" ", "").replace("_", "").replace(",", "")
+        .replace("usd", "").replace("$", "")
+    )
 
     # Annual revenue midpoints (USD). Cover the full ICP \M-\M business range
     # plus pre-ICP and beyond for accurate downsell/upsell estimates.
@@ -485,22 +501,50 @@ def _estimate_monthly_leak(context: dict, leak_score: float) -> tuple[int, int]:
             break
 
     if midpoint == 0:
-        # Fallback: parse explicit numbers like ".5M", "500000", "1.2m"
+        # Fallback parser: extract every numeric bound, then decide the annual
+        # figure. Handles ranges ("0-200k", "50k-200k"), open-low bands
+        # ("menos de 50k"), single amounts ("1.2m", "500000") and pre-revenue.
         import re
-        match = re.search(r'(\d+(?:\.\d+)?)\s*([mk])?', rev_str)
-        if match:
-            num = float(match.group(1))
-            unit = (match.group(2) or '').lower()
-            if unit == 'm':
-                midpoint = int(num * 1_000_000)
-            elif unit == 'k':
-                midpoint = int(num * 1_000)
-            elif num >= 1_000:
-                midpoint = int(num)  # bare number ≥1000 = literal currency amount
-            else:
-                midpoint = int(num * 1_000_000)  # small bare number (e.g. "1.5") = millions
+
+        pre_markers = (
+            "preingreso", "pre-ingreso", "prerevenue", "pre-revenue",
+            "preseed", "pre-seed", "validando", "validacion",
+            "siningreso", "noingreso", "ideastage", "idea-stage", "mvp",
+        )
+        is_pre_revenue = any(mk in rev_str for mk in pre_markers)
+
+        amounts: list[float] = []
+        for num_s, unit in re.findall(r"(\d+(?:\.\d+)?)([km]?)", rev_str):
+            n = float(num_s)
+            if unit == "m":
+                n *= 1_000_000
+            elif unit == "k":
+                n *= 1_000
+            elif n < 1_000:
+                n *= 1_000_000  # small bare number (e.g. "1.5") = millions
+            amounts.append(n)
+
+        positive = [a for a in amounts if a > 0]
+        open_low = (
+            "menos" in rev_str or "under" in rev_str or "lessthan" in rev_str
+            or "hasta" in rev_str or "<" in rev_str
+            or rev_str.startswith("0-")
+            or (bool(amounts) and min(amounts) == 0)
+        )
+
+        if is_pre_revenue or not positive:
+            # pre-revenue/unparseable → conservative assumed run-rate. (Was 1M,
+            # which rendered an absurd ~$15k/mo leak for a pre-revenue lead.)
+            midpoint = 100_000
+        elif open_low:
+            midpoint = max(positive)                        # "0-200k" → ceiling
+        elif len(positive) >= 2:
+            midpoint = (min(positive) + max(positive)) / 2  # range → midpoint
         else:
-            midpoint = 1_000_000  # Default ICP entry point
+            midpoint = positive[0]                          # single explicit amount
+
+    # A weak score must never read $0 — self-contradiction on the demo (INV1).
+    midpoint = max(int(round(midpoint)), 50_000)
 
     # Annual leak percentage by score (0-100):
     #   0  → 2-5%  annual revenue lost (minimum operational waste)

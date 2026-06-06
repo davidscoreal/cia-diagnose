@@ -1,4 +1,4 @@
-# CIA Diagnose v1.1.1
+# CIA Diagnose v1.1.2
 
 <!-- mcp-name: io.github.davidscoreal/cia-diagnose -->
 
@@ -78,6 +78,13 @@ Every recommendation shows three paths: the best **paid tool**, the best **open-
 ```bash
 pip install cia-diagnose      # or: uvx cia-diagnose
 ```
+
+> **Debian/Ubuntu — `Cannot uninstall PyJWT ... RECORD file not found`?**
+> The system PyJWT (installed via `apt`) has no pip RECORD, so pip refuses to
+> upgrade it. Install without touching the distro package:
+> ```bash
+> pip install cia-diagnose --ignore-installed PyJWT
+> ```
 
 ### Run (stdio — local)
 ```bash

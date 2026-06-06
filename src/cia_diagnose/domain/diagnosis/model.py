@@ -10,6 +10,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from enum import Enum
 
+from cia_diagnose.branding import BOOKING_URL
 from cia_diagnose.config import SERVER_VERSION
 
 
@@ -99,13 +100,30 @@ class Finding:
     benchmark_ref: str = ""           # Which benchmark triggered it
 
     def to_dict(self, lang: str = "es") -> dict:
+        # A finding with no lead-specific evidence is derived from an industry
+        # benchmark, NOT detected in the client's own data. Label it explicitly
+        # so it is never presented as "detected in your business" — the lead
+        # asking "where does my 18% come from?" must get an honest answer.
+        from_lead = bool(self.evidence)
+        detail = self.detail_es if lang == "es" else self.detail_en
+        if from_lead:
+            basis_label = "Detectado en tus datos" if lang == "es" else "Detected in your data"
+        else:
+            basis_label = (
+                "Benchmark de la industria (referencia)"
+                if lang == "es" else
+                "Industry benchmark (reference)"
+            )
+            detail = f"{detail}\n\n— {basis_label}" if detail else basis_label
         return {
             "dimension": self.dimension.value,
             "severity": self.severity.value,
             "title": self.title_es if lang == "es" else self.title_en,
-            "detail": self.detail_es if lang == "es" else self.detail_en,
+            "detail": detail,
             "impact_estimate": self.impact_estimate,
             "evidence": self.evidence,
+            "basis": "lead_data" if from_lead else "industry_benchmark",
+            "basis_label": basis_label,
         }
 
 
@@ -302,7 +320,10 @@ class DiagnosisReport:
                 f"Analysis based on {self.dimensions_with_data} of 11 dimensions. "
                 f"Data quality: {round(self.overall_data_quality * 100)}%."
             ),
-            "next_step_url": self.report_url,
+            # CTA the client should act on next. Prefer a hosted report link when
+            # one exists; otherwise fall back to the booking URL so this never
+            # ships empty (was always "").
+            "next_step_url": self.report_url or BOOKING_URL,
             "session_id": self.session_id,
             "version": self.version,
         }

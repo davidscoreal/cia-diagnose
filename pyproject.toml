@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "cia-diagnose"
-version = "1.1.1"
+version = "1.1.2"
 description = "Holistic business intelligence engine — 11-dimension diagnosis via any LLM. Triple option (Paid/OSS/CIA)"
 readme = "README.md"
 requires-python = ">=3.10"
