@@ -1,5 +1,34 @@
 # Changelog
 
+## v1.1.2 (2026-06-05)
+
+### Fixed
+- **Revenue-leak parser (`_estimate_monthly_leak`) — demo-killer.** The fallback
+  parser grabbed only the first number, so:
+  - `"0-200k"` returned **$0/mo** while the report screamed "CRÍTICO" — a self-
+    contradiction live in front of a lead.
+  - en-dash dropdown values (`"USD 200k – 1M"`) diverged from their hyphen
+    equivalents (`"200k-1m"`) → different leak for the same band.
+  - two-sided ranges (`"50k-200k"`) took the floor instead of the midpoint.
+  - the `1_000_000` default rendered an absurd **~$15k/mo** leak for pre-revenue
+    leads.
+  Now unicode dashes are normalised, every bound is parsed, ranges use the
+  midpoint, open-low bands use the ceiling, pre-revenue anchors to a credible
+  run-rate, and the estimate can never collapse to $0.
+
+### Changed
+- **Benchmark findings are labelled.** A finding with no lead-specific
+  `evidence` is now flagged `basis: "industry_benchmark"` with a visible
+  `"Benchmark de la industria (referencia)"` label, so reference findings are
+  never presented as detected in the client's own data.
+- **`next_step_url` no longer ships empty.** It falls back to the configured
+  booking URL (`branding.BOOKING_URL`) when no hosted report URL is set.
+
+### Added
+- `tests/test_leak_estimate.py` — acceptance invariants for the leak estimate
+  (no-$0, dash-invariance, midpoint, pre-revenue bounded, monotonicity) plus
+  reference-value spot checks.
+
 ## v1.1.1 (2026-06-02)
 
 - **License changed to MIT** (was Proprietary in 1.1.0). `pyproject` now declares
