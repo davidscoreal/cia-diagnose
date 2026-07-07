@@ -45,3 +45,4 @@ reports/output/
 *.tmp
 *.bak
 pytest-cache-files-*/
+uv.lock
