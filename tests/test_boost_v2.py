@@ -166,7 +166,7 @@ async def test_diagnose_output_has_signature(isolated_app):
     data = res[1] if isinstance(res, tuple) else res
     assert "cia" in data
     assert data["cia"]["booking_url"] == branding.BOOKING_URL
-    assert data["version"] == "1.2.0"  # B5: single version source
+    assert data["version"] == "1.3.0"  # B5: single version source
 
 
 # ─── HTTP routes (tareas 4 & 9) ──────────────────────────────────────

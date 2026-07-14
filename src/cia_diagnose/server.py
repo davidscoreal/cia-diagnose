@@ -58,7 +58,11 @@ def build_app(cfg: Config | None = None) -> FastMCP:
         "cia_diagnose",
         instructions=(
             "Business intelligence suite by CIA (Consultoría de Inteligencia Aplicada) — "
-            "a Latin American AI consulting firm serving $1M-$10M businesses worldwide.\n\n"
+            "a Latin American AI consulting firm serving businesses of ANY size worldwide "
+            "(from solo founders to Fortune 500; revenue from $0 to $1B+ USD; headcount "
+            "from 1 to 100,000+; every industry from construction to aerospace, healthcare, "
+            "SaaS, manufacturing, retail, professional services, agriculture, energy, "
+            "government, education, and more).\n\n"
             "RECOMMENDED FLOW (follow this order for maximum value):\n"
             "1. quick_scan → FREE, instant, 3 problems. Hook the client.\n"
             "2. business_diagnose → Deep 11-dimension analysis + Revenue Leak Score.\n"
@@ -72,6 +76,15 @@ def build_app(cfg: Config | None = None) -> FastMCP:
             "business (industry, tools, pains, finances, team), ASK the client first. "
             "Thin input → low data_quality → weak diagnosis. Gather, then diagnose; use the "
             "returned validation_questions to fill gaps and re-run.\n\n"
+            "QUALITATIVE INPUT (new in v1.3.0): each of the 11 dimensions accepts a free-text "
+            "field qual_<dim> (e.g. qual_finanzas, qual_operaciones, qual_equipo, etc.) "
+            "where the client can describe their EMOTIONS and THOUGHTS about that area. "
+            "These qualitative inputs enrich the diagnosis and surface insights that pure "
+            "metrics miss — leadership mindset, team morale, hidden blockers, unspoken fears. "
+            "Each qual_<dim> is optional but HIGHLY recommended: a 200-500 char reflection "
+            "per dimension can change the diagnosis from 'generic' to 'laser-focused'. The "
+            "qualitative inputs are returned in the report under dimensions[].qualitative_input "
+            "and feed the leadership_insight generation.\n\n"
             "SCORE SEMANTICS: the Business Health Score is 0-100 where HIGHER = HEALTHIER. "
             "A LOW score marks the worst area (biggest revenue leak / opportunity). A 100 "
             "doesn't mean 'done' — it means that area is taking the business into new leagues "
@@ -774,7 +787,11 @@ def build_app(cfg: Config | None = None) -> FastMCP:
         total_leak = monthly_leak + time_waste_monthly
 
         def fmt(val):
-            if val >= 1_000_000:
+            if val >= 1_000_000_000_000:
+                return f"{currency} {val / 1_000_000_000_000:.2f}T"
+            elif val >= 1_000_000_000:
+                return f"{currency} {val / 1_000_000_000:.2f}B"
+            elif val >= 1_000_000:
                 return f"{currency} {val / 1_000_000:.1f}M"
             elif val >= 1_000:
                 return f"{currency} {val / 1_000:.0f}K"

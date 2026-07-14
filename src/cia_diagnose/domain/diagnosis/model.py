@@ -149,6 +149,7 @@ class DimensionScore:
     basis: list[str] = field(default_factory=list)
     label_es: str = ""
     label_en: str = ""
+    qualitative_input: str = ""    # v1.3.0: client's free-text reflection on this dimension (emotions/thoughts)
 
     def __post_init__(self):
         self.weighted_score = self.score * self.weight
@@ -168,6 +169,7 @@ class DimensionScore:
             "basis": self.basis,
             "finding_count": len(self.findings),
             "findings": [f.to_dict(lang) for f in self.findings],
+            "qualitative_input": self.qualitative_input,
         }
 
 

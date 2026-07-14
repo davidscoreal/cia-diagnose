@@ -106,6 +106,10 @@ def diagnose(
                     "question_en": q["en"],
                 })
 
+        # v1.3.0: pull qualitative input for this dimension from context.
+        qual_key = f"qual_{dim.value}"
+        qual_input = str(context.get(qual_key, "") or "").strip()
+
         ds = DimensionScore(
             dimension=dim,
             score=health,
@@ -114,6 +118,7 @@ def diagnose(
             data_quality=data_quality,
             status=status,
             basis=basis,
+            qualitative_input=qual_input,
         )
         dimension_scores.append(ds)
         all_findings.extend(findings)
@@ -748,8 +753,8 @@ def _estimate_monthly_leak(context: dict, leak_score: float) -> tuple[int, int]:
         .replace("usd", "").replace("$", "")
     )
 
-    # Annual revenue midpoints (USD). Cover the full ICP \M-\M business range
-    # plus pre-ICP and beyond for accurate downsell/upsell estimates.
+    # Annual revenue midpoints (USD). Cover the full spectrum from solo founder
+    # ($0) to Fortune 500 ($1B+). v1.3.0: extended to universal scale — no caps.
     midpoints = {
         "under100k":         50_000,
         "100k-500k":        300_000,
@@ -762,9 +767,19 @@ def _estimate_monthly_leak(context: dict, leak_score: float) -> tuple[int, int]:
         "2m-10m":         6_000_000,
         "5m-10m":         7_500_000,
         "10m-50m":       25_000_000,
+        "10m-100m":      55_000_000,
+        "50m-100m":      75_000_000,
+        "100m-500m":    300_000_000,
+        "100m-1b":      500_000_000,
+        "500m-1b":      750_000_000,
+        "1b+":        1_500_000_000,
         "10m+":          15_000_000,
         "over10m":       15_000_000,
         "over_10m":      15_000_000,
+        "over100m":     100_000_000,
+        "over_100m":    100_000_000,
+        "over1b":     1_000_000_000,
+        "over_1b":    1_000_000_000,
     }
     midpoint = 0
     for key, val in midpoints.items():
